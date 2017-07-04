@@ -1,0 +1,14 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+
+    <file>qml/tic-tac-toe.qml</file>
+    <file>qml/ext/Button.qml</file>
+    <file>qml/ext/TicTac.qml</file>
+
+    <!-- aliases needed for loading from QML -->
+    <file alias="../pics/board.png">pics/board.png</file>
+    <file alias="../../pics/o.png">pics/o.png</file>
+    <file alias="../../pics/x.png">pics/x.png</file>
+
+</qresource>
+</RCC>
