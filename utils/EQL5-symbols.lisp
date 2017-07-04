@@ -1,8 +1,8 @@
 ;;; This file needs to be loaded in Android host ECL, in order to cross-compile
 ;;; EQL5 code.
 ;;;
-;;; It defines all symbols an macros of EQL5, defining also dummy functions for
-;;; all wrapper function symbols and functions defined in "ecl_fun.cpp".
+;;; It defines all symbols and macros of EQL5, defining also dummy functions
+;;; for all wrapper function symbols and functions defined in "ecl_fun.cpp".
 ;;;
 ;;; (Otherwise we would have to use an EQL5 version built with a 32 bit ECL
 ;;; with no double floats for cross-compiling, which would be less than

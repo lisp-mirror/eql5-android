@@ -5,10 +5,9 @@
     <file>qml/ext/Button.qml</file>
     <file>qml/ext/TicTac.qml</file>
 
-    <!-- aliases needed for loading from QML -->
-    <file alias="../pics/board.png">pics/board.png</file>
-    <file alias="../../pics/o.png">pics/o.png</file>
-    <file alias="../../pics/x.png">pics/x.png</file>
+    <file>pics/board.png</file>
+    <file>pics/o.png</file>
+    <file>pics/x.png</file>
 
 </qresource>
 </RCC>

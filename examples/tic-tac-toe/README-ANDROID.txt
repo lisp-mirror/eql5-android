@@ -3,13 +3,13 @@ PREPARE
 =======
 
 You need to prepare your Android development environment first, as described
-in ../README-PREPARE.txt
+in ../../README-PREPARE.txt
 
 (see also http://wiki.qt.io/Qt_for_Android_known_issues)
 
 In order to have all external resources, like qml files and images, included
 in the executable, you need to add them to the resource file (already done
-here, see 'tic_tac_toe.qrc').
+here, see 'tic_tac_toe.qrc'.
 
 
 
@@ -46,8 +46,9 @@ MAKE (cross-compile for Android)
 
 We use a trick for cross-compiling: since we don't want an EQL5 version only
 for cross-compiling, linked to a 32 bit ECL, we 'pretend' to be the 'eql5'
-executable, by defining all packages and all symbols of EQL5, and defining
-dummy functions for all EQL5 functions, so the compiler will not complain.
+executable, by defining all packages, symbols and macros(!) of EQL5, and
+defining dummy functions for all EQL5 functions, so the compiler will not
+complain.
 
 This is done by loading the file '../../utils/EQL5-symbols.lisp' into ECL.
 
