@@ -14126,4 +14126,5 @@
 
 (pushnew :eql  *features*)
 (pushnew :eql5 *features*)
+(pushnew :qt-wrapper-functions *features*)
 
