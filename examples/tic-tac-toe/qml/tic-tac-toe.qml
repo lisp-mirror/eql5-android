@@ -15,12 +15,14 @@ Rectangle {
     Image {
         id: board_image
         objectName: "board_image"
+        anchors.centerIn: parent
         source: "../pics/board.png"
     }
 
     Column {
         id: display
         objectName: "display"
+        anchors.centerIn: parent
 
         Grid {
             id: board
