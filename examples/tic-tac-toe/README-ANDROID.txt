@@ -9,7 +9,7 @@ in ../../README-PREPARE.txt
 
 In order to have all external resources, like qml files and images, included
 in the executable, you need to add them to the resource file (already done
-here, see 'tic_tac_toe.qrc'.
+here, see 'tic_tac_toe.qrc').
 
 
 
@@ -109,11 +109,15 @@ There is also the '--deployment ministro' option for the above tool, which
 means that you don't need to provide the Qt libraries; they will instead be
 downloaded automatically the first time the app is started on the Android
 device.
-I don't know if it already works with Qt 5.9; at the time I tested it did not.
 
-In our case it would be preferable to build a separate package for all the
-dependencies (including EQL5 and ECL), in order to keep the apps really small.
-This will certainly be done in a future release of 'EQL5-Android'.
+A list of the currently supported Qt versions of 'ministro' can be found here:
+
+  https://download.qt.io/ministro/android/qt5/
+
+At the time of writing, only versions up to Qt 5.7.1 are supported.
+
+So, if you use 'ministro', the APK file will be down to 3.5 MB (including the
+EQL5 and ECL libs), which seems acceptable.
 
 
 
