@@ -63,7 +63,7 @@ Now you need to edit file './gen/quick/_q_classes.h' and search:
 
   class LSGDynamicTexture
 
-Uncomment the following functions:
+Comment out the following functions:
 
   // void bind() {...}
   // bool hasAlphaChannel() const {...}
