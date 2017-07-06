@@ -20,9 +20,9 @@ need it to compile Android apps; a 'host ECL' will be sufficient, see below.)
 
 Qt 5.9 already includes Android versions of all binaries.
 
-N.B: You will _not_ need to build the EQL5 shared libraries for Android (that
-would be too much of a hassle); the cross-compiled versions are already
-included (see lib/).
+N.B: You will _not_ need to build the EQL5 shared libraries for Android; the
+cross-compiled versions are already included (see lib/).
+But if you prefer to build them by yourself, please see 'build-eql5/'.
 
 Since the included EQL5 Android libraries have been built with the above
 versions, you're required to have the exact same versions installed.
