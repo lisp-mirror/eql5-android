@@ -12,7 +12,7 @@ IMPORTANT NOTES
 
 You will need EQL5 version >= 17.7.1 (check eql5 -v).
 
-For developing Android apps, simply stay with the exact same ECL/QT5/EQL5
+For developing Android apps, simply stay with the exact same ECL/Qt5/EQL5
 versions you used to build the cross-compiled EQL5 libs.
 
 (Should be obvious, but I wanted to repeat it.)
@@ -33,7 +33,7 @@ Edit file 'android-make.lisp' and adapt the path to your 'EQL5-symbols.lisp'
 file (first line); then do:
 
   $ ecl-android -shell android-make.lisp
-  $ qmake-android android-eql5.pro
+  $ qmake-android android_eql5.pro
   $ make
 
 This will start to compile, but then it will give you a (harmless) error
@@ -73,7 +73,7 @@ Comment out the following functions:
 
 Now 'make' should finally be successful.
 
-The last step is stripping (to be ready for deploying):
+The last step is stripping (to be ready for deployment):
 
   $ cd android-libs
   $ $ANDROID_NDK_ROOT/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/arm-linux-androideabi-strip lib*
@@ -89,5 +89,6 @@ NOTE
 
 You may have noticed that there's no executable included, like 'eql5' on the
 desktop; even if you try to compile it, it would still build a shared library
-(because this is the way Android works).
+(because this is the way Android works -- your Qt 'main()' function will be
+called from Java when launching an app).
 
