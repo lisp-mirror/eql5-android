@@ -44,13 +44,22 @@ Please remember to choose this exact NDK version: 10e.
 Note that you can skip the 'ant' installation (obsolete, we will use 'gradle'
 instead, which will be installed automatically later on).
 
-Note also that the SDK tools are expected to be found here:
-'/opt/android/sdk' (Android Studio, on its first launch, will ask where to
-install the sdk, just change the default '~/Android/Sdk' to '/opt/android/sdk',
-or move it there afterwards).
+Also, we don't need Android Studio, so search for "command line tools" on the
+SDK download page.
 
-You will not need Android Studio, but you may want to start it just once,
-in order to have everything installed that you'll need.
+The SDK tools are expected to be installed here: '/opt/android/sdk/' (so unzip
+them there).
+
+N.B: If you use Qt versions prior to 5.9, you need to install an older version
+of the SDK tools (the latest one will not work with Qt < 5.9).
+
+Here are the links to the SDK tools for Qt prior to 5.9:
+
+macOS: https://dl.google.com/android/repository/tools_r25.2.5-macosx.zip
+Windows: https://dl.google.com/android/repository/tools_r25.2.5-windows.zip
+Linux: https://dl.google.com/android/repository/tools_r25.2.5-linux.zip
+
+As mentioned above, just unzip them in '/opt/android/sdk/'.
 
 
 
