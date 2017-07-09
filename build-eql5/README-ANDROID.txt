@@ -5,6 +5,9 @@ INFO
 If you don't want to use the included EQL5 libs from '../lib/' (or you want to
 use a Qt version different from 5.9.1), just follow the below steps.
 
+(This may be necessary if you want to use the 'ministro' service, because at
+the time of writing, only versions up to Qt 5.7.1 are supported by it.)
+
 
 
 IMPORTANT NOTES
@@ -25,9 +28,11 @@ CROSS-COMPILE EQL5
 This will compile all supported eql5 libs (I'm assuming you already went
 through '../README-PREPARE.txt').
 
-- copy all files from this directory to your eql5 desktop installation:
+- copy all files from this directory to your eql5 desktop installation, and
+  switch to it:
 
   $ cp * ~/eql5/src/
+  $ cd ~/eql5/src
 
 Edit file 'android-make.lisp' and adapt the path to your 'EQL5-symbols.lisp'
 file (first line); then do:
