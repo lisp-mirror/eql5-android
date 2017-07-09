@@ -5,6 +5,7 @@
 #include <QApplication>
 #include <QTextCodec>
 #include <QFileInfo>
+#include <QLabel>
 //#include <QMessageBox>
 
 extern "C" void ini_app(cl_object);
@@ -22,6 +23,7 @@ int main(int argc, char** argv) {
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication qapp(argc, argv);
+
     //qapp.setOrganizationName("MyTeam");
     //qapp.setOrganizationDomain("my-team.org");
     qapp.setApplicationName(QFileInfo(qapp.applicationFilePath()).baseName());
@@ -29,7 +31,16 @@ int main(int argc, char** argv) {
     QTextCodec* utf8 = QTextCodec::codecForName("UTF-8");
     QTextCodec::setCodecForLocale(utf8);
 
+    // splash text
+    QLabel* splash = new QLabel;
+    splash->setText("<h2 style='background-color: orange; color: white; text-align: center;'>(p) powered by Lisp</h2>");
+    splash->setAlignment(Qt::AlignCenter);
+    splash->show();
+    qApp->processEvents();
+
     EQL eql;
     eql.exec(ini_app);
+
+    delete splash;
 
     return catch_all_qexec(); }
