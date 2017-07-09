@@ -10,7 +10,6 @@ OBJECTS_DIR    = ./tmp/
 MOC_DIR        = ./tmp/
 
 OTHER_FILES    += qml/tic-tac-toe.qml \
-                  qml/ext/Button.qml \
                   qml/ext/TicTac.qml
 
 SOURCES        += build/main.cpp

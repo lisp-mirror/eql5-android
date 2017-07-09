@@ -1,13 +1,14 @@
 // for (c) please see COPYING.txt
 
-import QtQuick 2.0
+import QtQuick 2.6
+import QtQuick.Controls 2.0
 import "ext/" as Ext
 import EQL5 1.0
 
 Rectangle {
     id: game
     objectName: "game"
-    width: 420; height: 480
+    width: 420; height: 500
 
     property bool running: true
     property int difficulty: 10 // chance it will actually think
@@ -41,26 +42,28 @@ Rectangle {
                 }
             }
         }
+    }
 
-        Row {
-            spacing: 4
-            anchors.horizontalCenter: parent.horizontalCenter
+    Row {
+        spacing: 5
+        padding: 10
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
 
-            Ext.Button {
-                text: "Hard"
-                pressed: game.difficulty == 10
-                onClicked: { game.difficulty = 10 }
-            }
-            Ext.Button {
-                text: "Moderate"
-                pressed: game.difficulty == 8
-                onClicked: { game.difficulty = 8 }
-            }
-            Ext.Button {
-                text: "Easy"
-                pressed: game.difficulty == 2
-                onClicked: { game.difficulty = 2 }
-            }
+        Button {
+            text: "Hard"
+            down: game.difficulty == 10
+            onClicked: { game.difficulty = 10 }
+        }
+        Button {
+            text: "Moderate"
+            down: game.difficulty == 8
+            onClicked: { game.difficulty = 8 }
+        }
+        Button {
+            text: "Easy"
+            down: game.difficulty == 2
+            onClicked: { game.difficulty = 2 }
         }
     }
 

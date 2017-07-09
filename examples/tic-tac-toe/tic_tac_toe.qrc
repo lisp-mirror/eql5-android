@@ -2,7 +2,6 @@
 <qresource>
 
     <file>qml/tic-tac-toe.qml</file>
-    <file>qml/ext/Button.qml</file>
     <file>qml/ext/TicTac.qml</file>
 
     <file>pics/board.png</file>
