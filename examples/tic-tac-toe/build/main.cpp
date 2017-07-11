@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
 
     // splash text
     QLabel* splash = new QLabel;
-    splash->setText("<h2 style='background-color: orange; color: white; text-align: center;'>(p) powered by Lisp</h2>");
+    splash->setText("<h2 style='background-color: lightsteelblue; text-align: center;'>(powered by Lisp)</h2>");
     splash->setAlignment(Qt::AlignCenter);
     splash->show();
     qApp->processEvents();

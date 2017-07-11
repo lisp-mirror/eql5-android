@@ -15,7 +15,7 @@
   (|fromLocalFile.QUrl| file))
 
 (defun run ()
-  ;; special settings for Android, taken from Qt example
+  ;; special settings for mobile, taken from Qt example
   (setf qml:*quick-view* (qnew "QQuickView"))
   (let ((env (ext:getenv"QT_QUICK_CORE_PROFILE")))
     (when (and (stringp env)

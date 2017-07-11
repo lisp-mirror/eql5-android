@@ -1,5 +1,5 @@
 (load "../../utils/EQL5-symbols")
-(load "build/cross-compile")
+(load "../../utils/cross-compile")
 
 (require :cmp)
 
