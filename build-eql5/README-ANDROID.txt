@@ -3,10 +3,7 @@ INFO
 ====
 
 If you don't want to use the included EQL5 libs from '../lib/' (or you want to
-use a Qt version different from 5.9.1), just follow the below steps.
-
-(This may be necessary if you want to use the 'ministro' service, because at
-the time of writing, only versions up to Qt 5.7.1 are supported by it.)
+use a Qt version different from 5.7.1), just follow the below steps.
 
 
 

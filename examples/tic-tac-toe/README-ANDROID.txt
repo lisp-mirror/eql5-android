@@ -73,7 +73,7 @@ default in '~/Android/Sdk' during the first start of Android Studio).
 There is a nice Qt utility, which will automate the whole (and complex) build
 process. It's located under your Qt installation directory, e.g.
 
-  ~/Qt5.9.1/5.9.1/android_armv7/bin/androiddeployqt
+  ~/Qt5.7.1/5.7/android_armv7/bin/androiddeployqt
 
 Run the tool using the third script:
 
@@ -83,6 +83,7 @@ This will run the following command:
 
   androiddeployqt --input android-libtic_tac_toe.so-deployment-settings.json \
                   --output android-build \
+                  --deployment ministro \
                   --gradle \
                   --verbose
 
@@ -90,6 +91,21 @@ The mentioned 'json' file is generated automatically during 'make', see above.
 
 'gradle' is the new 'ant'. It will be downloaded the first time you start a
 build.
+
+The '--deployment ministro' option means that you don't need to provide the Qt
+libraries; they will instead be downloaded automatically the first time the app
+is started on the Android device.
+(This is of course optional, you may also include the Qt libs, which will push
+up the size of the APK file to about 13.5 MB.)
+
+A list of the currently supported Qt versions of 'ministro' can be found here:
+
+  https://download.qt.io/ministro/android/qt5/
+
+At the time of writing, only versions up to Qt 5.7.1 are supported.
+
+Using 'ministro', the APK file is about 3.5 MB (including the EQL5 and ECL
+libs), which seems acceptable.
 
 N.B: The first time you run this, you will probably hit a bug of the tool; so,
 just open the file 'android-build/build.gradle', and edit the offending line;
@@ -101,23 +117,6 @@ change the property 'androidCompileSdkVersion' to:
 
 Now the build should succeed (verbosely, as requested). The APK package is in
 'android-build/build/outputs/apk/'.
-
-Please note: this build includes all the used Qt libraries, and is therefore
-quite big for an Android app.
-
-There is also the '--deployment ministro' option for the above tool, which
-means that you don't need to provide the Qt libraries; they will instead be
-downloaded automatically the first time the app is started on the Android
-device.
-
-A list of the currently supported Qt versions of 'ministro' can be found here:
-
-  https://download.qt.io/ministro/android/qt5/
-
-At the time of writing, only versions up to Qt 5.7.1 are supported.
-
-So, if you use 'ministro', the APK file will be down to 3.5 MB (including the
-EQL5 and ECL libs), which seems acceptable.
 
 
 
