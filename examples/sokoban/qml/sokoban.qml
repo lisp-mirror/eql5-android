@@ -37,7 +37,7 @@ Rectangle {
     Row {
         id: buttons
         objectName: "buttons"
-        spacing: 5
+        spacing: 10
         padding: 10
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
@@ -71,7 +71,7 @@ Rectangle {
         anchors.rightMargin: 10
         anchors.margins: 10
         anchors.right: parent.right
-        anchors.bottom: parent.bottom
+        anchors.verticalCenter: parent.verticalCenter
 
         Ext.Button {
             id: up
