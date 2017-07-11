@@ -6,7 +6,7 @@ Important: prepare for several GB of downloads (1 GB Qt9, 1 GB Android NDK,
 and many other downloads...).
 
 Please note that I'm assuming you're on 64 bit Linux (obviously the
-recommended platform).
+recommended platform -- and VirtualBox is free).
 
 This project requires _exactly_ the following development environment:
 (in order to match the pre-built EQL5 libraries for Android)
