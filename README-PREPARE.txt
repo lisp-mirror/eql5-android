@@ -106,7 +106,7 @@ ECL_ANDROID      : path of your cross-compiled ECL
 -- aliases --
 
 ecl-android      : exe of host ECL (32 bit) for cross-compiling
-qmake-android    : exe of qmake for android arm (included in Qt9)
+qmake-android    : exe of qmake for android arm (included in Qt5)
 
 --
 

@@ -68,7 +68,6 @@ Rectangle {
     Item {
         width: up.width * 3
         height: up.height * 3
-        anchors.rightMargin: 10
         anchors.margins: 10
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
