@@ -1,5 +1,6 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.0
+import QtQuick.Window 2.2
 import "ext/" as Ext
 import EQL5 1.0
 
@@ -7,7 +8,9 @@ Rectangle {
     width: 900; height: 600
 
     Row {
-        scale: 0.9
+        // adapt board scale to screen size, depending on landscape/portrait
+        scale: (Screen.height < Screen.width) ? ((Screen.height - 2 * buttons.height - 20) / board.height)
+                                              : ((Screen.width - 2 * arrows.width - level.width - 20) / board.width)
         anchors.centerIn: parent
 
         Slider {
@@ -66,6 +69,7 @@ Rectangle {
 
     // container for arrow buttons
     Item {
+        id: arrows
         width: up.width * 3
         height: up.height * 3
         anchors.margins: 10

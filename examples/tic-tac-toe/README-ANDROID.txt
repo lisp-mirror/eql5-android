@@ -111,7 +111,7 @@ N.B: The first time you run this, you will probably hit a bug of the tool; so,
 just open the file 'android-build/build.gradle', and edit the offending line;
 change the property 'androidCompileSdkVersion' to:
 
-  androidCompileSdkVersion=26
+  androidCompileSdkVersion=25
 
 (that is, the version of your SDK tools, see e.g. the download name of the SDK
 command line tools file, or the Android Studio settings)
