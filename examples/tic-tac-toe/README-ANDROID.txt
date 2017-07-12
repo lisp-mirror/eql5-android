@@ -113,7 +113,8 @@ change the property 'androidCompileSdkVersion' to:
 
   androidCompileSdkVersion=26
 
-(that is, the version of your SDK tools, see e.g. Android Studio settings.)
+(that is, the version of your SDK tools, see e.g. the download name of the SDK
+command line tools file, or the Android Studio settings)
 
 Now the build should succeed (verbosely, as requested). The APK package is in
 'android-build/build/outputs/apk/'.

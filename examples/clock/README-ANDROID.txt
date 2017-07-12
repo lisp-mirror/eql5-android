@@ -39,11 +39,3 @@ BUILD APK FILE
 
   ./3-build-apk.sh
 
-
-
-TEST
-====
-
-Now you can connect your Android device via the USB port, copy over the *.apk
-file, and install/run it.
-

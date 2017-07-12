@@ -24,7 +24,7 @@ MAKE (cross-compile for Android)
   ./1-copy-libs.sh             # copy EQL5 and ECL libs
 
   ecl-android -shell make.lisp # note 'ecl-android'
-  qmake-android clock.pro      # note 'qmake-android'
+  qmake-android sokoban.pro    # note 'qmake-android'
   make
 
   ./2-install-lib.sh           # make install...
@@ -40,12 +40,4 @@ BUILD APK FILE
 ==============
 
   ./3-build-apk.sh
-
-
-
-TEST
-====
-
-Now you can connect your Android device via the USB port, copy over the *.apk
-file, and install/run it.
 
