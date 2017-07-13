@@ -107,15 +107,6 @@ At the time of writing, only versions up to Qt 5.7.1 are supported.
 Using 'ministro', the APK file is about 3.5 MB (including the EQL5 and ECL
 libs), which seems acceptable.
 
-N.B: The first time you run this, you will probably hit a bug of the tool; so,
-just open the file 'android-build/build.gradle', and edit the offending line;
-change the property 'androidCompileSdkVersion' to:
-
-  androidCompileSdkVersion=25
-
-(that is, the version of your SDK tools, see e.g. the download name of the SDK
-command line tools file, or the Android Studio settings)
-
 Now the build should succeed (verbosely, as requested). The APK package is in
 'android-build/build/outputs/apk/'.
 
