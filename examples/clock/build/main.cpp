@@ -6,7 +6,6 @@
 #include <QTextCodec>
 #include <QFileInfo>
 #include <QLabel>
-//#include <QMessageBox>
 
 extern "C" void ini_app(cl_object);
 
@@ -31,9 +30,9 @@ int main(int argc, char** argv) {
     QTextCodec* utf8 = QTextCodec::codecForName("UTF-8");
     QTextCodec::setCodecForLocale(utf8);
 
-    // splash text
+    // splash pixmap (see "../../img/logo.png")
     QLabel* splash = new QLabel;
-    splash->setText("<h2 style='background-color: lightsteelblue; text-align: center;'>(powered by Lisp)</h2>");
+    splash->setPixmap(QPixmap(":/img/logo.png"));
     splash->setAlignment(Qt::AlignCenter);
     splash->show();
     qApp->processEvents();

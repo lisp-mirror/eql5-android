@@ -11,3 +11,4 @@ MOC_DIR        = ./tmp/
 
 SOURCES        += build/main.cpp
 
+RESOURCES      = clock.qrc

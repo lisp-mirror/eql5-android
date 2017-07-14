@@ -8,7 +8,7 @@ Rectangle {
     width: 900; height: 600
 
     Row {
-        // adapt board scale to screen size, depending on landscape/portrait
+        // adapt 'level' and 'board' scale to screen size, depending on landscape/portrait
         scale: (Screen.height < Screen.width) ? ((Screen.height - 2 * buttons.height - 20) / board.height)
                                               : ((Screen.width - 2 * arrows.width - level.width - 20) / board.width)
         anchors.centerIn: parent
@@ -30,7 +30,7 @@ Rectangle {
             color: "lightsteelblue"
         }
 
-        // dummy to have buttons centered
+        // dummy to have it exactly centered
         Item {
             width: level.width
             height: level.height
