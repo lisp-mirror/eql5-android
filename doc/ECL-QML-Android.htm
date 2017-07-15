@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Lisp and QML on Android</title>
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+    <link rel="stylesheet" href="css/code.css" type="text/css">
+    <meta charset="utf-8">
+  </head>
+  <body style="margin: 20px;">
+    <div style="width: 700px; margin: 20px;">
+      <script src="js/highlight.pack.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script>
+
+      <h2>Lisp (ECL) and QML (Qt5) on Android?</h2>
+
+      <small>(please note that I'm assuming a <b>Linux/64</b> bit platform or VirtualBox image)</small>
+
+      <p style="text-align: right">2017-07-15</p>
+
+      <p>Preamble: about a month ago, I was completely void of any android experience.
+      <br>This is to say: using both QML (which is easy to learn) and Common Lisp (which I assume you already know) to develop android apps is not a difficult task at all, as you'll see.</p>
+        
+      <p>So, if you are like me just a month ago, there are no excuses not to write your own, first android app using this new "EQL5-Android" project!</p>
+
+      <p>We will build a small game (Sokoban), which uses <b>Lisp</b> for the program logic, and <b>QML</b> for the UI, and build an <b>APK</b> for the android platform.</p>
+
+      <hr style="width: 25%;">
+
+      <p>Being the author of that very first attempt of integrating Lisp and Qt4 (see <a target="_blank" href="https://sourceforge.net/projects/lisp-cffi-qt4/files/">lisp-cffi-qt4</a>), what I would like to accomplish is providing you with a ca. 3 MB download, which can be tried out instantly.</p>
+
+      <p><u>10 years ago</u>, the <code><b>lisp-cffi-qt4.zip</b></code> (a runnable win32 binary version), was a 3 MB download, including both ECL and Qt4 (UPX compressed, but still).
+      <br><u>10 years later</u>, this time on android, what download size is to be expected?
+      <br>We will see...</p>
+
+      <hr style="width: 25%;">
+
+      <p>Since all the documentation needed for preparing the development environment is already covered in the "EQL5-Android" project itself, I will give only the link here:</p>
+
+      <p><a target="_blank" href="https://gitlab.com/eql/EQL5-Android/blob/master/README-PREPARE.txt">README-PREPARE.txt</a></p>
+
+      <p>So, I'm assuming that you already have everything installed and set up (<b>Qt</b> 5.7.1, Android <b>NDK</b> 10e, Android <b>SDK</b>, Java <b>JDK</b>, and obviously the EQL5-Android sources from <a target="_blank" href="https://gitlab.com/eql/EQL5-Android/tree/master">gitlab</a>), in order to build android packages (APK files).</p>
+
+      <p>(EQL5 itself, the desktop version, is not strictly needed to follow this example; but for developing your own apps, you will obviously need it; even here it's very helpful for testing and debugging, if something doesn't work as expected.)</p>
+
+      <p>If you already know the process of building EQL5 apps for the desktop, you will find that building (cross-compiling) to android is very similar, with only a few more steps involved.</p>
+
+      <p>Since we use an example of EQL5-Android itself, everything has already been set up. But I want to remember the steps that are not obvious, if you are not familiar with Qt and EQL:</p>
+
+      <ul>
+        <li>you need to add all your external resources, like QML files, PNG files etc. to a Qt resource file (ending <code>.qrc</code>); this will integrate them (compressed) directly into the executable
+        <li>you need to add all your Lisp files, in exact order of loading, to <code>make.lisp</code> (in a future version of EQL5, I will try to integrate this step with ASDF)
+      </ul>
+
+      <p>And that's it, basically (except the app name, which needs to be adapted to the <code>*.qrc</code> file name, to your <code>*.pro</code> file name and contents (see <code>TARGET</code> and <code>RESOURCES</code>), and to the contents of the third script <code>3-build-apk.sh</code> (see <code>*.json</code> file name).</p>
+
+      <p>Everything else will stay the same for every project.</p>
+
+      <p>Now I want to call your attention on the huge advantage of using Qt for your android apps: you can first build a desktop <code>exe</code>, with the exact same sources, and try/debug it. If the desktop version works, the android app will generally work too (the only things that may need adaption are e.g. font sizes and similar).</p>
+
+      <p>So, let's get practical! In the EQL5-Android sources, switch to <code>'examples/sokoban/'</code>.</p>
+
+      <p>Building a desktop exe would be this 3 liner:</p>
+      <pre><code>
+  $ <b>eql5</b> make-desktop.lisp
+  $ <b>qmake</b> sokoban_desktop.pro
+  $ make
+      </code></pre>
+
+      <p>(To test if all resources have really been included in the <code><b>sokoban_desktop</b></code> executable, you need to move it to a different directory, and launch it from there.)</p>
+
+      <p>Here's a screenshot of our app running on the desktop:</p>
+
+      <img src="img/sokoban-desktop.png">
+
+      <p>But now let's do the <b>cross-compile</b> dance!</p>
+
+      <p>First let's copy the needed shared libraries to the <code>'android-build/'</code> directory.
+      <br>Just run script number 1:</p>
+      <pre><code>
+  $ ./1-copy-libs.sh
+      </code></pre>
+
+      <p>This step needs only be done once for every new project. It will copy the cross-compiled ECL and EQL5 libs into our android build directory.</p>
+
+      <p>The next steps are very similar to a desktop build:</p>
+
+      <pre><code>
+  $ <b>ecl-android</b> -shell make.lisp
+  $ <b>qmake-android</b> sokoban.pro
+  $ make
+      </code></pre>
+
+      <hr style="width: 25%;">
+
+      <p>Since cross-compiling requires a special "host ECL", which needs to match the target platform (that is, 32 bit, no double floats), we would be in trouble with cross-compiling EQL5 code: we certainly don't want a seperate EQL5 32 bit version, only for cross-compiling...</p>
+
+      <p>But there is a solution to this (see <code>'utils/EQL5-symbols.lisp'</code> in sources): for cross-compiling -- which is the job of our "host ECL" -- we pretend to be the <code><b>eql5</b></code> executable, by defining all packages and symbols, defining all EQL5 macros (otherwise we can't compile), and simply defining dummy-functions for all EQL5 functions, so the compiler will not complain.</p>
+
+      <p>So, loading <code><b>'utils/EQL5-symbols.lisp'</b></code> in our <b>host ECL</b> will be sufficient for cross-compiling EQL5 code.</p>
+
+      <p>If you are interested in how the cross-compile environment is set up, please see:</p>
+
+      <p><a href="https://gitlab.com/eql/EQL5-Android/blob/master/utils/cross-compile.lisp"><code>utils/cross-compile.lisp</code></a></p>
+
+      <p>(thanks to Sylvain Ageneau, who wrote the original version; this is a simplified version not depending on ASDF; the latter will be integrated in a future version)</p>
+
+      <hr style="width: 25%;">
+
+      <p>So, the above 3 liner will build the shared library of our app, ready to be included in the android build. To copy it where the android build expects it, use script number 2:</p>
+
+      <pre><code>
+  $ ./2-install-lib.sh
+      </code></pre>
+
+      <p>The last step, which will build our <b>APK</b> file, is a verbose one (for eventual debugging), and a little time consuming: it will create the whole package structure, and compile the whole thing into an APK file, ready to be installed on an android device.</p>
+
+      <p>There is this great tool (courtesy Qt) called <code><b>androiddeployqt</b></code>, which automates the whole and complex process of creating an APK file, with all the needed options already set in our 3rd script:</p>
+
+      <pre><code>
+  $ ./3-build-apk.sh
+      </code></pre>
+
+      <p>Here the contents of the above script, where you can see all the selected options:</p>
+
+      <pre><code>
+  $ ~/Qt5.7.1/5.7/android_armv7/bin/<b>androiddeployqt</b> \
+        --input android-libsokoban.so-deployment-settings.json \
+        --output android-build \
+        --deployment ministro \
+        --gradle \
+        --verbose
+      </code></pre>
+
+      <p>If it will tell you <code><b>BUILD SUCCESSFUL</b></code>, then you'll find the APK file (ready for deployment) in <code>'android-build/build/outputs/apk/'</code>.
+
+      <p>The last step is copying over the APK file to your android device, and install / run it. Normally you're not allowed to do this, because it requires special developer settings (please search the web for instructions how to enable them, as they are different for every android version).</p>
+
+      <p>After connecting via <b>USB</b> and copying the APK file over to your device, just tap it from there. This will ask for installing, and then for opening the app.</p>
+
+      <p>Here's a screenshot of the sokoban app running on a tablet:</p>
+
+      <img src="img/splash.png">
+
+      <p>Above you see the splash screen, because startup will take a few seconds.</p>
+
+      <p>Below the game:</p>
+
+      <img src="img/sokoban-android.png">
+
+      <p>After seeing the result, I'd like to consider a few QML and Lisp snippets.</p>
+
+      <p>QML is easy to learn. You just need to declare <b>what</b> you want (and it will do the <b>how</b> behind the scenes).
+      <br>Let's see this snippet for defining and placing our arrow buttons:</p>
+
+      <pre><code class="qml">
+  // container for arrow buttons
+  Item {
+      id: arrows
+      width: up.width * 3
+      height: up.height * 3
+      anchors.margins: 10
+      anchors.right: parent.right
+      anchors.verticalCenter: parent.verticalCenter
+
+      Ext.Button {
+          id: up
+          objectName: "up"
+          source: "img/up.png"
+          anchors.horizontalCenter: parent.horizontalCenter
+      }
+
+      Ext.Button {
+          objectName: "left"
+          source: "img/left.png"
+          anchors.verticalCenter: parent.verticalCenter
+      }
+
+      Ext.Button {
+          objectName: "right"
+          source: "img/right.png"
+          anchors.verticalCenter: parent.verticalCenter
+          anchors.right: parent.right
+      }
+
+      Ext.Button {
+          objectName: "down"
+          source: "img/down.png"
+          anchors.horizontalCenter: parent.horizontalCenter
+          anchors.bottom: parent.bottom
+      }
+  }
+      </code></pre>
+
+      <p>So, we define an <code>Item</code> as container for the buttons, giving it the width (<code>up.width * 3</code>) and height (<code>up.height * 3</code>), according to the button sizes: this may be any calculation or function call, and may refer to any item of the file, referred to by its <code>id</code>.<p>
+
+      <p>For placing the container itself, and the single arrow buttons, we just need to define <code><b>anchors</b></code>, which can be relative to other items (here: the <code>parent</code> item).</p>
+
+      <p>The <code>Ext.Button</code> is a user defined item class, which can be found in <code>'qml/ext/Button.qml</code>. That is, the whole directory <code>'ext/'</code> is imported as <code>Ext</code>:</p>
+
+      <pre><code class="qml">
+  import "ext/" as Ext
+      </code></pre>
+
+      <p>This means that every file in <code>'ext/'</code> is now a new QML class, which can be referred to via <code>Ext</code> (like a namespace).</p>
+
+      <p>The definition of our image button class (see <code>'qml/ext/Button.qml')</code> is:</p>
+
+      <pre><code class="qml">
+  import QtQuick 2.0
+
+  Image {
+      signal pressed()
+
+      MouseArea {
+          anchors.fill: parent
+          onPressed: { parent.pressed() }
+      }
+  }
+      </code></pre>
+
+      <p>So, we don't need a real button, but only a clickable image: adding a mouse area will allow us to capture mouse events; this event is then passed to the parent (that is, the <code>Image</code> class), where a Qt signal will be emitted: this will allow us to connect to it from Lisp:</p>
+
+      <pre><code class="lisp">
+  (defun connect ()
+    (macrolet ((pressed (item function)
+                 `(qconnect (find-quick-item ,item) "pressed()"
+                            (lambda () ,function))))
+      (pressed "up"       (sokoban:move :north *maze*))
+      (pressed "down"     (sokoban:move :south *maze*))
+      (pressed "left"     (sokoban:move :west *maze*))
+      (pressed "right"    (sokoban:move :east *maze*))
+      (pressed "previous" (change-level :previous))
+      (pressed "next"     (change-level :next))
+      (pressed "undo"     (undo))
+      (pressed "restart"  (reset-maze))
+      (pressed "solve"    (solve))))
+      </code></pre>
+
+      <p>If you already played the game finishing a level, you will have noticed that there are 2 animations (rotation of the player, wiggling of all boxes) which run queued.
+      <br>This is a little tricky to do, but with the help of a Lisp macro, we only need these lines in Lisp (being <code><b>queued</b></code> a macro):</p>
+
+      <pre><code class="lisp">
+  (defun final-animation ()
+    (queued (qml-set "rotate_player" "running" t)
+            (qml-set-all "wiggle_box" "running" t)))
+      </code></pre>
+
+      <p>Please see the sources for all the details. And this would not be possible without a Lisp function called from QML for notifying us whenever an animation state changes, see <code>'qml/ext/RotationAnimation.qml'</code>:</p>
+
+      <pre><code class="qml">
+  import QtQuick 2.0
+  import EQL5 1.0
+
+  RotationAnimation {
+      onRunningChanged: Lisp.call("qsoko:animation-change", running)
+  }
+      </code></pre>
+
+      <hr style="width: 25%;">
+
+      <p>What I left out to explain is the dynamic (at run time) creation of QML items (see <code>'qml/items/*'</code> and <code>'lisp/sokoban.lisp'</code>); let's just say that this is left as an exercise to the reader, as all sources will patiently stay there to be read...</p>
+
+      <hr style="width: 25%;">
+
+      <p>Well. But I still didn't answer the initial question: how big of a download is to be expected, 10 years later?</p>
+
+      <p>Since our APK file uses the <b>ministro</b> service for automatically installing the needed Qt libraries at the first launch of the app, it will only need to include both the ECL and EQL5 libraries (you can therefore use different ECL and EQL5 versions for every app you deploy).</p>
+
+      <p>So, to finally answer the question: our download will be ca. <b>3.5 MB</b> (instead of 3 MB, 10 years ago, although we obviously compare <i>apples and oranges</i> here).</p>
+
+      <p>Seems acceptable.</p>
+
+      <p>And since I promised you to test it instantly (if you own a device with ARM processor), here you are:</p>
+
+      <p><a target="_blank" href="http://lights-of-holiness.eu/tmp/sokoban.apk">sokoban.apk</a></p>
+
+      <p>Enjoy!</p>
+
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+
+    </div>
+  </body>
+</html>
+
