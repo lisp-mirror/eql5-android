@@ -195,7 +195,7 @@
 
       <p>For placing the container itself, and the single arrow buttons, we just need to define <code><b>anchors</b></code>, which can be relative to other items (here: the <code>parent</code> item).</p>
 
-      <p>The <code>Ext.Button</code> is a user defined item class, which can be found in <code>'qml/ext/Button.qml</code>. That is, the whole directory <code>'ext/'</code> is imported as <code>Ext</code>:</p>
+      <p>The <code>Ext.Button</code> is a user defined item class, which can be found in <code>'qml/ext/Button.qml'</code>. That is, the whole directory <code>'ext/'</code> is imported as <code>Ext</code>:</p>
 
       <pre><code class="qml">
   import "ext/" as Ext
@@ -213,7 +213,7 @@
 
       MouseArea {
           anchors.fill: parent
-          onPressed: { parent.pressed() }
+          onPressed: parent.pressed()
       }
   }
       </code></pre>

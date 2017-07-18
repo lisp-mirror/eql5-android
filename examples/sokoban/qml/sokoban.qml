@@ -9,8 +9,9 @@ Rectangle {
 
     Row {
         // adapt 'level' and 'board' scale to screen size, depending on landscape/portrait
-        scale: (Screen.height < Screen.width) ? ((Screen.height - 2 * buttons.height - 20) / board.height)
-                                              : ((Screen.width - 2 * arrows.width - level.width - 20) / board.width)
+        scale: (Screen.height < Screen.width)
+                   ? ((Screen.height - 2 * buttons.height - 20) / board.height)
+                   : ((Screen.width - 2 * arrows.width - level.width - 20) / board.width)
         anchors.centerIn: parent
 
         Slider {

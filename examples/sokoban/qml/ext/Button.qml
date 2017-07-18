@@ -5,7 +5,7 @@ Image {
 
     MouseArea {
         anchors.fill: parent
-        onPressed: { parent.pressed() }
+        onPressed: parent.pressed()
     }
 }
 
