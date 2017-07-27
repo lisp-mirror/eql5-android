@@ -19952,12 +19952,21 @@
 
 ;;;
 
-(do-external-symbols (sym (find-package :eql))
-  (unless (or (and (upper-case-p (char (symbol-name sym) 0))
-                   (find #\. (symbol-name sym)))
-              (ignore-errors (symbol-value sym))
-              (ignore-errors (symbol-function sym)))
-    (setf (symbol-function sym) (lambda (&rest args) (apply sym args))))) ; define dummy function
+(do-symbols (sym (find-package :eql))
+  (let* ((name (symbol-name sym))
+         (ch1 (char name 0)))
+    (unless (or (and (upper-case-p ch1)
+                     (find #\. name))
+                (ignore-errors (symbol-value sym))
+                (ignore-errors (symbol-function sym)))
+      (when (or (lower-case-p ch1)
+                (x:starts-with "Q" name)
+                (x:starts-with "%Q" name)
+                (find name '("MAKE-QIMAGE") :test 'string=))
+        ;; set a dummy function which ignores all arguments, doesn't
+        ;; need arguments itself, and can be nested
+        ;; (otherwise we would get compile errors)
+        (setf (symbol-function sym) (lambda (&rest args) (+)))))))
 
 (alias qnew  qnew-instance)
 (alias qnew* qnew-instance*)
