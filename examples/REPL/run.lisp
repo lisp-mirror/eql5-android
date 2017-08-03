@@ -1,0 +1,11 @@
+(load "dependencies")
+(load "lisp/qml-lisp")
+(load "package")
+(load "lisp/data/lisp-keywords")
+(load "lisp/data/eql-keywords")
+(load "lisp/input-hook")
+(load "lisp/top-level")
+(load "lisp/eval")
+(load "lisp/editor")
+
+(editor:start)

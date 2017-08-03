@@ -42,9 +42,10 @@
   (with-android-env ()
     (compile-file file :system-p t)))
 
-(defun build-static-library* (name files)
+(defun build-static-library* (name files &optional epilogue-code)
   (with-android-env ()
     (c:build-static-library name
                             :lisp-files files
-                            :init-name "ini_app")))
+                            :init-name "ini_app"
+                            :epilogue-code epilogue-code)))
 

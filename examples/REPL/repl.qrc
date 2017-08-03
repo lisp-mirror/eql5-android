@@ -1,0 +1,12 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+
+    <file>qml/repl.qml</file>
+    <file>qml/ext/Flickable.qml</file>
+    <file>qml/ext/QueryDialog.qml</file>
+    <file>qml/ext/DebugDialog.qml</file>
+
+    <file>../../img/logo.png</file>
+
+</qresource>
+</RCC>

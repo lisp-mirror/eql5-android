@@ -19965,7 +19965,7 @@
                 (find name '("MAKE-QIMAGE") :test 'string=))
         ;; set a dummy function which ignores all arguments, doesn't
         ;; need arguments itself, and can be nested
-        ;; (otherwise we would get compile errors)
+        ;; (otherwise we would get compile errors while cross-compiling)
         (setf (symbol-function sym) (lambda (&rest args) (+)))))))
 
 (alias qnew  qnew-instance)
