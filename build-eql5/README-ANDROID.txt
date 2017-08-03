@@ -12,7 +12,7 @@ IMPORTANT NOTES
 
 You will need EQL5 version >= 17.7.1 (check eql5 -v).
 
-For developing Android apps, simply stay with the exact same ECL/Qt5/EQL5
+For developing android apps, simply stay with the exact same ECL/Qt5/EQL5
 versions you used to build the cross-compiled EQL5 libs.
 
 (Should be obvious, but I wanted to repeat it.)
@@ -46,7 +46,7 @@ qmetatype.h:2203:100: error: conflicting declaration 'void* __dso_handle'
            gc.h:1625:24: note: previous declaration as 'int __dso_handle []'
 ----------------------------------------------------------------------------
 
-Now you'll need to patch the offending 'gc.h' file from Android ECL; here's
+Now you'll need to patch the offending 'gc.h' file from android ECL; here's
 the diff:
 
 ---------------------------------------------------------------------------
@@ -91,6 +91,6 @@ NOTE
 
 You may have noticed that there's no executable included, like 'eql5' on the
 desktop; even if you try to compile it, it would still build a shared library
-(because this is the way Android works -- your Qt 'main()' function will be
+(because this is the way android works -- your Qt 'main()' function will be
 called from Java when launching an app).
 

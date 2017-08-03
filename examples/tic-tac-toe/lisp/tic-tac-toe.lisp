@@ -15,9 +15,9 @@
   (|fromLocalFile.QUrl| file))
 
 (defun run ()
-  ;; special settings for mobile, taken from Qt example
   (setf qml:*quick-view* (qnew "QQuickView"))
-  (let ((env (ext:getenv"QT_QUICK_CORE_PROFILE")))
+  ;; special settings for mobile, taken from Qt example
+  (let ((env (ext:getenv "QT_QUICK_CORE_PROFILE")))
     (when (and (stringp env)
                (not (zerop (parse-integer env :junk-allowed t))))
       (let ((f (|format| qml:*quick-view*)))

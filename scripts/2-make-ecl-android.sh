@@ -1,4 +1,4 @@
-# use the previously built host ECL to build the Android version
+# use the previously built host ECL to build the android version
 
 export NDK_PATH=${ANDROID_NDK_ROOT}
 export SYSROOT=${NDK_PATH}/platforms/android-14/arch-arm

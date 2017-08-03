@@ -26,3 +26,7 @@ cache
 tmp*
 qrc_*.cpp
 android-build
+*.tgz
+r
+r.lisp
+files.txt

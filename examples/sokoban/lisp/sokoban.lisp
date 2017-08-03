@@ -302,7 +302,7 @@
 
 (defun ini-qml (file)
   ;; special settings for mobile, taken from Qt example
-  (let ((env (ext:getenv"QT_QUICK_CORE_PROFILE")))
+  (let ((env (ext:getenv "QT_QUICK_CORE_PROFILE")))
     (when (and (stringp env)
                (not (zerop (parse-integer env :junk-allowed t))))
       (let ((f (|format| *quick-view*)))

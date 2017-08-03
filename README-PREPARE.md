@@ -36,7 +36,7 @@ A good description of what you'll need can be found here:
 
 [http://doc.qt.io/qt-5/androidgs.html](http://doc.qt.io/qt-5/androidgs.html)
 
-Please remember to choose this exact NDK version: 10e.
+Please remember to choose this exact **NDK** version: **10e**.
 
 Note that you can skip the 'ant' installation (obsolete, we will use 'gradle'
 instead, which will be installed automatically later on).
@@ -52,7 +52,7 @@ them there).
 N.B: If you use Qt versions prior to 5.9, you need to install an older version
 of the SDK tools (the latest one will not work with Qt < 5.9).
 
-Here are the links to the SDK tools for Qt prior to 5.9:
+Here are the links to the **SDK** tools for Qt prior to 5.9:
 
 [Linux](https://dl.google.com/android/repository/tools_r25.2.5-linux.zip)  
 [macOS](https://dl.google.com/android/repository/tools_r25.2.5-macosx.zip)  
@@ -78,7 +78,7 @@ mentioned above, with a small modification.
 
 * extract ECL sources (release version 16.1.3) in e.g. `~/ecl`, renaming
   `ecl-16.1.3` to `android`
-* copy the 2 scripts from scripts/ to `~/ecl/android/`
+* copy the 2 scripts from `scripts/` to `~/ecl/android/`
 * do (adapt the path to match your NDK directory):
 
 ```
