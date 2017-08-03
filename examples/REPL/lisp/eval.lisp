@@ -116,7 +116,7 @@
   (dolist (text/color (list (cons (get-output-stream-string *error-output-buffer*) "red")
                                   (cons (get-output-stream-string *terminal-out-buffer*) "black")))
     (qml-call "debug_text" "append"
-              (format nil "<span style='color: ~A'><pre>~A</pre></span>"
+              (format nil "<pre><font face='Droid Sans Mono' color='~A'>~A</font></pre>"
                       (cdr text/color)
                       (x:string-substitute "<br>" (string #\Newline) (qescape (car text/color))))))
   (qml-call "debug_dialog" "open")

@@ -27,10 +27,8 @@ Dialog {
 
                 width: flickText.width
                 height: flickText.height
-                readOnly: true
-                font.family: "Droid Sans Mono"
                 textFormat: TextEdit.RichText
-                wrapMode: TextEdit.Wrap
+                readOnly: true
             }
         }
 

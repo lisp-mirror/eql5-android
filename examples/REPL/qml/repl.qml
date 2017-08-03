@@ -57,10 +57,9 @@ Rectangle {
 
                 width: flickOutput.width
                 height: flickOutput.height
-                font.family: "Droid Sans Mono"
                 font.pointSize: 18
-                readOnly: true
                 textFormat: TextEdit.RichText
+                readOnly: true
 
                 onCursorRectangleChanged: flickOutput.ensureVisible(cursorRectangle)
             }
