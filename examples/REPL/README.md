@@ -119,3 +119,19 @@ Note also that during development, you should change this line in
   (defvar *silent* nil) ; T for deployment, NIL for development
 ```
 
+
+
+### Tips
+
+On first startup, if you don't see a horizontal line (dividing input and
+output), you may need to press the `Clear` button first; then tap in the input
+field above, to show the virtual keyboard.
+
+If the output window has too much contents (thousands of lines, may happen
+accidentally), and is becoming slow, remember that you're using the same Lisp
+image where your REPL lives in, so you can clear it directly like this:
+
+```
+  (qml:qml-call "output" "clear")
+```
+
