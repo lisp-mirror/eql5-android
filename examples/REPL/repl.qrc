@@ -5,6 +5,7 @@
     <file>qml/ext/Flickable.qml</file>
     <file>qml/ext/QueryDialog.qml</file>
     <file>qml/ext/DebugDialog.qml</file>
+    <file>qml/ext/FileDialog.qml</file>
 
     <file>../../img/logo.png</file>
 

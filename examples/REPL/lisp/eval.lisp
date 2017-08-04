@@ -2,7 +2,6 @@
   (:use :cl :eql :qml)
   (:export
    #:ini
-   #:exit-local-event-loop
    #:feed-top-level))
 
 (in-package :eval)
@@ -16,7 +15,6 @@
 (defvar *prompt*                 t)
 (defvar *silent*                 t)
 (defvar *debug-invoked*          nil)
-(defvar *dialog-event-loop*      (qnew "QEventLoop"))
 
 (defun ini (&key output)
   (when output
@@ -78,7 +76,7 @@
                     (make-string (- 50 (length counter) (length pkg)) :initial-element #\-)
                     str))
           (format t "~A~%~%~A" #.(make-string 50 :initial-element #\_) str))
-      (setf si::*read-string* str)
+      (setf si::*read-string* (format nil "(progn ~A)" str))
       (start-top-level))))
 
 (defun start-top-level ()
@@ -99,32 +97,15 @@
   (get-output-stream-string *terminal-out-buffer*))
 
 (defun handle-query-io ()
-  (let ((text (get-output-stream-string *terminal-out-buffer*)))
-    (unless (x:empty-string text)
-      (qml-set "query_text" "text" text)))
-  (qml-call "query_input" "clear")
-  (qml-call "query_dialog" "open")
-  (|exec| *dialog-event-loop*) ; app would block otherwise
-  (let ((text (qml-get "query_input" "text")))
+  (let ((text (dialogs:query-dialog (get-output-stream-string *terminal-out-buffer*))))
     (when *gui-output*
       (funcall *gui-output* :values text))
     (format nil "~A~%" text)))
 
 (defun handle-debug-io ()
   (setf *debug-invoked* t)
-  (qml-call "debug_text" "clear")
-  (dolist (text/color (list (cons (get-output-stream-string *error-output-buffer*) "red")
-                                  (cons (get-output-stream-string *terminal-out-buffer*) "black")))
-    (qml-call "debug_text" "append"
-              (format nil "<pre><font face='Droid Sans Mono' color='~A'>~A</font></pre>"
-                      (cdr text/color)
-                      (x:string-substitute "<br>" (string #\Newline) (qescape (car text/color))))))
-  (qml-call "debug_dialog" "open")
-  (|exec| *dialog-event-loop*) ; app would block otherwise
-  (get-output-stream-string *standard-output-buffer*) ; clear buffer
-  (let ((cmd (qml-get "debug_input" "text")))
+  (let ((cmd (dialogs:debug-dialog (list (cons (get-output-stream-string *error-output-buffer*) "red")
+                                         (cons (get-output-stream-string *terminal-out-buffer*) "black")))))
+    (get-output-stream-string *standard-output-buffer*) ; clear buffer
     (format nil "~A~%" (if (x:empty-string cmd) ":r1" cmd))))
-
-(defun exit-dialog-event-loop () ; called from QML
-  (|exit| *dialog-event-loop*))
 

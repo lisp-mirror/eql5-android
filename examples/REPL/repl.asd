@@ -9,5 +9,6 @@
                (:file "lisp/data/eql-keywords")
                (:file "lisp/input-hook")
                (:file "lisp/top-level")
+               (:file "lisp/dialogs")
                (:file "lisp/eval")
                (:file "lisp/editor")))

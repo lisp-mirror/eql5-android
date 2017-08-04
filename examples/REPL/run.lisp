@@ -5,6 +5,7 @@
 (load "lisp/data/eql-keywords")
 (load "lisp/input-hook")
 (load "lisp/top-level")
+(load "lisp/dialogs")
 (load "lisp/eval")
 (load "lisp/editor")
 

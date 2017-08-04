@@ -66,44 +66,51 @@ Rectangle {
         }
     }
 
-    Column {
-        id: buttons
-        objectName: "buttons"
-
-        padding: 2
-        spacing: 2
+    Rectangle {
+        width: buttons.width
+        height: buttons.height
         anchors.right: parent.right
 
-        property int pointSize: evalLisp.font.pointSize
+        Column {
+            id: buttons
+            objectName: "buttons"
 
-        Button {
-            id: clear
-            objectName: "clear"
-            text: "Clear"
-        }
-        Button {
-            objectName: "font_bigger"
-            text: "Aa"
-            font.pointSize: parent.pointSize + 2
-        }
-        Button {
-            objectName: "font_smaller"
-            text: "Aa"
-            font.pointSize: parent.pointSize - 2
-        }
-        Button {
-            objectName: "history_up"
-            text: "Up"
-        }
-        Button {
-            objectName: "history_down"
-            text: "Down"
-        }
-        Button {
-            id: evalLisp
-            objectName: "eval"
-            height: clear.height * 2
-            text: "<b>Eval</b>"
+            padding: 4
+            spacing: 7
+
+            property int pointSize: evalLisp.font.pointSize
+
+            Button {
+                objectName: "font_bigger"
+                text: "Aa"
+                font.pointSize: parent.pointSize + 2
+            }
+            Button {
+                objectName: "font_smaller"
+                text: "Aa"
+                font.pointSize: parent.pointSize - 2
+            }
+            Button {
+                objectName: "clear"
+                text: "Clear"
+            }
+            Button {
+                objectName: "open_file"
+                text: "File..."
+            }
+            Button {
+                objectName: "history_up"
+                text: "Up"
+            }
+            Button {
+                objectName: "history_down"
+                text: "Down"
+            }
+            Button {
+                id: evalLisp
+                objectName: "eval"
+                text: "<b>Eval</b>"
+            }
         }
     }
 
@@ -115,5 +122,9 @@ Rectangle {
 
     Ext.DebugDialog {
         objectName: "debug_dialog"
+    }
+
+    Ext.FileDialog {
+        objectName: "file_dialog"
     }
 }

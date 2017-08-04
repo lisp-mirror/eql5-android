@@ -34,6 +34,7 @@
     (clicked "eval"         (eval-expression))
     (clicked "history_up"   (history-move :up))
     (clicked "history_down" (history-move :down))
+    (clicked "open_file"    (open-file))
     (clicked "font_bigger"  (change-font :bigger))
     (clicked "font_smaller" (change-font :smaller))
     (clicked "clear"        (qml-call *qml-edit* "clear"))))
@@ -277,6 +278,11 @@
                  (if (eql :bigger to) 2 -2))))
     (qml-set *qml-edit* "font.pointSize" size)
     (qml-set *qml-output* "font.pointSize" size)))
+
+(defun open-file ()
+  (x:when-it (dialogs:get-file-name)
+    (when (x:starts-with "file://" x:it)
+      (qml-set *qml-edit* "text" (read-file (subseq x:it #.(length "file://")))))))
 
 (defun file-to-url (file)
   "Convert FILE to a QUrl, distinguishing between development and release version."
