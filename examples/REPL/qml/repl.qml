@@ -83,12 +83,12 @@ Rectangle {
             Button {
                 objectName: "font_bigger"
                 text: "Aa"
-                font.pointSize: parent.pointSize + 2
+                font.pointSize: parent.pointSize + 3
             }
             Button {
                 objectName: "font_smaller"
                 text: "Aa"
-                font.pointSize: parent.pointSize - 2
+                font.pointSize: parent.pointSize - 3
             }
             Button {
                 objectName: "clear"
