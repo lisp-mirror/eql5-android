@@ -43,8 +43,8 @@ Dialog {
 
             width: parent.width
             text: ":r1"
+            font.family: "Droid Sans Mono"
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-            focus: true
         }
     }
 }
