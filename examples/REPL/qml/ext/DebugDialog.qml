@@ -7,7 +7,7 @@ Dialog {
     title: "Debug Dialog"
     standardButtons: StandardButton.Ok | StandardButton.Cancel
 
-    function exit() { Lisp.call("dialogs:exit-event-loop") }
+    function exit() { Lisp.call("dialogs:exited") }
 
     onAccepted: exit()
     onRejected: { input.clear(); exit() }

@@ -7,10 +7,7 @@ FileDialog {
     nameFilters: [ "Lisp files (*.lisp *.lsp)" ]
     folder: shortcuts.home
 
-    property string file
+    property string callback
 
-    function exit() { Lisp.call("dialogs:exit-event-loop") }
-
-    onAccepted: { file = fileUrl; exit() }
-    onRejected: { file = ""; exit() }
+    onAccepted: Lisp.call(callback, Qt.resolvedUrl(fileUrl).toString())
 }

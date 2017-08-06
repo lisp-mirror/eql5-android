@@ -280,9 +280,11 @@
     (qml-set *qml-output* "font.pointSize" size)))
 
 (defun open-file ()
-  (x:when-it (dialogs:get-file-name)
-    (when (x:starts-with "file://" x:it)
-      (qml-set *qml-edit* "text" (read-file (subseq x:it #.(length "file://")))))))
+  (dialogs:get-file-name 'do-open-file))
+
+(defun do-open-file (name)
+  (when (x:starts-with "file://" name)
+    (qml-set *qml-edit* "text" (read-file (subseq name #.(length "file://"))))))
 
 (defun file-to-url (file)
   "Convert FILE to a QUrl, distinguishing between development and release version."
@@ -320,10 +322,15 @@
   (ini-highlighter)
   (qconnect *qml-document* "cursorPositionChanged(QTextCursor)" 'cursor-position-changed))
 
+(defun delayed-focus () ; called from QML
+  (qsingle-shot 500 (lambda () (qml-set "edit" "focus" "true"))))
+
 (defun start ()
   (ini-qml "qml/repl.qml")
   (connect-buttons)
-  (eval:ini :output 'eval-output)
+  (eval:ini :output       'eval-output
+            :query-dialog 'dialogs:query-dialog
+            :debug-dialog 'dialogs:debug-dialog)
   (setf *history-file* (x:cc (first (|standardLocations.QStandardPaths| |QStandardPaths.HomeLocation|))
                              "/.eql5-lisp-repl-history"))
   (setf *break-on-errors* t))

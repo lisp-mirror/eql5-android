@@ -30,7 +30,7 @@ Some modules are not supported on Android, namely the web and multimedia ones.
 --
 
 The minimum android **API** level is **13** (needed for Qt5), which means the
-android device must run at least **version 3.2.6** (which dates back to 2011).
+android device must run at least **version 3.2** (which dates back to 2011).
 
 
 

@@ -1,12 +1,15 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
-import QtQuick.Window 2.2
 import 'ext/' as Ext
 import EQL5 1.0
 
 Rectangle {
     id: main
     width: 800; height: 500 // needed for desktop
+
+    Component.onCompleted: Lisp.call("editor:delayed-focus") // enforce correct resizing on startup
+
+    function halfHeight() { return (height - Qt.inputMethod.keyboardRectangle.height) / 2 }
 
     Column {
 
@@ -15,7 +18,7 @@ Rectangle {
             objectName: "flickEdit"
 
             width: main.width
-            height: (main.height - Qt.inputMethod.keyboardRectangle.height) / 2
+            height: halfHeight()
             contentWidth: edit.paintedWidth
             contentHeight: edit.paintedHeight
 
@@ -29,7 +32,6 @@ Rectangle {
                 font.pointSize: 18
                 inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
                 wrapMode: TextEdit.Wrap
-                focus: true
 
                 onCursorRectangleChanged: flickEdit.ensureVisible(cursorRectangle)
                 Component.onCompleted: Lisp.call(textDocument, "editor:set-text-document")
@@ -47,7 +49,7 @@ Rectangle {
             objectName: "flickOutput"
 
             width: main.width
-            height: (main.height - Qt.inputMethod.keyboardRectangle.height) / 2
+            height: halfHeight()
             contentWidth: output.paintedWidth
             contentHeight: output.paintedHeight
 

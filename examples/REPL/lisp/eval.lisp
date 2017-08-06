@@ -1,6 +1,9 @@
 (defpackage :eval
   (:use :cl :eql :qml)
   (:export
+   #:*eval-thread*
+   #:*query-dialog*
+   #:*debug-dialog*
    #:ini
    #:feed-top-level))
 
@@ -10,15 +13,19 @@
 (defvar *trace-output-buffer*    (make-string-output-stream))
 (defvar *error-output-buffer*    (make-string-output-stream))
 (defvar *terminal-out-buffer*    (make-string-output-stream))
-(defvar *gui-debug-io*           nil)
-(defvar *gui-output*             nil)
 (defvar *prompt*                 t)
 (defvar *silent*                 t)
 (defvar *debug-invoked*          nil)
+(defvar *eval-thread*            nil)
+(defvar *gui-debug-io*           nil)
+(defvar *gui-output*             nil)
+(defvar *gui-query-dialog*       nil)
+(defvar *gui-debug-dialog*       nil)
 
-(defun ini (&key output)
-  (when output
-    (setf *gui-output* output))
+(defun ini (&key output query-dialog debug-dialog)
+  (setf *gui-output*       output
+        *gui-query-dialog* query-dialog
+        *gui-debug-dialog* debug-dialog)
   (ini-streams)
   (setf *debug-io* *gui-debug-io*))
 
@@ -77,9 +84,13 @@
                     str))
           (format t "~A~%~%~A" #.(make-string 50 :initial-element #\_) str))
       (setf si::*read-string* (format nil "(progn ~A)" str))
-      (start-top-level))))
+      ;; run eval in its own thread, so GUI will remain responsive
+      ;; N.B. this is only safe because we use "thread-safe.lisp" (like in Slime mode)
+      (setf *eval-thread* (mp:process-run-function "top-level" 'start-top-level)))))
 
 (defun start-top-level ()
+  (qml:qml-set "eval" "enabled" "false")
+  (qml:qml-set "eval" "text" "<font color='blue'><b>Evaluating</b></font>")
   (setf *debug-invoked* nil)
   (write-output :expression *standard-output-buffer*)
   (clear-buffers)
@@ -89,7 +100,9 @@
   (write-output :output *standard-output-buffer*)
   (when (and *gui-output*
              (not *debug-invoked*))
-    (funcall *gui-output* :values (format nil "~{~S~^#||#~}" si::*latest-values*)))) ; "#||#": separator
+    (funcall *gui-output* :values (format nil "~{~S~^#||#~}" si::*latest-values*))) ; "#||#": separator
+  (qml:qml-set "eval" "text" "<b>Eval</b>")
+  (qml:qml-set "eval" "enabled" "true"))
 
 (defun clear-buffers ()
   (get-output-stream-string *standard-output-buffer*)
@@ -97,15 +110,15 @@
   (get-output-stream-string *terminal-out-buffer*))
 
 (defun handle-query-io ()
-  (let ((text (dialogs:query-dialog (get-output-stream-string *terminal-out-buffer*))))
+  (let ((text (funcall *gui-query-dialog* (get-output-stream-string *terminal-out-buffer*))))
     (when *gui-output*
       (funcall *gui-output* :values text))
     (format nil "~A~%" text)))
 
 (defun handle-debug-io ()
   (setf *debug-invoked* t)
-  (let ((cmd (dialogs:debug-dialog (list (cons (get-output-stream-string *error-output-buffer*) "red")
-                                         (cons (get-output-stream-string *terminal-out-buffer*) "black")))))
+  (let ((cmd (funcall *gui-debug-dialog* (list (cons (get-output-stream-string *error-output-buffer*) "red")
+                                               (cons (get-output-stream-string *terminal-out-buffer*) "black")))))
     (get-output-stream-string *standard-output-buffer*) ; clear buffer
     (format nil "~A~%" (if (x:empty-string cmd) ":r1" cmd))))
 

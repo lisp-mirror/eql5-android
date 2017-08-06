@@ -4,18 +4,16 @@
    #:query-dialog
    #:debug-dialog
    #:get-file-name
-   #:exit-event-loop))
+   #:exited))
 
 (in-package :dialogs)
-
-(defvar *event-loop* (qnew "QEventLoop"))
 
 (defun query-dialog (query)
   (unless (x:empty-string query)
     (qml-set "query_text" "text" query))
   (qml-call "query_input" "clear")
   (qml-call "query_dialog" "open")
-  (|exec| *event-loop*)
+  (wait-for-closed)
   (qml-get "query_input" "text"))
 
 (defun debug-dialog (messages)
@@ -26,16 +24,16 @@
                       (cdr text/color)
                       (x:string-substitute "<br>" (string #\Newline) (qescape (car text/color))))))
   (qml-call "debug_dialog" "open")
-  (|exec| *event-loop*)
+  (wait-for-closed)
   (qml-get "debug_input" "text"))
 
-(defun get-file-name ()
-  (qml-call "file_dialog" "open")
-  (|exec| *event-loop*)
-  (let ((name (qml-get "file_dialog" "file")))
-    (unless (x:empty-string name)
-      name)))
+(defun get-file-name (callback)
+  (qml-set "file_dialog" "callback" (prin1-to-string callback))
+  (qml-call "file_dialog" "open"))
 
-(defun exit-event-loop () ; called from QML
-  (|exit| *event-loop*))
+(defun wait-for-closed ()
+  (mp:process-suspend eval:*eval-thread*))
+
+(defun exited () ; called from QML
+  (mp:process-resume eval:*eval-thread*))
 
