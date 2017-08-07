@@ -322,9 +322,6 @@
   (ini-highlighter)
   (qconnect *qml-document* "cursorPositionChanged(QTextCursor)" 'cursor-position-changed))
 
-(defun delayed-focus () ; called from QML
-  (qsingle-shot 500 (lambda () (qml-set "edit" "focus" "true"))))
-
 (defun start ()
   (ini-qml "qml/repl.qml")
   (connect-buttons)

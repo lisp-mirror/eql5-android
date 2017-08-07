@@ -5,20 +5,24 @@ import EQL5 1.0
 
 Rectangle {
     id: main
-    width: 800; height: 500 // needed for desktop
+    objectName: "main"
 
-    Component.onCompleted: Lisp.call("editor:delayed-focus") // enforce correct resizing on startup
+    width: 800; height: 500 // for desktop
 
-    function halfHeight() { return (height - Qt.inputMethod.keyboardRectangle.height) / 2 }
+    function halfHeight() {
+        return (height - Qt.inputMethod.keyboardRectangle.height) / 2
+    }
+
+    Component.onCompleted: Qt.inputMethod.show()
 
     Column {
 
         Ext.Flickable {
             id: flickEdit
-            objectName: "flickEdit"
+            objectName: "flick_edit"
 
             width: main.width
-            height: halfHeight()
+            height: main.halfHeight()
             contentWidth: edit.paintedWidth
             contentHeight: edit.paintedHeight
 
@@ -32,9 +36,13 @@ Rectangle {
                 font.pointSize: 18
                 inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
                 wrapMode: TextEdit.Wrap
+                focus: true
 
                 onCursorRectangleChanged: flickEdit.ensureVisible(cursorRectangle)
-                Component.onCompleted: Lisp.call(textDocument, "editor:set-text-document")
+
+                Component.onCompleted: {
+                    Lisp.call(textDocument, "editor:set-text-document")
+                }
             }
         }
 
@@ -46,10 +54,10 @@ Rectangle {
 
         Ext.Flickable {
             id: flickOutput
-            objectName: "flickOutput"
+            objectName: "flick_output"
 
             width: main.width
-            height: halfHeight()
+            height: main.halfHeight()
             contentWidth: output.paintedWidth
             contentHeight: output.paintedHeight
 
