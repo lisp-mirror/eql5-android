@@ -111,7 +111,8 @@
 
 (defun handle-query-io ()
   (let ((text (funcall *gui-query-dialog* (get-output-stream-string *terminal-out-buffer*))))
-    (when *gui-output*
+    (when (and *gui-output*
+               (not (x:empty-string text)))
       (funcall *gui-output* :values text))
     (format nil "~A~%" text)))
 
