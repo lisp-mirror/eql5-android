@@ -98,9 +98,9 @@
   (write-output :error  *error-output-buffer*)
   (write-output :trace  *trace-output-buffer*)
   (write-output :output *standard-output-buffer*)
-  (when (and *gui-output*
-             (not *debug-invoked*))
-    (funcall *gui-output* :values (format nil "~{~S~^#||#~}" si::*latest-values*))) ; "#||#": separator
+  (when *gui-output*
+    (funcall *gui-output* :values (format nil "~{~S~^#||#~}" si::*latest-values*)) ; "#||#": separator
+    (setf si::*latest-values* nil))
   (qml:qml-set "eval" "text" "<b>Eval</b>")
   (qml:qml-set "eval" "enabled" "true"))
 
@@ -119,6 +119,5 @@
   (setf *debug-invoked* t)
   (let ((cmd (funcall *gui-debug-dialog* (list (cons (get-output-stream-string *error-output-buffer*) "red")
                                                (cons (get-output-stream-string *terminal-out-buffer*) "black")))))
-    (get-output-stream-string *standard-output-buffer*) ; clear buffer
     (format nil "~A~%" (if (x:empty-string cmd) ":r1" cmd))))
 
