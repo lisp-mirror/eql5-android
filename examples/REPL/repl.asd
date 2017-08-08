@@ -1,5 +1,7 @@
 (defsystem :repl
   :serial t
+  ;; these dependencies are not required for the REPL, they are
+  ;; just here as examples for integrating Quicklisp libraries
   :depends-on (:split-sequence
                :cl-ppcre
                :iterate)
