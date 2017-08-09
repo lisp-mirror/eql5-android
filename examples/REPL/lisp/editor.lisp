@@ -214,7 +214,7 @@
                           (x:string-substitute "<br>" (string #\Newline) text*))))))
 
 (defun eval-expression ()
-  (let ((text (string-trim '(#\Newline) (qml-get *qml-edit* "text"))))
+  (let ((text (string-trim '(#\Space #\Tab #\Newline #\Return) (qml-get *qml-edit* "text"))))
     (eval* text)
     (history-add text)
     (qml-call *qml-edit* "clear")))

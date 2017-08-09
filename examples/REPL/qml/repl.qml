@@ -13,6 +13,7 @@ Rectangle {
         return (height - Qt.inputMethod.keyboardRectangle.height) / 2
     }
 
+    // call show() manually for correct resizing of flickables on startup
     Component.onCompleted: Qt.inputMethod.show()
 
     Column {

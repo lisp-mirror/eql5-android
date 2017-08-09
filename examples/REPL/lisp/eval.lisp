@@ -83,7 +83,13 @@
                     (make-string (- 50 (length counter) (length pkg)) :initial-element #\-)
                     str))
           (format t "~A~%~%~A" #.(make-string 50 :initial-element #\_) str))
-      (setf si::*read-string* (format nil "(progn ~A)" str))
+      (multiple-value-bind (x end)
+          (ignore-errors (read-from-string str))
+        ;; use LOAD if there is more than 1 form
+        (setf si::*read-string*
+              (if (eql (length str) end)
+                  str
+                  (format nil "(load (make-string-input-stream ~S))" str))))
       ;; run eval in its own thread, so GUI will remain responsive
       ;; N.B. this is only safe because we use "thread-safe.lisp" (like in Slime mode)
       (setf *eval-thread* (mp:process-run-function "top-level" 'start-top-level)))))
