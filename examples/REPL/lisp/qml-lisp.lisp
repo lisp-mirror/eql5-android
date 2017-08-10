@@ -12,6 +12,7 @@
    #:*quick-view*
    #:*caller*
    #:children
+   #:file-to-url
    #:find-quick-item
    #:js
    #:qml-call
@@ -114,6 +115,13 @@
   "Force reloading of QML file after changes made to it."
   (|clearComponentCache| (|engine| *quick-view*))
   (|setSource| *quick-view* (|source| *quick-view*)))
+
+(defun file-to-url (file)
+  "Convert FILE to a QUrl, distinguishing between development and release version."
+  #+release
+  (qnew "QUrl(QString)" (x:cc "qrc:/" file)) ; see "Qt Resource System"
+  #-release
+  (|fromLocalFile.QUrl| file))
 
 ;;; call QML methods
 

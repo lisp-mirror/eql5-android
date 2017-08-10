@@ -286,13 +286,6 @@
   (when (x:starts-with "file://" name)
     (qml-set *qml-edit* "text" (read-file (subseq name #.(length "file://"))))))
 
-(defun file-to-url (file)
-  "Convert FILE to a QUrl, distinguishing between development and release version."
-  #+release
-  (qnew "QUrl(QString)" (x:cc "qrc:/" file)) ; see "Qt Resource System"
-  #-release
-  (|fromLocalFile.QUrl| file))
-
 (defun ini-qml (file)
   (setf qml:*quick-view* (qnew "QQuickView"))
   ;; special settings for mobile, taken from Qt example

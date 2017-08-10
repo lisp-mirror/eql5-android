@@ -134,8 +134,4 @@ Rectangle {
     Ext.DebugDialog {
         objectName: "debug_dialog"
     }
-
-    Ext.FileDialog {
-        objectName: "file_dialog"
-    }
 }

@@ -8,6 +8,9 @@
 
 (in-package :dialogs)
 
+(defvar *file-dialog-component* nil)
+(defvar *file-dialog-instance*  nil)
+
 (defun query-dialog (query)
   (unless (x:empty-string query)
     (qml-set "query_text" "text" query))
@@ -27,7 +30,19 @@
   (wait-for-closed)
   (qml-get "debug_input" "text"))
 
+(defun qml-component (file)
+  (qnew "QQmlComponent(QQmlEngine*,QUrl)"
+        (|engine| *quick-view*)
+        (qml:file-to-url file)))
+
 (defun get-file-name (callback)
+  (unless *file-dialog-component*
+    (setf *file-dialog-component* (qml-component "qml/ext/FileDialog.qml")))
+  ;; new instance on every call to ensure correct size depending on landscape/portrait
+  (when *file-dialog-instance*
+    (qdel *file-dialog-instance*))
+  (setf *file-dialog-instance* (qt-object-? (|create| *file-dialog-component*)))
+  (|setParent| *file-dialog-instance* (qml:root-item))
   (qml-set "file_dialog" "callback" (prin1-to-string callback))
   (qml-call "file_dialog" "open"))
 

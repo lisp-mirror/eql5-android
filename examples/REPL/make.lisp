@@ -34,7 +34,9 @@
   (let ((src (x:cc file ".lisp"))
         (obj (x:cc file ".o")))
     (print src)
-    (load src)
+    ;; exclude files using inline C code
+    (unless (find (pathname-name src) '(#| nothing yet |#) :test 'string=)
+      (load src))
     (when (> (file-write-date src)
              (if (probe-file obj)
                  (file-write-date obj)
