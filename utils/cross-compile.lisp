@@ -37,9 +37,9 @@
                                               (x:cc "--sysroot=" sysroot)))))
      ,@body))
 
-(defun compile-file* (file)
+(defun compile-file* (file &optional (system-p t))
   (with-android-env ()
-    (compile-file file :system-p t)))
+    (compile-file file :system-p system-p)))
 
 (defun build-static-library* (name files &optional epilogue-code)
   (with-android-env ()

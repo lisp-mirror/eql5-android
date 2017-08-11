@@ -15,8 +15,8 @@ Dialog {
     Column {
         Flickable {
             id: flickText
-            width: 450
-            height: 200
+            width: 500
+            height: 250
             contentWidth: text.paintedWidth
             contentHeight: text.paintedHeight
             clip: true
@@ -34,7 +34,7 @@ Dialog {
 
         Text {
             id: command
-            text: "Enter debug command (:h for help)"
+            text: "Enter debug command (:r1 for restart 1 etc., :h for help)"
         }
 
         TextField {

@@ -94,9 +94,14 @@
       ;; N.B. this is only safe because we use "thread-safe.lisp" (like in Slime mode)
       (setf *eval-thread* (mp:process-run-function "top-level" 'start-top-level)))))
 
+(defun set-eval-state (evaluating)
+  (qml:qml-set "eval" "enabled"
+               (if evaluating "false" "true"))
+  (qml:qml-set "eval" "text"
+               (if evaluating "<font color='red'><b>Evaluating</b></font>" "<b>Eval</b>")))
+
 (defun start-top-level ()
-  (qml:qml-set "eval" "enabled" "false")
-  (qml:qml-set "eval" "text" "<font color='red'><b>Evaluating</b></font>")
+  (set-eval-state t)
   (setf *debug-invoked* nil)
   (write-output :expression *standard-output-buffer*)
   (clear-buffers)
@@ -107,8 +112,7 @@
   (when *gui-output*
     (funcall *gui-output* :values (format nil "~{~S~^#||#~}" si::*latest-values*)) ; "#||#": separator
     (setf si::*latest-values* nil))
-  (qml:qml-set "eval" "text" "<b>Eval</b>")
-  (qml:qml-set "eval" "enabled" "true"))
+  (set-eval-state nil))
 
 (defun clear-buffers ()
   (get-output-stream-string *standard-output-buffer*)
@@ -123,6 +127,7 @@
     (format nil "~A~%" text)))
 
 (defun handle-debug-io ()
+  (set-eval-state nil)
   (setf *debug-invoked* t)
   (let ((cmd (funcall *gui-debug-dialog* (list (cons (get-output-stream-string *error-output-buffer*) "red")
                                                (cons (get-output-stream-string *terminal-out-buffer*) "black")))))
