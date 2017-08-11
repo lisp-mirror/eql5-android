@@ -9,13 +9,6 @@ Rectangle {
 
     width: 800; height: 500 // for desktop
 
-    function halfHeight() {
-        return (height - Qt.inputMethod.keyboardRectangle.height) / 2
-    }
-
-    // call show() manually for correct resizing of flickables on startup
-    Component.onCompleted: Qt.inputMethod.show()
-
     Column {
 
         Ext.Flickable {
@@ -23,7 +16,7 @@ Rectangle {
             objectName: "flick_edit"
 
             width: main.width
-            height: main.halfHeight()
+            height: (main.height - (evalLisp.evaluated ? Qt.inputMethod.keyboardRectangle.height : 0)) / 2
             contentWidth: edit.paintedWidth
             contentHeight: edit.paintedHeight
 
@@ -48,31 +41,31 @@ Rectangle {
         }
 
         Rectangle {
-            width: main.width
-            height: 1
-            color: "gray"
-        }
-
-        Ext.Flickable {
-            id: flickOutput
-            objectName: "flick_output"
+            id: rectOutput
 
             width: main.width
-            height: main.halfHeight()
-            contentWidth: output.paintedWidth
-            contentHeight: output.paintedHeight
+            height: main.height - flickEdit.height
 
-            TextEdit {
-                id: output
-                objectName: "output"
+            Ext.Flickable {
+                id: flickOutput
+                objectName: "flick_output"
 
-                width: flickOutput.width
-                height: flickOutput.height
-                font.pointSize: 18
-                textFormat: TextEdit.RichText
-                readOnly: true
+                anchors.fill: parent
+                contentWidth: output.paintedWidth
+                contentHeight: output.paintedHeight
 
-                onCursorRectangleChanged: flickOutput.ensureVisible(cursorRectangle)
+                TextEdit {
+                    id: output
+                    objectName: "output"
+
+                    width: flickOutput.width
+                    height: flickOutput.height
+                    font.pointSize: 18
+                    textFormat: TextEdit.RichText
+                    readOnly: true
+
+                    onCursorRectangleChanged: flickOutput.ensureVisible(cursorRectangle)
+                }
             }
         }
     }
@@ -121,6 +114,9 @@ Rectangle {
                 id: evalLisp
                 objectName: "eval"
                 text: "<b>Eval</b>"
+
+                property bool evaluated: false
+                onClicked: { evaluated = true; rectOutput.color = "lavender" }
             }
         }
     }

@@ -324,4 +324,3 @@
   (setf *history-file* (x:cc (first (|standardLocations.QStandardPaths| |QStandardPaths.HomeLocation|))
                              "/.eql5-lisp-repl-history"))
   (setf *break-on-errors* t))
-

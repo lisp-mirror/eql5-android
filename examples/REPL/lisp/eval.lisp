@@ -96,7 +96,7 @@
 
 (defun start-top-level ()
   (qml:qml-set "eval" "enabled" "false")
-  (qml:qml-set "eval" "text" "<font color='blue'><b>Evaluating</b></font>")
+  (qml:qml-set "eval" "text" "<font color='red'><b>Evaluating</b></font>")
   (setf *debug-invoked* nil)
   (write-output :expression *standard-output-buffer*)
   (clear-buffers)
