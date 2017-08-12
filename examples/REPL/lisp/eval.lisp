@@ -95,10 +95,10 @@
       (setf *eval-thread* (mp:process-run-function "top-level" 'start-top-level)))))
 
 (defun set-eval-state (evaluating)
-  (qml:qml-set "eval" "enabled"
-               (if evaluating "false" "true"))
-  (qml:qml-set "eval" "text"
-               (if evaluating "<font color='red'><b>Evaluating</b></font>" "<b>Eval</b>")))
+  (qml:qml-set "eval" "enabled" (not evaluating))
+  (qml:qml-set "eval" "text" (if evaluating
+                                 "<font color='red'><b>Evaluating</b></font>"
+                                 "<b>Eval</b>")))
 
 (defun start-top-level ()
   (set-eval-state t)

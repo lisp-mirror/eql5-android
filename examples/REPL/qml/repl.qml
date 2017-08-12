@@ -1,71 +1,68 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
+import QtQuick.Window 2.2
 import 'ext/' as Ext
 import EQL5 1.0
 
 Rectangle {
     id: main
     objectName: "main"
+    width: 900; height: 600 // for desktop
 
-    width: 800; height: 500 // for desktop
+    function halfHeight() {
+        return (Screen.desktopAvailableHeight - Qt.inputMethod.keyboardRectangle.height) / 2
+    }
 
-    Column {
+    Ext.Flickable {
+        id: flickEdit
+        objectName: "flick_edit"
+        width: main.width
+        height: main.halfHeight()
 
-        Ext.Flickable {
-            id: flickEdit
-            objectName: "flick_edit"
+        TextEdit {
+            id: edit
+            objectName: "edit"
+            width: flickEdit.width
+            height: flickEdit.height
+            font.family: "Droid Sans Mono"
+            font.pointSize: 18
+            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+            wrapMode: TextEdit.Wrap
+            focus: true
 
-            width: main.width
-            height: (main.height - (evalLisp.evaluated ? Qt.inputMethod.keyboardRectangle.height : 0)) / 2
-            contentWidth: edit.paintedWidth
-            contentHeight: edit.paintedHeight
+            onCursorRectangleChanged: flickEdit.ensureVisible(cursorRectangle)
 
-            TextEdit {
-                id: edit
-                objectName: "edit"
-
-                width: flickEdit.width
-                height: flickEdit.height
-                font.family: "Droid Sans Mono"
-                font.pointSize: 18
-                inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-                wrapMode: TextEdit.Wrap
-                focus: true
-
-                onCursorRectangleChanged: flickEdit.ensureVisible(cursorRectangle)
-
-                Component.onCompleted: {
-                    Lisp.call(textDocument, "editor:set-text-document")
-                }
+            Component.onCompleted: {
+                Lisp.call(textDocument, "editor:set-text-document")
+                Lisp.call("editor:set-delayed-focus")
             }
         }
+    }
 
-        Rectangle {
-            id: rectOutput
+    Rectangle {
+        id: rectOutput
+        objectName: "rect_output"
+        color: "lavender"
+        y: flickEdit.height
+        width: main.width
+        height: main.halfHeight()
 
-            width: main.width
-            height: main.height - flickEdit.height
+        Ext.Flickable {
+            id: flickOutput
+            anchors.fill: parent
+            contentWidth: output.paintedWidth
+            contentHeight: output.paintedHeight
 
-            Ext.Flickable {
-                id: flickOutput
-                objectName: "flick_output"
+            TextEdit {
+                id: output
+                objectName: "output"
+                width: flickOutput.width
+                height: flickOutput.height
+                font.pointSize: 18
+                textFormat: TextEdit.RichText
+                readOnly: true
 
-                anchors.fill: parent
-                contentWidth: output.paintedWidth
-                contentHeight: output.paintedHeight
-
-                TextEdit {
-                    id: output
-                    objectName: "output"
-
-                    width: flickOutput.width
-                    height: flickOutput.height
-                    font.pointSize: 18
-                    textFormat: TextEdit.RichText
-                    readOnly: true
-
-                    onCursorRectangleChanged: flickOutput.ensureVisible(cursorRectangle)
-                }
+                onCursorRectangleChanged: flickOutput.ensureVisible(cursorRectangle)
             }
         }
     }
@@ -78,23 +75,30 @@ Rectangle {
         Column {
             id: buttons
             objectName: "buttons"
-
             padding: 4
-            spacing: 7
+            spacing: 6
 
             property int pointSize: evalLisp.font.pointSize
 
-            Button {
-                objectName: "font_bigger"
-                text: "Aa"
-                font.pointSize: parent.pointSize + 3
+            Row {
+                Button {
+                    objectName: "font_smaller"
+                    width: evalLisp.width / 2 - 3
+                    text: "Aa"
+                    font.pointSize: buttons.pointSize - 3
+                }
+                Item {
+                    width: 6; height: 1
+                }
+                Button {
+                    objectName: "font_bigger"
+                    width: evalLisp.width / 2 - 3
+                    text: "Aa"
+                    font.pointSize: buttons.pointSize + 3
+                }
             }
             Button {
-                objectName: "font_smaller"
-                text: "Aa"
-                font.pointSize: parent.pointSize - 3
-            }
-            Button {
+                id: clear
                 objectName: "clear"
                 text: "Clear"
             }
@@ -102,21 +106,26 @@ Rectangle {
                 objectName: "open_file"
                 text: "File..."
             }
-            Button {
-                objectName: "history_up"
-                text: "Up"
-            }
-            Button {
-                objectName: "history_down"
-                text: "Down"
+            Row {
+                Button {
+                    objectName: "history_up"
+                    width: evalLisp.width / 2 - 3
+                    text: "<<"
+                }
+                Item {
+                    width: 6; height: 1
+                }
+                Button {
+                    objectName: "history_down"
+                    width: evalLisp.width / 2 - 3
+                    text: ">>"
+                }
             }
             Button {
                 id: evalLisp
+                height: clear.height * 2
                 objectName: "eval"
                 text: "<b>Eval</b>"
-
-                property bool evaluated: false
-                onClicked: { evaluated = true; rectOutput.color = "lavender" }
             }
         }
     }

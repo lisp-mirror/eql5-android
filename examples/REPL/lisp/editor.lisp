@@ -315,6 +315,14 @@
   (ini-highlighter)
   (qconnect *qml-document* "cursorPositionChanged(QTextCursor)" 'cursor-position-changed))
 
+(defun set-delayed-focus () ; called from QML
+  ;; needed because resizing sometimes gets messed up on startup
+  ;; (caused by virtual keyboard)
+  (qsingle-shot 1000 (lambda ()
+                       (qml-call "clear" "forceActiveFocus")
+                       (qlater (lambda ()
+                                 (qml-call "edit" "forceActiveFocus"))))))
+
 (defun start ()
   (ini-qml "qml/repl.qml")
   (connect-buttons)

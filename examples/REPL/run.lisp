@@ -10,4 +10,6 @@
 (load "lisp/thread-safe")
 (load "lisp/editor")
 
-(editor:start)
+(progn
+  (editor:start)
+  (|showMaximized| qml:*quick-view*))

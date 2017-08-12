@@ -24,7 +24,6 @@ Dialog {
             TextEdit {
                 id: text
                 objectName: "debug_text"
-
                 width: flickText.width
                 height: flickText.height
                 textFormat: TextEdit.RichText
@@ -40,7 +39,6 @@ Dialog {
         TextField {
             id: input
             objectName: "debug_input"
-
             width: parent.width
             text: ":r1"
             font.family: "Droid Sans Mono"

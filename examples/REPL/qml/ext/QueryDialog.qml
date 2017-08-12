@@ -22,7 +22,6 @@ Dialog {
         TextField {
             id: input
             objectName: "query_input"
-
             width: parent.width
             font.family: "Droid Sans Mono"
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
