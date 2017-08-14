@@ -18,6 +18,8 @@ Rectangle {
         objectName: "flick_edit"
         width: main.width
         height: main.halfHeight()
+        contentWidth: edit.paintedWidth
+        contentHeight: edit.paintedHeight
 
         TextEdit {
             id: edit
@@ -27,7 +29,6 @@ Rectangle {
             font.family: "Droid Sans Mono"
             font.pointSize: 18
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-            wrapMode: TextEdit.Wrap
             focus: true
 
             onCursorRectangleChanged: flickEdit.ensureVisible(cursorRectangle)
@@ -35,6 +36,16 @@ Rectangle {
             Component.onCompleted: {
                 Lisp.call(textDocument, "editor:set-text-document")
                 Lisp.call("editor:set-delayed-focus")
+            }
+        }
+
+        MouseArea {
+            anchors.fill: parent
+
+            onPressed: {
+                // seems necessary to move cursor by tapping
+                edit.forceActiveFocus()
+                edit.cursorPosition = edit.positionAt(mouse.x, mouse.y)
             }
         }
     }
@@ -67,6 +78,10 @@ Rectangle {
         }
     }
 
+    function halfButtonWidth() {
+        return evalLisp.width / 2 - 3
+    }
+
     Rectangle {
         width: buttons.width
         height: buttons.height
@@ -83,7 +98,7 @@ Rectangle {
             Row {
                 Button {
                     objectName: "font_smaller"
-                    width: evalLisp.width / 2 - 3
+                    width: halfButtonWidth()
                     text: "Aa"
                     font.pointSize: buttons.pointSize - 3
                 }
@@ -92,7 +107,7 @@ Rectangle {
                 }
                 Button {
                     objectName: "font_bigger"
-                    width: evalLisp.width / 2 - 3
+                    width: halfButtonWidth()
                     text: "Aa"
                     font.pointSize: buttons.pointSize + 3
                 }
@@ -109,7 +124,7 @@ Rectangle {
             Row {
                 Button {
                     objectName: "history_up"
-                    width: evalLisp.width / 2 - 3
+                    width: halfButtonWidth()
                     text: "<<"
                 }
                 Item {
@@ -117,7 +132,7 @@ Rectangle {
                 }
                 Button {
                     objectName: "history_down"
-                    width: evalLisp.width / 2 - 3
+                    width: halfButtonWidth()
                     text: ">>"
                 }
             }

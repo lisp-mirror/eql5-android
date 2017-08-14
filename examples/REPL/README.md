@@ -123,9 +123,9 @@ Note also that during development, you should change this line in
 
 ### Tips
 
-On first startup, if you don't see a horizontal line (dividing input and
-output), you may need to press the `Clear` button first; then tap in the input
-field above, to show the virtual keyboard.
+On first startup, if some resizing went wrong (caused by the virtual keyboard),
+try to tap on the `Clear` button first; then tap in the input field above; this
+should display the virtual keyboard, and resize all the fields accordingly.
 
 If the output window has too much contents (thousands of lines, may happen
 accidentally), and is becoming slow, remember that you're using the same Lisp
@@ -135,3 +135,30 @@ image where your REPL lives in, so you can clear it directly like this:
   (qml:qml-call "output" "clear")
 ```
 
+For trivial debugging, you can use a simple (blocking) message box from QML
+like this (remember that `qmsg` accepts any Lisp value, converting it to a
+string if necessary; here: a list):
+
+```
+  import EQL5 1.0
+
+  Lisp.call("qmsg", ["var x", x, "var y", y])
+```
+
+To exit the message box (since it has no buttons), just tap anywhere outside of
+it.
+
+--
+
+Since we have all of EQL5 available, you can directly run files like
+`clock.lisp` (see `../clock/lisp/clock.lisp`).
+
+So, if you copy the file to your device, you can open it using the `File...`
+button, and run it with `Eval`.
+
+Close the clock window using the back button on your device (triangle). This
+will only hide the window; you can show it again by entering:
+
+```
+  (|show| clock:*clock*)
+```

@@ -44,7 +44,8 @@
       (cross:compile-file* file))))
 
 (cross:build-static-library* "build/app"
-                             (mapcar (lambda (file) (x:cc file ".o"))
-                                             *files*)
-                             '(editor:start))
+                             :lisp-files (mapcar (lambda (file) (x:cc file ".o"))
+                                                 *files*)
+                             :init-name "ini_app"
+                             :epilogue-code '(editor:start))
 
