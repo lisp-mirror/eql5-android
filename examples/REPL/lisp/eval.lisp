@@ -16,6 +16,7 @@
 (defvar *prompt*                 t)
 (defvar *silent*                 t)
 (defvar *debug-invoked*          nil)
+(defvar *query-invoked*          nil)
 (defvar *eval-thread*            nil)
 (defvar *gui-debug-io*           nil)
 (defvar *gui-output*             nil)
@@ -102,16 +103,19 @@
 
 (defun start-top-level ()
   (set-eval-state t)
-  (setf *debug-invoked* nil)
+  (setf *debug-invoked* nil
+        *query-invoked* nil)
   (write-output :expression *standard-output-buffer*)
   (clear-buffers)
   (si::%top-level)
   (write-output :error  *error-output-buffer*)
   (write-output :trace  *trace-output-buffer*)
   (write-output :output *standard-output-buffer*)
-  (when *gui-output*
-    (funcall *gui-output* :values (format nil "~{~S~^#||#~}" si::*latest-values*)) ; "#||#": separator
-    (setf si::*latest-values* nil))
+  (when (and *gui-output*
+             (or (not *debug-invoked*)
+                 (and *debug-invoked*
+                      *query-invoked*)))
+    (funcall *gui-output* :values (format nil "~{~S~^#||#~}" si::*latest-values*))) ; "#||#": separator
   (set-eval-state nil))
 
 (defun clear-buffers ()
@@ -120,6 +124,7 @@
   (get-output-stream-string *terminal-out-buffer*))
 
 (defun handle-query-io ()
+  (setf *query-invoked* t)
   (let ((text (funcall *gui-query-dialog* (get-output-stream-string *terminal-out-buffer*))))
     (when (and *gui-output*
                (not (x:empty-string text)))
