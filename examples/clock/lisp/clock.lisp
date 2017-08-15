@@ -1,6 +1,6 @@
 ;;; This is (kind of) a port of the Qt Script Example "Clock".
 ;;; 
-;;; Will run on Android without modification.
+;;; Will run on android without modification (thanks Qt5!).
 
 (defpackage :clock
   (:use :common-lisp :eql)
@@ -17,12 +17,15 @@
                       "size" '(170 170)
                       "pos" '(50 50)))
 
+(defvar *timer* nil)
+
 (defun start ()
-  (let ((timer (qnew "QTimer(QObject*)" *clock*)))
-    (qconnect timer "timeout()" (lambda () (|update| *clock*)))
+  (unless *timer*
+    (setf *timer* (qnew "QTimer(QObject*)" *clock*))
+    (qconnect *timer* "timeout()" (lambda () (|update| *clock*)))
     (qoverride *clock* "paintEvent(QPaintEvent*)" 'paint)
-    (|start| timer 500)
-    (x:do-with *clock* |show| |raise|)))
+    (|start| *timer* 500))
+  (|show| *clock*))
 
 (defun pen (width &optional (color "black"))
   (x:let-it (qnew "QPen")
