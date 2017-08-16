@@ -29,6 +29,7 @@ Rectangle {
             font.family: "Droid Sans Mono"
             font.pointSize: 18
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+            cursorDelegate: cursor
             focus: true
 
             onCursorRectangleChanged: flickEdit.ensureVisible(cursorRectangle)
@@ -46,6 +47,23 @@ Rectangle {
                 // seems necessary to move cursor by tapping
                 edit.forceActiveFocus()
                 edit.cursorPosition = edit.positionAt(mouse.x, mouse.y)
+            }
+        }
+
+        Component {
+            id: cursor
+
+            Rectangle {
+                width: 3
+                color: "blue"
+
+                SequentialAnimation on opacity {
+                    running: true
+                    loops: Animation.Infinite
+
+                    NumberAnimation { to: 0; duration: 500; easing.type: "OutQuad" }
+                    NumberAnimation { to: 1; duration: 500; easing.type: "InQuad" }
+                }
             }
         }
     }

@@ -3,5 +3,6 @@
 (defpackage :editor
   (:use :cl :eql :qml)
   (:export
+   #:*file*
    #:start))
 
