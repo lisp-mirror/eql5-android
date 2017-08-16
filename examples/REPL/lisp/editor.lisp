@@ -16,6 +16,7 @@
 (defvar *string-color*        "saddlebrown")
 (defvar *highlighter*         nil)
 (defvar *history-file*        nil)
+(defvar *file*                nil)
 
 ;; QML items
 (defvar *qml-edit*     "edit")
@@ -284,7 +285,11 @@
 
 (defun do-open-file (name)
   (when (x:starts-with "file://" name)
-    (qml-set *qml-edit* "text" (read-file (subseq name #.(length "file://"))))))
+    (let ((name* (subseq name #.(length "file://"))))
+      (setf *file* name*)
+      (if (x:starts-with "fas" (pathname-type name*))
+          (eval* (format nil "(load ~S)" name*))
+          (qml-set *qml-edit* "text" (read-file name*))))))
 
 (defun ini-qml (file)
   (setf qml:*quick-view* (qnew "QQuickView"))
