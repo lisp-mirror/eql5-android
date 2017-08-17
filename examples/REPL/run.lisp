@@ -9,6 +9,7 @@
 (load "lisp/dialogs")
 (load "lisp/thread-safe")
 (load "lisp/editor")
+(load "lisp/ini")
 
 (progn
   (editor:start)

@@ -14,4 +14,5 @@
                (:file "lisp/eval")
                (:file "lisp/dialogs")
                (:file "lisp/thread-safe")
-               (:file "lisp/editor")))
+               (:file "lisp/editor")
+               (:file "lisp/ini")))

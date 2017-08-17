@@ -2,4 +2,5 @@
   --input android-librepl.so-deployment-settings.json \
   --output android-build \
   --deployment ministro \
+  --install \
   --gradle

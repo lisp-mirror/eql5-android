@@ -75,7 +75,7 @@ Being the whole file list already generated in `files.txt`, cross-compiling is
 now a trivial task.
 
 ```
-  ./1-copy-libs.sh             # copy EQL5 and ECL libs
+  ./1-copy-libs.sh             # copy EQL5, ECL, prebuilt ECL libs (ASDF...)
 
   ecl-android -shell make.lisp # note 'ecl-android'
   qmake-android repl.pro       # note 'qmake-android'
@@ -93,9 +93,30 @@ Remember to run `2-install-lib.sh` after recompiling.
 
 ### Build APK file
 
+Please make sure to have your device attached via USB before running:
+
 ```
   ./3-build-apk.sh
 ```
+
+This will build/uninstall/install the APK (deleting all previously installed
+files, e.g. the command history.)
+
+
+
+### First launch / prebuilt ECL libs
+
+After launching the app for the first time, all prebuilt ECL libs will be
+copied from 'assets/' to the home directory (to be easily accessible and
+replaceable, just in case).
+
+Now you can `require` them as usual, e.g:
+
+```
+  (require :asdf)
+  (require :sockets)
+```
+
 
 
 ### Desktop notes

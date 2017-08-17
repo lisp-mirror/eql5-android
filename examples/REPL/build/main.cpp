@@ -9,7 +9,6 @@
 //#include <QMessageBox>
 
 extern "C" void ini_app(cl_object);
-extern "C" void ini_contrib(cl_object);
 
 int catch_all_qexec() {
     int ret = 0;
