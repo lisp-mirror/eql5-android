@@ -21,3 +21,7 @@ cp $ECL_ANDROID/lib/ecl-16.1.3/*.asd       android-build/assets/lib/
 cp $ECL_ANDROID/lib/ecl-16.1.3/*.fas       android-build/assets/lib/
 cp $ECL_ANDROID/lib/ecl-16.1.3/*.doc       android-build/assets/lib/
 cp $ECL_ANDROID/lib/ecl-16.1.3/encodings/* android-build/assets/lib/encodings/
+
+# strip
+
+$ANDROID_NDK_ROOT/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/arm-linux-androideabi-strip android-build/assets/lib/*.fas
