@@ -21,17 +21,36 @@
                 (return-from copy-asset-files)))))))
   t)
 
+(defun touch-file (name)
+  (open name :direction :probe :if-does-not-exist :create))
+
+(defun android-p ()
+  (find :android *features*))
+
 (let ((ini ".eql5-repl-ini"))
   (defun post-install ()
     (when (copy-asset-files *assets-lib*)
-      (with-open-file (s ini :direction :output)
-        (write-string "ok" s)
-        :done)))
-  #+release
-  (unless (probe-file ini)
-    (qlater (lambda () (editor::eval* "(eql-user::post-install)")))))
+      (touch-file ini)
+      :done))
+  (when (android-p)
+    (let ((.eclrc ".eclrc"))
+      (if (probe-file .eclrc)
+          (load .eclrc)
+          (touch-file .eclrc))
+      (unless (probe-file ini)
+        (qlater (lambda () (editor::eval* "(eql-user::post-install)")))))))
+
+(when (android-p)
+  (si:install-bytecodes-compiler))
 
 ;; Quicklisp setup
 
-;; TODO
+(defun quicklisp ()
+  ;; stolen from 'ecl-android'
+  (require :ecl-quicklisp)
+  (require :deflate)
+  (require :ql-minitar)
+  ;; replace interpreted function with precompiled one from DEFLATE
+  (eval (read-from-string
+         "(setf (symbol-function 'ql-gunzipper:gunzip) #'deflate:gunzip)")))
 

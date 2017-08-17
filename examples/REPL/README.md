@@ -117,6 +117,16 @@ Now you can `require` them as usual, e.g:
   (require :sockets)
 ```
 
+To get **Quicklisp**, simply eval:
+
+```
+  (quicklisp)
+```
+
+Please note that there's no feedback of the progress (this is true for
+installing any Quicklisp library), but the **Eval** button will say
+**Evaluating** when busy.
+
 
 
 ### Desktop notes
