@@ -107,7 +107,7 @@ files, e.g. the command history.)
 ### First launch / prebuilt ECL libs
 
 After launching the app for the first time, all prebuilt ECL libs will be
-copied from 'assets/' to the home directory (to be easily accessible and
+copied from `assets/` to the home directory (to be easily accessible and
 replaceable, just in case).
 
 Now you can `require` them as usual, e.g:

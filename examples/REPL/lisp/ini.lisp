@@ -15,23 +15,23 @@
             (copy-asset-files (|filePath| info))
             (let* ((from (|filePath| info))
                    (to (trim from)))
-              (unless (probe-file to)
-                (unless (|copy.QFile| from to)
-                  (qmsg (format nil "Error copying asset file: ~S" from))
-                  (return-from copy-asset-files))))))))
+              (unless (or (probe-file to)
+                          (|copy.QFile| from to))
+                (qmsg (format nil "Error copying asset file: ~S" from))
+                (return-from copy-asset-files)))))))
   t)
 
-(defun post-install ()
-  (unless (probe-file ".eql5-repl-ini")
+(let ((ini ".eql5-repl-ini"))
+  (defun post-install ()
     (when (copy-asset-files *assets-lib*)
-      (with-open-file (s ".eql5-repl-ini" :direction :output)
+      (with-open-file (s ini :direction :output)
         (write-string "ok" s)
-        :done))))
+        :done)))
+  #+release
+  (unless (probe-file ini)
+    (qlater (lambda () (editor::eval* "(eql-user::post-install)")))))
 
-#+release
-(qlater (lambda () (editor::eval* "(eql-user::post-install)")))
-
-;; additional setup
+;; Quicklisp setup
 
 ;; TODO
 
