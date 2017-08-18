@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
     qApp->processEvents();
 
     EQL eql;
-    eql.exec(ini_app);
+    eql.exec(ini_app, "(eql-user::ini)");
 
     delete splash;
 

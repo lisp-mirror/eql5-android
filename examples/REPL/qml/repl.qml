@@ -101,6 +101,36 @@ Rectangle {
     }
 
     Rectangle {
+        y: rectOutput.y - fontSize.height / 2
+        width: fontSize.width
+        height: fontSize.height
+        anchors.horizontalCenter: rectOutput.horizontalCenter
+
+        Row {
+            id: fontSize
+            padding: 4
+            spacing: 6
+
+            property int pointSize: evalLisp.font.pointSize
+
+            Button {
+                objectName: "font_smaller"
+                width: halfButtonWidth()
+                font.family: "Droid Sans Mono"
+                text: "Aa"
+                font.pointSize: fontSize.pointSize - 3
+            }
+            Button {
+                objectName: "font_bigger"
+                width: halfButtonWidth()
+                font.family: "Droid Sans Mono"
+                text: "Aa"
+                font.pointSize: fontSize.pointSize + 3
+            }
+        }
+    }
+
+    Rectangle {
         width: buttons.width
         height: buttons.height
         anchors.right: parent.right
@@ -111,42 +141,26 @@ Rectangle {
             padding: 4
             spacing: 6
 
-            property int pointSize: evalLisp.font.pointSize
-
-            Row {
-                Button {
-                    objectName: "font_smaller"
-                    width: halfButtonWidth()
-                    text: "Aa"
-                    font.pointSize: buttons.pointSize - 3
-                }
-                Item {
-                    width: 6; height: 1
-                }
-                Button {
-                    objectName: "font_bigger"
-                    width: halfButtonWidth()
-                    text: "Aa"
-                    font.pointSize: buttons.pointSize + 3
-                }
+            Button {
+                objectName: "open_file"
+                text: "File..."
+            }
+            Button {
+                objectName: "save_file"
+                text: "Save..."
             }
             Button {
                 id: clear
                 objectName: "clear"
                 text: "Clear"
             }
-            Button {
-                objectName: "open_file"
-                text: "File..."
-            }
             Row {
+                spacing: 6
+
                 Button {
                     objectName: "history_up"
                     width: halfButtonWidth()
                     text: "<<"
-                }
-                Item {
-                    width: 6; height: 1
                 }
                 Button {
                     objectName: "history_down"

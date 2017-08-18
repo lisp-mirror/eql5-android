@@ -32,13 +32,14 @@
   (macrolet ((clicked (name function)
                `(qconnect (find-quick-item ,name) "clicked()"
                           (lambda () ,function))))
-    (clicked "eval"         (eval-expression))
+    (clicked "open_file"    (open-file))
+    (clicked "save_file"    (save-file))
+    (clicked "clear"        (qml-call *qml-edit* "clear"))
     (clicked "history_up"   (history-move :up))
     (clicked "history_down" (history-move :down))
-    (clicked "open_file"    (open-file))
+    (clicked "eval"         (eval-expression))
     (clicked "font_bigger"  (change-font :bigger))
-    (clicked "font_smaller" (change-font :smaller))
-    (clicked "clear"        (qml-call *qml-edit* "clear"))))
+    (clicked "font_smaller" (change-font :smaller))))
 
 (defun ini-highlighter ()
   (setf *eql-keyword-format*  (qnew "QTextCharFormat")
@@ -280,16 +281,47 @@
     (qml-set *qml-edit* "font.pointSize" size)
     (qml-set *qml-output* "font.pointSize" size)))
 
+;; open file
+
+(defun trim-file (name)
+  (if (x:starts-with "file://" name)
+      (subseq name #.(length "file://"))
+      name))
+
 (defun open-file ()
   (dialogs:get-file-name 'do-open-file))
 
 (defun do-open-file (name)
-  (when (x:starts-with "file://" name)
-    (let ((name* (subseq name #.(length "file://"))))
+  (let ((name* (trim-file name)))
+    (unless (x:empty-string name*)
       (setf *file* name*)
       (if (x:starts-with "fas" (pathname-type name*))
           (eval* (format nil "(load ~S)" name*))
           (qml-set *qml-edit* "text" (read-file name*))))))
+
+;; save-file
+
+(defun save-file ()
+  (dialogs:get-file-name 'do-save-file t))
+
+(defun do-save-file (name)
+  (let ((name* (trim-file name))
+        (ok t))
+    (unless (x:empty-string name*)
+      (when (probe-file name*)
+        ;; QMessageBox::question() is the most convenient solution here
+        ;; (both blocking and drawn in native-like style)
+        (unless (= |QMessageBox.Save|
+                   (|question.QMessageBox| nil
+                                           "Overwrite?"
+                                           "File already exists; overwrite?"
+                                           (logior |QMessageBox.Save| |QMessageBox.Cancel|)))
+          (setf ok nil)))
+      (when ok
+        (with-open-file (s name* :direction :output :if-exists :supersede)
+          (write-sequence (qml-get *qml-edit* "text") s))))))
+
+;; ini
 
 (defun ini-qml (file)
   (setf qml:*quick-view* (qnew "QQuickView"))

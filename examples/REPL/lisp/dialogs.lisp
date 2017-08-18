@@ -35,7 +35,7 @@
         (|engine| *quick-view*)
         (qml:file-to-url file)))
 
-(defun get-file-name (callback)
+(defun get-file-name (callback &optional save)
   (unless *file-dialog-component*
     (setf *file-dialog-component* (qml-component "qml/ext/FileDialog.qml")))
   ;; new instance on every call to ensure correct size depending on landscape/portrait
@@ -44,6 +44,7 @@
   (setf *file-dialog-instance* (qt-object-? (|create| *file-dialog-component*)))
   (|setParent| *file-dialog-instance* (qml:root-item))
   (qml-set "file_dialog" "callback" (prin1-to-string callback))
+  (qml-set "file_dialog" "selectExisting" (not save))
   (qml-call "file_dialog" "open"))
 
 (defun wait-for-closed ()

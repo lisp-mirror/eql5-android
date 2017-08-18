@@ -5,8 +5,8 @@ import EQL5 1.0
 FileDialog {
     objectName: "file_dialog"
     title: "Please choose a file"
-    nameFilters: [ "Lisp files (*.lisp *.lsp *.fas*)" ]
-    folder: shortcuts.home
+    nameFilters: [ "Lisp files (*.lisp *.lsp *.fas*)", "All files (*.*)" ]
+    folder: shortcuts.documents
 
     property string callback
 
