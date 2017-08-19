@@ -34,7 +34,7 @@
                           (lambda () ,function))))
     (clicked "open_file"    (open-file))
     (clicked "save_file"    (save-file))
-    (clicked "clear"        (qml-call *qml-edit* "clear"))
+    (clicked "clear"        (clear))
     (clicked "history_up"   (history-move :up))
     (clicked "history_down" (history-move :down))
     (clicked "eval"         (eval-expression))
@@ -246,6 +246,7 @@
           out (open *history-file* :direction :output
                     :if-exists :append :if-does-not-exist :create)))
   (defun history-move (direction)
+    (setf *file* nil)
     (unless out
       (history-ini))
     (let (exp)
@@ -281,6 +282,10 @@
     (qml-set *qml-edit* "font.pointSize" size)
     (qml-set *qml-output* "font.pointSize" size)))
 
+(defun clear ()
+  (qml-call *qml-edit* "clear")
+  (setf *file* nil))
+
 ;; open file
 
 (defun trim-file (name)
@@ -301,25 +306,35 @@
 
 ;; save-file
 
+(defun save-to-file (file)
+  (with-open-file (s file :direction :output :if-exists :supersede)
+    (write-sequence (qml-get *qml-edit* "text") s)))
+
+(defun confirm-save-dialog (title text)
+  (= |QMessageBox.Save|
+     (|question.QMessageBox| nil title text
+                             (logior |QMessageBox.Save| |QMessageBox.Cancel|))))
+
 (defun save-file ()
-  (dialogs:get-file-name 'do-save-file t))
+  (let ((dialog t))
+  (when (and *file*
+             (confirm-save-dialog "Save?"
+                                  (format nil "Save to opened file, overwriting it?<br><br>~S<br>" *file*)))
+    (save-to-file *file*)
+    (setf dialog nil))
+  (when dialog
+    (dialogs:get-file-name 'do-save-file 'save))))
 
 (defun do-save-file (name)
-  (let ((name* (trim-file name))
+  (let ((file (trim-file name))
         (ok t))
-    (unless (x:empty-string name*)
-      (when (probe-file name*)
-        ;; QMessageBox::question() is the most convenient solution here
-        ;; (both blocking and drawn in native-like style)
-        (unless (= |QMessageBox.Save|
-                   (|question.QMessageBox| nil
-                                           "Overwrite?"
-                                           "File already exists; overwrite?"
-                                           (logior |QMessageBox.Save| |QMessageBox.Cancel|)))
+    (unless (x:empty-string file)
+      (when (probe-file file)
+        (unless (confirm-save-dialog "Overwrite?"
+                                     (format nil "File already exists; overwrite?<br><br>~S<br>" file))
           (setf ok nil)))
       (when ok
-        (with-open-file (s name* :direction :output :if-exists :supersede)
-          (write-sequence (qml-get *qml-edit* "text") s))))))
+        (save-to-file file)))))
 
 ;; ini
 
