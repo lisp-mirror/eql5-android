@@ -40,9 +40,11 @@
 
 ;; Quicklisp setup (stolen from 'ecl-android')
 
+(defun sym (symbol package)
+  (intern (symbol-name symbol) package))
+
 (defun quicklisp ()
-  (flet ((sym (sym pkg)
-           (intern (symbol-name sym) pkg)))
+  (unless (find-package :quicklisp)
     (require :ecl-quicklisp)
     (require :deflate)
     (require :ql-minitar)
@@ -52,32 +54,25 @@
 
 ;; Swank setup (stolen from 'ecl-android')
 
-;; TODO
-
-#|
-(format t "Preparing swank~%")
-(ql:quickload 'swank :verbose t)
-(swank-loader:init :load-contribs t :setup t :delete t :quiet t)
-
-(in-package :swank/backend)
-(defimplementation lisp-implementation-program ()
-  "Return the argv[0] of the running Lisp process, or NIL."
-  "org.lisp.ecl")
-
-(in-package :cl-user)
-(defun start-swank ()
-  (format t "Starting swank server~%")
-  (mp:process-run-function
-   "SLIME-listener"
-   (lambda ()
-     (let ((swank::*loopback-interface* "0.0.0.0"))
-       (swank:create-server :port 4005
-                            :dont-close t
-                            ;; :style nil #|:spawn|#
-                            )))))
+(defun start-swank (&key (load-contribs t) (setup t) (delete t) (quiet t))
+  (quicklisp)
+  (funcall (sym 'quickload :ql) :swank :verbose t)
+  (funcall (sym 'init :swank-loader)
+           :load-contribs load-contribs
+           :setup setup
+           :delete delete
+           :quiet quiet)
+  (eval (read-from-string "(swank/backend:defimplementation swank/backend:lisp-implementation-program () \"org.lisp.ecl\")"))
+  ;; QRUN*: use main thread to start new thread
+  (qrun* (mp:process-run-function
+          "SLIME-listener"
+          (lambda ()
+            (setf (symbol-value (sym '*loopback-interface* :swank)) "0.0.0.0")
+            (funcall (sym 'create-server :swank)
+                     :port 4005
+                     :dont-close t)))))
 
 (defun stop-swank ()
-  (format t "Stopping swank server~%")
-  (swank:stop-server 4005)
-  (format t ";; Swank off-line~%"))
-|#
+  (funcall (sym 'stop-server :swank) 4005)
+  :stopped)
+
