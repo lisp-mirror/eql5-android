@@ -20,7 +20,7 @@
 
 (defmacro with-android-env (() &body body)
   `(let* ((ndk (ext:getenv "ANDROID_NDK_ROOT"))
-          (ver "android-13")
+          (ver "android-16")
           (toolchain (x:cc ndk "/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64"))
           (sysroot (x:cc ndk "/platforms/" ver))
           (ecl-android (ext:getenv "ECL_ANDROID"))
