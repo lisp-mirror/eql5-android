@@ -54,7 +54,7 @@
 
 ;; Swank setup (stolen from 'ecl-android')
 
-(defun start-swank (&key (load-contribs t) (setup t) (delete t) (quiet t))
+(defun start-swank (&key (loopback "0.0.0.0") (load-contribs t) (setup t) (delete t) (quiet t))
   (quicklisp)
   (funcall (sym 'quickload :ql) :swank :verbose t)
   (funcall (sym 'init :swank-loader)
@@ -67,12 +67,13 @@
   (qrun* (mp:process-run-function
           "SLIME-listener"
           (lambda ()
-            (setf (symbol-value (sym '*loopback-interface* :swank)) "0.0.0.0")
+            (setf (symbol-value (sym '*loopback-interface* :swank)) loopback)
             (funcall (sym 'create-server :swank)
                      :port 4005
                      :dont-close t)))))
 
 (defun stop-swank ()
-  (funcall (sym 'stop-server :swank) 4005)
-  :stopped)
+  (when (find-package :swank)
+    (funcall (sym 'stop-server :swank) 4005)
+    :stopped))
 

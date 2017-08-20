@@ -48,7 +48,8 @@
   (qml-call "file_dialog" "open"))
 
 (defun wait-for-closed ()
-  (mp:process-suspend eval:*eval-thread*))
+  (when (mp:process-active-p eval:*eval-thread*)
+    (mp:process-suspend eval:*eval-thread*)))
 
 (defun exited () ; called from QML
   (mp:process-resume eval:*eval-thread*))

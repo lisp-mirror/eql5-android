@@ -14,7 +14,7 @@
 (defvar *error-output-buffer*    (make-string-output-stream))
 (defvar *terminal-out-buffer*    (make-string-output-stream))
 (defvar *prompt*                 t)
-(defvar *silent*                 t)
+(defvar *silent*                 nil)
 (defvar *debug-invoked*          nil)
 (defvar *query-invoked*          nil)
 (defvar *eval-thread*            nil)
@@ -93,7 +93,7 @@
                   (format nil "(load (make-string-input-stream ~S))" str))))
       ;; run eval in its own thread, so GUI will remain responsive
       ;; N.B. this is only safe because we use "thread-safe.lisp" (like in Slime mode)
-      (setf *eval-thread* (mp:process-run-function "top-level" 'start-top-level)))))
+      (setf *eval-thread* (mp:process-run-function "EQL5 REPL top-level" 'start-top-level)))))
 
 (defun set-eval-state (evaluating)
   (qml:qml-set "eval" "enabled" (not evaluating))
