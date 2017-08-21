@@ -106,7 +106,6 @@
   (setf *debug-invoked* nil
         *query-invoked* nil)
   (write-output :expression *standard-output-buffer*)
-  (clear-buffers)
   (si::%top-level)
   (write-output :error  *error-output-buffer*)
   (write-output :trace  *trace-output-buffer*)

@@ -306,9 +306,11 @@
 
 ;; save-file
 
-(defun save-to-file (file)
-  (with-open-file (s file :direction :output :if-exists :supersede)
-    (write-sequence (qml-get *qml-edit* "text") s)))
+(defun save-to-file (file &optional (qml-item *qml-edit*) append)
+  (with-open-file (s file :direction :output
+                     :if-exists (if append :append :supersede)
+                     :if-does-not-exist :create)
+    (write-sequence (qml-get qml-item "text") s)))
 
 (defun confirm-save-dialog (title text)
   (= |QMessageBox.Save|
@@ -335,6 +337,12 @@
           (setf ok nil)))
       (when ok
         (save-to-file file)))))
+
+;; log
+
+(defun log-output ()
+  (save-to-file "output-log.htm" *qml-output* 'append)
+  t)
 
 ;; ini
 
