@@ -143,13 +143,6 @@ debug dialog.
 Note that the selected font "Droid Sans Mono" is obviously not available on
 the desktop.
 
-Note also that during development, you should change this line in
-`lisp/eval.lisp`:
-
-```
-  (defvar *silent* nil) ; T for deployment, NIL for development
-```
-
 
 
 ### Tips

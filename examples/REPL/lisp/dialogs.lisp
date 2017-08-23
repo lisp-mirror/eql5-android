@@ -10,6 +10,7 @@
 
 (defvar *file-dialog-component* nil)
 (defvar *file-dialog-instance*  nil)
+(defvar *suspended-thread*      nil)
 
 (defun query-dialog (query)
   (unless (x:empty-string query)
@@ -48,9 +49,12 @@
   (qml-call "file_dialog" "open"))
 
 (defun wait-for-closed ()
-  (when (mp:process-active-p eval:*eval-thread*)
-    (mp:process-suspend eval:*eval-thread*)))
+  (unless (eql (mp:process-name mp:*current-process*)
+               'si:top-level)
+    (setf *suspended-thread* mp:*current-process*)
+    (mp:process-suspend mp:*current-process*)))
 
 (defun exited () ; called from QML
-  (mp:process-resume eval:*eval-thread*))
+  (when *suspended-thread*
+    (mp:process-resume *suspended-thread*)))
 
