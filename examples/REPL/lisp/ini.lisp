@@ -54,7 +54,9 @@
 
 ;; Swank setup (stolen from 'ecl-android')
 
-(defun start-swank (&key (loopback "0.0.0.0") (log-events nil) (load-contribs t) (setup t) (delete t) (quiet t))
+(defun start-swank (&key (loopback "0.0.0.0") log-events
+                         (load-contribs t) (setup t) (delete t) (quiet t)
+                         (port 4005) (dont-close t) style)
   (quicklisp)
   (funcall (sym 'quickload :ql) :swank :verbose t)
   (funcall (sym 'init :swank-loader)
@@ -70,8 +72,9 @@
             (setf (symbol-value (sym '*loopback-interface* :swank)) loopback)
             (setf (symbol-value (sym '*log-events* :swank)) log-events)
             (funcall (sym 'create-server :swank)
-                     :port 4005
-                     :dont-close t)))))
+                     :port port
+                     :dont-close dont-close
+                     :style style)))))
 
 (defun stop-swank ()
   (when (find-package :swank)
