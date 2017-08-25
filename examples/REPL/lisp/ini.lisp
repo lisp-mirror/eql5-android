@@ -53,6 +53,20 @@
           (symbol-function (sym 'gunzip :deflate)))))
 
 ;; Swank setup (stolen from 'ecl-android')
+;;
+;; N.B. at the time of writing, you need to patch 'swank.lisp'
+;; like this (we don't have stdin available on android):
+;;
+;; ----------------------------------------------------
+;; (defun repl-input-stream-read (connection stdin)
+;;   (loop
+;;    (let* ((socket (connection.socket-io connection))
+;;+          (inputs (list socket #-android stdin))
+;;-          (inputs (list socket stdin))
+;;           (ready (wait-for-input inputs)))
+;;      (cond ((eq ready :interrupt)
+;;             (check-slime-interrupts))
+;; ----------------------------------------------------
 
 (defun start-swank (&key (loopback "0.0.0.0") log-events
                          (load-contribs t) (setup t) (delete t) (quiet t)
