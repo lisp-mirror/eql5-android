@@ -186,3 +186,9 @@ will only hide the window; you can show it again by entering:
 ```
   (|show| clock:*clock*)
 ```
+
+
+
+### Slime
+
+Please see [README-SLIME](README-SLIME.md)
