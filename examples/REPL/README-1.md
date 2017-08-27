@@ -191,4 +191,4 @@ will only hide the window; you can show it again by entering:
 
 ### Slime
 
-Please see [README-SLIME](README-SLIME.md)
+Please see [README-SLIME](README-2-SLIME.md)
