@@ -10,7 +10,7 @@ can't but agree with the headline!
 
 #### * prepare android:
 
-Currently you need a development version of swank, so please download the
+Currently you need a development version of Swank, so please download the
 `zip` file from here directly onto your device:
 
 [slime-simpler-communication-style](https://github.com/luismbo/slime/tree/simpler-communication-style)
@@ -30,7 +30,7 @@ Especially the last command will take some time.
 
 Now Quicklisp will load the above Swank version.
 
-##### * prepare pc:
+#### * prepare PC:
 
 On the PC just use the current Slime (v2.19 at the time of writing).
 
