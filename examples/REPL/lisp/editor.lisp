@@ -392,3 +392,31 @@
   (setf *history-file* (x:cc (first (|standardLocations.QStandardPaths| |QStandardPaths.HomeLocation|))
                              "/.eql5-lisp-repl-history"))
   (setf *break-on-errors* t))
+
+;;;
+;;; the following is experimental (Swank is not stable on android)
+;;; (please see also README-2-SLIME.md)
+;;;
+;;;   $ cd qml
+;;;   $ ./web-server.sh
+;;;   $ adb forward tcp:4005 tcp:4005
+;;;   $ adb reverse tcp:8080 tcp:8080
+;;;
+;;; on android eval
+;;;
+;;;   (start-swank)
+;;;
+;;; edit 'qml/repl.qml' locally (see e.g. 'qml-mode' for Emacs),
+;;; then on the local Slime REPL, eval
+;;;
+;;;   (editor:reload-qml)
+;;;
+;;; just continue from the shown error message
+;;;
+
+(defun reload-qml ()
+  "Reload QML file from an url, directly on the device."
+  (if (x:starts-with "qrc:/" (|toString| (|source| qml:*quick-view*)))
+      (|setSource| qml:*quick-view* (qnew "QUrl(QString)" "http://localhost:8080/repl.qml"))
+      (qml:reload))
+  (connect-buttons)) ; important!

@@ -4,6 +4,7 @@
   (:use :cl :eql :qml)
   (:export
    #:*file*
-   #:start
-   #:log-output))
+   #:log-output
+   #:reload-qml
+   #:start))
 
