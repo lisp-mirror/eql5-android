@@ -397,7 +397,6 @@
 ;;; the following is experimental (Swank is not stable on android)
 ;;; (please see also README-2-SLIME.md)
 ;;;
-;;;   $ cd qml
 ;;;   $ ./web-server.sh
 ;;;   $ adb forward tcp:4005 tcp:4005
 ;;;   $ adb reverse tcp:8080 tcp:8080
@@ -416,7 +415,9 @@
 
 (defun reload-qml ()
   "Reload QML file from an url, directly on the device."
-  (if (x:starts-with "qrc:/" (|toString| (|source| qml:*quick-view*)))
-      (|setSource| qml:*quick-view* (qnew "QUrl(QString)" "http://localhost:8080/repl.qml"))
-      (qml:reload))
-  (connect-buttons)) ; important!
+  (let ((src (|toString| (|source| qml:*quick-view*))))
+    (if (x:starts-with "qrc:/" src)
+        (|setSource| qml:*quick-view* (qnew "QUrl(QString)"
+                                            (x:string-substitute "http://localhost:8080/" "qrc:/" src)))
+        (qml:reload)))
+  (connect-buttons))
