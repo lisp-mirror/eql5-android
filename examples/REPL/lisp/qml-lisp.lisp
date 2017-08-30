@@ -95,9 +95,11 @@
 
 (defun find-quick-item (object-name)
   "Finds the first QQuickItem matching OBJECT-NAME."
-  (if (string= (|objectName| (root-item)) object-name)
-      (root-item)
-      (qt-object-? (qfind-child (root-item) object-name))))
+  (let ((root (root-item)))
+    (unless (qnull root)
+      (if (string= (|objectName| root) object-name)
+          (root-item)
+          (qt-object-? (qfind-child root object-name))))))
 
 (defun quick-item (item/name)
   (cond ((stringp item/name)

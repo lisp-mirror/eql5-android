@@ -94,6 +94,24 @@ Rectangle {
                 onCursorRectangleChanged: flickOutput.ensureVisible(cursorRectangle)
             }
         }
+
+        Rectangle {
+            color: "lightgray"
+            objectName: "status_bar"
+            border.width: 1
+            border.color: "gray"
+            width: main.width
+            height: status.height
+            anchors.bottom: parent.bottom
+            visible: false
+
+            Text {
+                id: status
+                objectName: "status"
+                font.family: "Droid Sans Mono"
+                font.pointSize: 18
+            }
+        }
     }
 
     function halfButtonWidth() {

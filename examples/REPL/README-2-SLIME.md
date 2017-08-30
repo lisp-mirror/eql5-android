@@ -44,8 +44,8 @@ communication style `:loop` work with Slime.
 ### Connecting to android: 2 variants
 
 Please note: if -- for any reason -- the connection can't be established the
-first time you try, it seems best to restart both the android REPL and the PC
-Emacs, before attempting another try (I say this out of experience).
+first time you try, it seems best to restart the android REPL, before
+attempting another try (I'm talking out of experience).
 
 Also, stopping Swank on android and restarting it, without restarting the REPL
 too, seems not to work.

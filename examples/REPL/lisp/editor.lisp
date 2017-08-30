@@ -29,17 +29,18 @@
       (read-sequence x:it s))))
 
 (defun connect-buttons ()
-  (macrolet ((clicked (name function)
-               `(qconnect (find-quick-item ,name) "clicked()"
-                          (lambda () ,function))))
-    (clicked "open_file"    (open-file))
-    (clicked "save_file"    (save-file))
-    (clicked "clear"        (clear))
-    (clicked "history_up"   (history-move :up))
-    (clicked "history_down" (history-move :down))
-    (clicked "eval"         (eval-expression))
-    (clicked "font_bigger"  (change-font :bigger))
-    (clicked "font_smaller" (change-font :smaller))))
+  (flet ((clicked (name function)
+           (let ((item (find-quick-item name)))
+             (qdisconnect item "clicked()")          ; for reloading
+             (qconnect item "clicked()" function))))
+    (clicked "open_file"    'open-file)
+    (clicked "save_file"    'save-file)
+    (clicked "clear"        'clear)
+    (clicked "history_up"   (lambda () (history-move :up)))
+    (clicked "history_down" (lambda () (history-move :down)))
+    (clicked "eval"         'eval-expression)
+    (clicked "font_bigger"  (lambda () (change-font :bigger)))
+    (clicked "font_smaller" (lambda () (change-font :smaller)))))
 
 (defun ini-highlighter ()
   (setf *eql-keyword-format*  (qnew "QTextCharFormat")
@@ -280,7 +281,8 @@
   (let ((size (+ (qml-get *qml-edit* "font.pointSize")
                  (if (eql :bigger to) 2 -2))))
     (qml-set *qml-edit* "font.pointSize" size)
-    (qml-set *qml-output* "font.pointSize" size)))
+    (qml-set *qml-output* "font.pointSize" size)
+    (qml-set "status" "font.pointSize" size)))
 
 (defun clear ()
   (qml-call *qml-edit* "clear")
@@ -319,13 +321,13 @@
 
 (defun save-file ()
   (let ((dialog t))
-  (when (and *file*
-             (confirm-save-dialog "Save?"
-                                  (format nil "Save to opened file, overwriting it?<br><br>~S<br>" *file*)))
-    (save-to-file *file*)
-    (setf dialog nil))
-  (when dialog
-    (dialogs:get-file-name 'do-save-file 'save))))
+    (when (and *file*
+               (confirm-save-dialog "Save?"
+                                    (format nil "Save to opened file, overwriting it?<br><br>~S<br>" *file*)))
+      (save-to-file *file*)
+      (setf dialog nil))
+    (when dialog
+      (dialogs:get-file-name 'do-save-file :save))))
 
 (defun do-save-file (name)
   (let ((file (trim-file name))
@@ -341,7 +343,7 @@
 ;; log
 
 (defun log-output ()
-  (save-to-file "output-log.htm" *qml-output* 'append)
+  (save-to-file "output-log.htm" *qml-output* :append)
   t)
 
 ;; ini
@@ -386,6 +388,10 @@
 (defun start ()
   (ini-qml "qml/repl.qml")
   (connect-buttons)
+  (qconnect qml:*quick-view* "statusChanged(QQuickView::Status)" ; for reloading
+            (lambda (status)
+              (when (= |QQuickView.Ready| status)
+                (connect-buttons))))
   (eval:ini :output       'eval-output
             :query-dialog 'dialogs:query-dialog
             :debug-dialog 'dialogs:debug-dialog)
@@ -394,23 +400,21 @@
   (setf *break-on-errors* t))
 
 ;;;
-;;; the following is experimental (Swank is not stable on android)
+;;; the following is experimental (Swank is not yet stable on android)
 ;;; (please see also README-2-SLIME.md)
 ;;;
-;;;   $ ./web-server.sh
-;;;   $ adb forward tcp:4005 tcp:4005
-;;;   $ adb reverse tcp:8080 tcp:8080
+;;;   $ adb forward tcp:4005 tcp:4005 # for Slime connection
+;;;   $ adb reverse tcp:8080 tcp:8080 # for local web server
+;;;   $ ./web-server.sh               # for loading QML files from android
 ;;;
-;;; on android eval
+;;; * on android eval
 ;;;
 ;;;   (start-swank)
 ;;;
-;;; edit 'qml/repl.qml' locally (see e.g. 'qml-mode' for Emacs),
-;;; then on the local Slime REPL, eval
+;;; * edit 'qml/repl.qml' locally (see e.g. 'qml-mode' for Emacs),
+;;;   then on the local Slime REPL, eval
 ;;;
 ;;;   (editor:reload-qml)
-;;;
-;;; just continue from the shown error message
 ;;;
 
 (defun reload-qml ()
@@ -419,5 +423,4 @@
     (if (x:starts-with "qrc:/" src)
         (|setSource| qml:*quick-view* (qnew "QUrl(QString)"
                                             (x:string-substitute "http://localhost:8080/" "qrc:/" src)))
-        (qml:reload)))
-  (connect-buttons))
+        (qml:reload))))

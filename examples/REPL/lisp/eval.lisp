@@ -36,11 +36,14 @@
             *trace-output*    *trace-output-buffer*
             *error-output*    *error-output-buffer*)
       (setf *standard-output* (make-broadcast-stream *standard-output*
-                                                     *standard-output-buffer*)
+                                                     *standard-output-buffer*
+                                                     *status-standard-buffer*)
             *trace-output*    (make-broadcast-stream *trace-output*
-                                                     *trace-output-buffer*)
+                                                     *trace-output-buffer*
+                                                     *status-trace-buffer*)
             *error-output*    (make-broadcast-stream *error-output*
-                                                     *error-output-buffer*)))
+                                                     *error-output-buffer*
+                                                     *status-error-buffer*)))
   (setf *terminal-io*  (make-two-way-stream (two-way-stream-input-stream *terminal-io*)
                                             (if *silent*
                                                 *terminal-out-buffer*
@@ -93,6 +96,9 @@
                   (format nil "(load (make-string-input-stream ~S))" str))))
       ;; run eval in its own thread, so GUI will remain responsive
       ;; N.B. this is only safe because we use "thread-safe.lisp" (like in Slime mode)
+      (clear-status-buffers)
+      (start-status-timer)
+      (qml:qml-set "status_bar" "visible" t)
       (setf *eval-thread* (mp:process-run-function "EQL5 REPL top-level" 'start-top-level)))))
 
 (defun set-eval-state (evaluating)
@@ -107,6 +113,9 @@
         *query-invoked* nil)
   (write-output :expression *standard-output-buffer*)
   (si::%top-level)
+  (stop-status-timer)
+  (qml:qml-set "status_bar" "visible" nil)
+  (qml:qml-set "status" "text" "")
   (write-output :error  *error-output-buffer*)
   (write-output :trace  *trace-output-buffer*)
   (write-output :output *standard-output-buffer*)
@@ -116,11 +125,6 @@
                       *query-invoked*)))
     (funcall *gui-output* :values (format nil "~{~S~^#||#~}" si::*latest-values*))) ; "#||#": separator
   (set-eval-state nil))
-
-(defun clear-buffers ()
-  (get-output-stream-string *standard-output-buffer*)
-  (get-output-stream-string *error-output-buffer*)
-  (get-output-stream-string *terminal-out-buffer*))
 
 (defun handle-query-io ()
   (setf *query-invoked* t)
@@ -137,3 +141,45 @@
                                                (cons (get-output-stream-string *terminal-out-buffer*) "black")))))
     (format nil "~A~%" (if (x:empty-string cmd) ":r1" cmd))))
 
+;; status bar
+
+(defvar *status-timer*           nil)
+(defvar *status-standard-buffer* (make-string-output-stream))
+(defvar *status-trace-buffer*    (make-string-output-stream))
+(defvar *status-error-buffer*    (make-string-output-stream))
+(defvar *status-standard-line*   "")
+(defvar *status-trace-line*      "")
+(defvar *status-error-line*      "")
+
+(defun start-status-timer ()
+  (unless *status-timer*
+    (setf *status-timer* (qnew "QTimer"))
+    (qconnect *status-timer* "timeout()" 'update-status-bar))
+  (|start| *status-timer* 100))
+
+(defun stop-status-timer ()
+  (|stop| *status-timer*))
+
+(defun clear-status-buffers ()
+  (get-output-stream-string *status-standard-buffer*)
+  (get-output-stream-string *status-trace-buffer*)
+  (get-output-stream-string *status-error-buffer*))
+
+(defun update-status-line (stream line-var)
+  (let ((chunk (string-right-trim '(#\Space #\Tab) (get-output-stream-string stream))))
+    (unless (x:empty-string chunk)
+      (let* ((line (x:cc (symbol-value line-var) chunk))
+             (nl (position #\Newline line :from-end t)))
+        (setf (symbol-value line-var)
+              (if nl (subseq line (1+ nl)) line)))
+      t)))
+
+(defun update-status-bar ()
+  (mapc (lambda (stream line-var)
+          (when (update-status-line stream line-var)
+            (qml:qml-set "status" "text" (symbol-value line-var))
+            (return-from update-status-bar)))
+          (list *status-standard-buffer* *status-trace-buffer* *status-error-buffer*)
+          '(*status-standard-line* *status-trace-line* *status-error-line*))
+  (when (x:empty-string (qml:qml-get "status" "text"))
+    (qml:qml-set "status" "text" "Evaluating...")))
