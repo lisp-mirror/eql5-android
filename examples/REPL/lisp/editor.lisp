@@ -21,6 +21,7 @@
 ;; QML items
 (defvar *qml-edit*     "edit")
 (defvar *qml-output*   "output")
+(defvar *qml-status*   "status")
 (defvar *qml-document* nil)
 
 (defun read-file (file)
@@ -30,9 +31,7 @@
 
 (defun connect-buttons ()
   (flet ((clicked (name function)
-           (let ((item (find-quick-item name)))
-             (qdisconnect item "clicked()")          ; for reloading
-             (qconnect item "clicked()" function))))
+           (qconnect (find-quick-item name) "clicked()" function)))
     (clicked "open_file"    'open-file)
     (clicked "save_file"    'save-file)
     (clicked "clear"        'clear)
@@ -282,7 +281,7 @@
                  (if (eql :bigger to) 2 -2))))
     (qml-set *qml-edit* "font.pointSize" size)
     (qml-set *qml-output* "font.pointSize" size)
-    (qml-set "status" "font.pointSize" size)))
+    (qml-set *qml-status* "font.pointSize" size)))
 
 (defun clear ()
   (qml-call *qml-edit* "clear")
