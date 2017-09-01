@@ -140,22 +140,10 @@ which are different for every Android version. The web is your friend...)
 Debug
 -----
 
-(A few hints only; of course debugging is best done using the desktop version.)
+Of course debugging is best done using the desktop version.
 
-`/opt/android/sdk/platform-tools/adb` can be useful for debugging, e.g:
+For android specific debugging, there is currently nothing integrated yet.
 
-```
-  adb logcat
-```
-
-will print logging messages of the device.
-
-For trivial debugging on Android you may also just use a message box:
-
-```
-  (qmsg variable-or-message)
-```
-
-Debugging using Qt Creator is probably the most comfortable way, if you get
-it to work.
-
+Note that anything sent to the output streams will not be shown in the android
+internal logs (see `adb logcat`); one would need to use the android C log
+functions for that (but this is not integrated).

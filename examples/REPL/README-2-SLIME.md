@@ -10,25 +10,32 @@ can't but agree with the headline!
 
 #### * prepare android:
 
-Currently you need a development version of Swank, so please download the
-`zip` file from here directly onto your device:
-
-[slime-simpler-communication-style](https://github.com/luismbo/slime/tree/simpler-communication-style)
-
-Then do in our REPL (the first `zip` file path is just an example):
+Currently (that is, as long as the new `:spawn` communication style doesn't
+work on android), you need a tiny patch in `swank.lisp`:
 
 ```
-  (quicklisp)
-
-  (ql:quickload :zip)
-
-  (zip:unzip "/storage/emulated/0/Download/slime-simpler-communication-style.zip"
-             "quicklisp/local-projects/")
+ (defun repl-input-stream-read (connection stdin)
+   (loop
+    (let* ((socket (connection.socket-io connection))
++          (inputs (list socket #-android stdin))
+-          (inputs (list socket stdin))
+           (ready (wait-for-input inputs)))
+      (cond ((eq ready :interrupt)
+             (check-slime-interrupts))
 ```
 
-Especially the last command will take some time.
+The easiest way to apply it seems to patch your `swank.lisp` on the PC, then
+copy it over to android; from our android REPL app, eval (adapting the paths):
 
-Now Quicklisp will load the above Swank version.
+```
+  (let ((from "/storage/emulated/0/Documents/swank.lisp")
+        (to "quicklisp/dists/quicklisp/software/slime-v2.20/swank.lisp"))
+    (ignore-errors (delete-file to))
+    (|copy.QFile| from to))
+```
+
+The above function needs to return `T` as first value, otherwise it didn't copy
+the file.
 
 #### * prepare PC:
 

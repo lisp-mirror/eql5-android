@@ -416,10 +416,10 @@
 ;;;   (editor:reload-qml)
 ;;;
 
-(defun reload-qml ()
+(defun reload-qml (&optional (url "http://localhost:8080/"))
   "Reload QML file from an url, directly on the device."
   (let ((src (|toString| (|source| qml:*quick-view*))))
     (if (x:starts-with "qrc:/" src)
         (|setSource| qml:*quick-view* (qnew "QUrl(QString)"
-                                            (x:string-substitute "http://localhost:8080/" "qrc:/" src)))
+                                            (x:string-substitute url "qrc:/" src)))
         (qml:reload))))

@@ -96,8 +96,9 @@
                   (format nil "(load (make-string-input-stream ~S))" str))))
       ;; run eval in its own thread, so GUI will remain responsive
       ;; N.B. this is only safe because we use "thread-safe.lisp" (like in Slime mode)
-      (clear-status-buffers)
-      (start-status-timer)
+      (unless *log-mode*
+        (clear-status-buffers)
+        (start-status-timer))
       (qml:qml-set "status_bar" "visible" t)
       (setf *eval-thread* (mp:process-run-function "EQL5 REPL top-level" 'start-top-level)))))
 
@@ -113,7 +114,8 @@
         *query-invoked* nil)
   (write-output :expression *standard-output-buffer*)
   (si::%top-level)
-  (stop-status-timer)
+  (unless *log-mode*
+    (stop-status-timer))
   (qml:qml-set "status_bar" "visible" nil)
   (qml:qml-set "status" "text" "")
   (write-output :error  *error-output-buffer*)
@@ -141,7 +143,7 @@
                                                (cons (get-output-stream-string *terminal-out-buffer*) "black")))))
     (format nil "~A~%" (if (x:empty-string cmd) ":r1" cmd))))
 
-;; status bar
+;; status bar & log mode
 
 (defvar *status-timer*           nil)
 (defvar *status-standard-buffer* (make-string-output-stream))
@@ -151,14 +153,40 @@
 (defvar *status-trace-line*      "")
 (defvar *status-error-line*      "")
 
-(defun start-status-timer ()
+(defvar *log-mode*               nil)
+(defvar *log-stream*             nil)
+(defvar *log-file*               "logs/output.txt")
+
+(defun start-status-timer (&optional (interval 500))
   (unless *status-timer*
     (setf *status-timer* (qnew "QTimer"))
-    (qconnect *status-timer* "timeout()" 'update-status-bar))
-  (|start| *status-timer* 100))
+    (qconnect *status-timer* "timeout()" 'update-status))
+  (|start| *status-timer* interval))
 
 (defun stop-status-timer ()
   (|stop| *status-timer*))
+
+(defun start-logging ()
+  (ensure-directories-exist *log-file*)
+  (setf *log-stream* (open *log-file* :direction :output :if-exists :supersede))
+  (|stop| *status-timer*)
+  (|start| *status-timer* 100)
+  (setf *log-mode* t))
+
+(defun stop-logging ()
+  (when *log-stream*
+    (close *log-stream*)
+    (|stop| *status-timer*)
+    (setf *log-stream* nil
+          *log-mode*   nil)))
+
+(defun display-log ()
+  (flet ((read-log ()
+           (with-open-file (s *log-file* :direction :input)
+             (x:let-it (make-string (file-length s))
+               (read-sequence x:it s)))))
+    (qml:qml-set "output" "text"
+                 (x:string-substitute "<br>" (string #\Newline) (qescape (read-log))))))
 
 (defun clear-status-buffers ()
   (get-output-stream-string *status-standard-buffer*)
@@ -166,20 +194,26 @@
   (get-output-stream-string *status-error-buffer*))
 
 (defun update-status-line (stream line-var)
-  (let ((chunk (string-right-trim '(#\Space #\Tab) (get-output-stream-string stream))))
+  (let ((chunk (get-output-stream-string stream)))
     (unless (x:empty-string chunk)
-      (let* ((line (x:cc (symbol-value line-var) chunk))
-             (nl (position #\Newline line :from-end t)))
-        (setf (symbol-value line-var)
-              (if nl (subseq line (1+ nl)) line)))
+      (if *log-mode*
+          (progn
+            (write-string chunk *log-stream*)
+            (finish-output *log-stream*))
+          (let* ((line (x:cc (symbol-value line-var) chunk))
+                 (nl (position #\Newline line :from-end t)))
+            (setf (symbol-value line-var)
+                  (if nl (subseq line (1+ nl)) line))))
       t)))
 
-(defun update-status-bar ()
+(defun update-status ()
   (mapc (lambda (stream line-var)
           (when (update-status-line stream line-var)
-            (qml:qml-set "status" "text" (symbol-value line-var))
-            (return-from update-status-bar)))
+            (unless *log-mode*
+              (qml:qml-set "status" "text" (symbol-value line-var)))
+            (return-from update-status)))
           (list *status-standard-buffer* *status-trace-buffer* *status-error-buffer*)
           '(*status-standard-line* *status-trace-line* *status-error-line*))
-  (when (x:empty-string (qml:qml-get "status" "text"))
+  (when (and (not *log-mode*)
+             (x:empty-string (qml:qml-get "status" "text")))
     (qml:qml-set "status" "text" "Evaluating...")))
