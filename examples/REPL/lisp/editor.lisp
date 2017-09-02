@@ -390,7 +390,8 @@
   (qconnect qml:*quick-view* "statusChanged(QQuickView::Status)" ; for reloading
             (lambda (status)
               (when (= |QQuickView.Ready| status)
-                (connect-buttons))))
+                (connect-buttons)
+                (setf eql::*reloading-qml* nil))))
   (eval:ini :output       'eval-output
             :query-dialog 'dialogs:query-dialog
             :debug-dialog 'dialogs:debug-dialog)
@@ -398,28 +399,15 @@
                              "/.eql5-lisp-repl-history"))
   (setf *break-on-errors* t))
 
-;;;
-;;; the following is experimental (Swank is not yet stable on android)
-;;; (please see also README-2-SLIME.md)
-;;;
-;;;   $ adb forward tcp:4005 tcp:4005 # for Slime connection
-;;;   $ adb reverse tcp:8080 tcp:8080 # for local web server
-;;;   $ ./web-server.sh               # for loading QML files from android
-;;;
-;;; * on android eval
-;;;
-;;;   (start-swank)
-;;;
-;;; * edit 'qml/repl.qml' locally (see e.g. 'qml-mode' for Emacs),
-;;;   then on the local Slime REPL, eval
-;;;
-;;;   (editor:reload-qml)
-;;;
-
 (defun reload-qml (&optional (url "http://localhost:8080/"))
+  ;; please see README-1.md
   "Reload QML file from an url, directly on the device."
+  (setf eql::*reloading-qml* t)
   (let ((src (|toString| (|source| qml:*quick-view*))))
     (if (x:starts-with "qrc:/" src)
         (|setSource| qml:*quick-view* (qnew "QUrl(QString)"
                                             (x:string-substitute url "qrc:/" src)))
-        (qml:reload))))
+        (qml:reload)))
+  ;; don't remove message box (won't work without / event queue problem)
+  (|information.QMessageBox| nil "REPL" "<b>QML</b> files reloaded.")
+  :qml-reloaded)

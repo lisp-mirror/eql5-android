@@ -6,7 +6,7 @@ can't but agree with the headline!
 
 
 
-### Important note
+### IMPORTANT NOTE
 
 **Swank** is currently **not stable** on android (at least for me); it freezes
 randomly, blocking both the REPL app and Emacs on the PC.
@@ -150,14 +150,3 @@ Then, after having developed a working desktop version, you can try to change
 things (using Slime) directly on the device (using `qml-get`, `qml-set`,
 `qml-call` etc.); just make sure to set an `objectName` to every QML item you
 want to change interactively.
-
---
-
-There is experimental work in progress to reload the QML files directly on the
-device (after editing them on the PC). The function is called:
-
-```
-  (editor:reload-qml) ; see comment in file 'lisp/editor.lisp'
-```
-
-But since Swank isn't stable yet, it's currently not really useful.

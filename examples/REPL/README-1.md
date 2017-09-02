@@ -126,9 +126,8 @@ To get **Quicklisp**, simply eval:
   (quicklisp)
 ```
 
-Please note that there's no feedback of the progress (this is true for
-installing any Quicklisp library), but the **Eval** button will say
-**Evaluating** when busy.
+In the status bar at the bottom you can follow the progress (also it will
+only show the last line of the output you would see on a console).
 
 
 
@@ -145,6 +144,30 @@ debug dialog.
 
 Note that the selected font "Droid Sans Mono" is obviously not available on
 the desktop.
+
+
+
+### Reload QML files from android
+
+You can reload the QML files directly from the REPL, editing them on your PC.
+
+Switch to the REPL example directory, and run:
+
+```
+  $ adb reverse tcp:8080 tcp:8080 # for below
+  $ ./web-server.sh               # needs python3
+```
+
+Edit e.g. `qml/repl.qml` on the PC and save it; on the android REPL, eval:
+
+```
+  (editor:reload-qml)
+```
+
+(Reloading is possible because QML files accept any URL as source path.)
+
+**Hint**: search the web for `qml-mode` for Emacs, or just use QtCreator,
+which is perfect for editing QML files (e.g. `qtcreator my.qml`)
 
 
 
@@ -192,6 +215,6 @@ will only hide the window; you can show it again by entering:
 
 
 
-### Slime
+### Slime (currently not recommended, because not stable yet)
 
 Please see [README-SLIME](README-2-SLIME.md)

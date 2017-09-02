@@ -23,6 +23,8 @@
 (defvar *gui-query-dialog*       nil)
 (defvar *gui-debug-dialog*       nil)
 
+(defvar eql::*reloading-qml*     nil)
+
 (defun ini (&key output query-dialog debug-dialog)
   (setf *gui-output*       output
         *gui-query-dialog* query-dialog
@@ -98,19 +100,17 @@
       ;; N.B. this is only safe because we use "thread-safe.lisp" (like in Slime mode)
       (unless *log-mode*
         (clear-status-buffers)
-        (unless (find-package :swank)
-          (start-status-timer)))
-      (qml:qml-set "status_bar" "visible" t)
+        (start-status-timer))
+      (unless eql::*reloading-qml*
+        (qml:qml-set "status_bar" "visible" t))
       (setf *eval-thread* (mp:process-run-function "EQL5 REPL top-level" 'start-top-level)))))
 
 (defun set-eval-state (evaluating)
-  (let ((slime-mode (find-package :swank)))
-    (when (or (not slime-mode)
-              (and slime-mode (not evaluating)))
-      (qml:qml-set "eval" "enabled" (not evaluating))
-      (qml:qml-set "eval" "text" (if evaluating
-                                     "<font color='red'><b>Evaluating</b></font>"
-                                     "<b>Eval</b>")))))
+  (unless eql::*reloading-qml*
+    (qml:qml-set "eval" "enabled" (not evaluating))
+    (qml:qml-set "eval" "text" (if evaluating
+                                   "<font color='red'><b>Evaluating</b></font>"
+                                   "<b>Eval</b>"))))
 
 (defun start-top-level ()
   (set-eval-state t)
@@ -120,7 +120,8 @@
   (si::%top-level)
   (unless *log-mode*
     (stop-status-timer))
-  (qml:qml-set "status_bar" "visible" nil)
+  (unless eql::*reloading-qml*
+    (qml:qml-set "status_bar" "visible" nil))
   (qml:qml-set "status" "text" "")
   (write-output :error  *error-output-buffer*)
   (write-output :trace  *trace-output-buffer*)
@@ -210,13 +211,14 @@
       t)))
 
 (defun update-status ()
-  (mapc (lambda (stream line-var)
-          (when (update-status-line stream line-var)
-            (unless *log-mode*
-              (qml:qml-set "status" "text" (symbol-value line-var)))
-            (return-from update-status)))
-          (list *status-standard-buffer* *status-trace-buffer* *status-error-buffer*)
-          '(*status-standard-line* *status-trace-line* *status-error-line*))
-  (when (and (not *log-mode*)
-             (x:empty-string (qml:qml-get "status" "text")))
-    (qml:qml-set "status" "text" "Evaluating...")))
+  (unless eql::*reloading-qml*
+    (mapc (lambda (stream line-var)
+            (when (update-status-line stream line-var)
+              (unless *log-mode*
+                (qml:qml-set "status" "text" (symbol-value line-var)))
+              (return-from update-status)))
+            (list *status-standard-buffer* *status-trace-buffer* *status-error-buffer*)
+            '(*status-standard-line* *status-trace-line* *status-error-line*))
+    (when (and (not *log-mode*)
+               (x:empty-string (qml:qml-get "status" "text")))
+      (qml:qml-set "status" "text" "Evaluating..."))))
