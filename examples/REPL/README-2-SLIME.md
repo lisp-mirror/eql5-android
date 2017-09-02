@@ -6,6 +6,13 @@ can't but agree with the headline!
 
 
 
+### Important note
+
+**Swank** is currently **not stable** on android (at least for me); it freezes
+randomly, blocking both the REPL app and Emacs on the PC.
+
+
+
 ### Prepare
 
 #### * prepare android:
@@ -39,12 +46,7 @@ the file.
 
 #### * prepare PC:
 
-On the PC just use the current Slime (v2.19 at the time of writing).
-
-I needed to manually copy the file `slime-simpler-communication-style/slime.el`
-from the above mentioned `zip` file to my Slime directory, e.g.
-`quicklisp/dists/quicklisp/software/slime-v2.19/`, in order to have the new
-communication style `:loop` work with Slime.
+On the PC just use the current Slime (v2.20 at the time of writing).
 
 
 
@@ -148,3 +150,14 @@ Then, after having developed a working desktop version, you can try to change
 things (using Slime) directly on the device (using `qml-get`, `qml-set`,
 `qml-call` etc.); just make sure to set an `objectName` to every QML item you
 want to change interactively.
+
+--
+
+There is experimental work in progress to reload the QML files directly on the
+device (after editing them on the PC). The function is called:
+
+```
+  (editor:reload-qml) ; see comment in file 'lisp/editor.lisp'
+```
+
+But since Swank isn't stable yet, it's currently not really useful.
