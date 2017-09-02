@@ -98,15 +98,19 @@
       ;; N.B. this is only safe because we use "thread-safe.lisp" (like in Slime mode)
       (unless *log-mode*
         (clear-status-buffers)
-        (start-status-timer))
+        (unless (find-package :swank)
+          (start-status-timer)))
       (qml:qml-set "status_bar" "visible" t)
       (setf *eval-thread* (mp:process-run-function "EQL5 REPL top-level" 'start-top-level)))))
 
 (defun set-eval-state (evaluating)
-  (qml:qml-set "eval" "enabled" (not evaluating))
-  (qml:qml-set "eval" "text" (if evaluating
-                                 "<font color='red'><b>Evaluating</b></font>"
-                                 "<b>Eval</b>")))
+  (let ((slime-mode (find-package :swank)))
+    (when (or (not slime-mode)
+              (and slime-mode (not evaluating)))
+      (qml:qml-set "eval" "enabled" (not evaluating))
+      (qml:qml-set "eval" "text" (if evaluating
+                                     "<font color='red'><b>Evaluating</b></font>"
+                                     "<b>Eval</b>")))))
 
 (defun start-top-level ()
   (set-eval-state t)
@@ -169,8 +173,7 @@
 (defun start-logging ()
   (ensure-directories-exist *log-file*)
   (setf *log-stream* (open *log-file* :direction :output :if-exists :supersede))
-  (|stop| *status-timer*)
-  (|start| *status-timer* 100)
+  (start-status-timer 200)
   (setf *log-mode* t))
 
 (defun stop-logging ()

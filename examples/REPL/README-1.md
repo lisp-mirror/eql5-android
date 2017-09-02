@@ -84,6 +84,9 @@ now a trivial task.
   ./2-install-lib.sh           # make install...
 ```
 
+To force recompilation of all files (e.g. after upgrading ECL), pass `-f`
+as last argument to the `ecl-android` command.
+
 If you need to recompile the Lisp code, remember to do `touch tmp/main.o`,
 in order to force `make` to link your newly compiled Lisp library.
 

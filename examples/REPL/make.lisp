@@ -30,6 +30,8 @@
                         (loop :for line = (read-line s nil nil)
                               :while line :collect line)))
 
+(defparameter *force-compile* (find "-f" (ext:command-args) :test 'string=))
+
 (dolist (file *files*)
   (let ((src (x:cc file ".lisp"))
         (obj (x:cc file ".o")))
@@ -37,10 +39,11 @@
     ;; exclude files using inline C code
     (unless (find (pathname-name src) '(#| nothing yet |#) :test 'string=)
       (load src))
-    (when (> (file-write-date src)
-             (if (probe-file obj)
-                 (file-write-date obj)
-                 0))
+    (when (or *force-compile*
+              (> (file-write-date src)
+                 (if (probe-file obj)
+                     (file-write-date obj)
+                     0)))
       (cross:compile-file* file))))
 
 (cross:build-static-library* "build/app"
