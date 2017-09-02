@@ -409,5 +409,5 @@
                                             (x:string-substitute url "qrc:/" src)))
         (qml:reload)))
   ;; don't remove message box (won't work without / event queue problem)
-  (|information.QMessageBox| nil "REPL" "<b>QML</b> files reloaded.")
-  :qml-reloaded)
+  (|information.QMessageBox| nil "REPL" "Reloading <b>QML</b> files...")
+  (values))

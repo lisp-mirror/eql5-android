@@ -164,7 +164,7 @@ Edit e.g. `qml/repl.qml` on the PC and save it; on the android REPL, eval:
   (editor:reload-qml)
 ```
 
-(Reloading is possible because QML files accept any URL as source path.)
+(Reloading is possible because `QQuickView` accepts any URL as source file.)
 
 **Hint**: search the web for `qml-mode` for Emacs, or just use QtCreator,
 which is perfect for editing QML files (e.g. `qtcreator my.qml`)
