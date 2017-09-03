@@ -1,10 +1,13 @@
 ### IMPORTANT NOTE
 
-**Swank** combined with **Qt5/ECL** is currently **not stable** on **android**;
-it freezes randomly, blocking both the REPL app and Emacs on the PC.
+You **can't** _(currently)_ use the **Slime REPL**, as it would randomly
+**freeze** both the android app and Emacs.
 
-_So, the documentation below is basically for a future, hopefully working
-version. You have been warned._
+That may sound worse than it is: if you use a scratch file as a pseudo REPL,
+everything works without problems (auto-completion etc.); just use `C-M x` for
+evaluation (the cursor must be inside your expression).
+
+*So, don't (currently) touch the REPL. You have been warned.*
 
 
 
@@ -52,7 +55,7 @@ first time you try, it seems best to restart the android REPL, before
 attempting another try (I'm talking out of experience).
 
 Also, stopping Swank on android and restarting it, without restarting the REPL
-too, seems not to work.
+app too, seems not to work.
 
 #### 1) Local: port forwarding
 
@@ -145,3 +148,7 @@ Then, after having developed a working desktop version, you can try to change
 things (using Slime) directly on the device (using `qml-get`, `qml-set`,
 `qml-call` etc.); just make sure to set an `objectName` to every QML item you
 want to change interactively.
+
+--
+
+Please see also [README](README-1.md), **"Reload QML files from android"**
