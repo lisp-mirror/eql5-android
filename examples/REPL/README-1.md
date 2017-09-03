@@ -96,14 +96,13 @@ Remember to run `2-install-lib.sh` after recompiling.
 
 ### Build APK file
 
-Please make sure to have your device attached via USB before running:
-
 ```
   ./3-build-apk.sh
 ```
 
-This will build/uninstall/install the APK (deleting all previously installed
-files, e.g. the command history.)
+This will build the APK, which needs to be copied and installed manually
+(the reason is that the `--install` option would uninstall all app files,
+including eventual previously installed Quicklisp libs etc.).
 
 
 
@@ -151,7 +150,8 @@ the desktop.
 
 You can reload the QML files directly from the REPL, editing them on your PC.
 
-Switch to the REPL example directory, and run:
+Switch to the REPL example directory, and run (after connecting the device
+through USB):
 
 ```
   $ adb reverse tcp:8080 tcp:8080 # for below

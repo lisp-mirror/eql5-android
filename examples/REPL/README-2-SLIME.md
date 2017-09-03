@@ -1,15 +1,10 @@
-A real keyboard, a real Emacs!
-------------------------------
-
-After spending some time trying to hack something useful on android, you simply
-can't but agree with the headline!
-
-
-
 ### IMPORTANT NOTE
 
-**Swank** is currently **not stable** on android (at least for me); it freezes
-randomly, blocking both the REPL app and Emacs on the PC.
+**Swank** combined with **Qt5/ECL** is currently **not stable** on **android**;
+it freezes randomly, blocking both the REPL app and Emacs on the PC.
+
+_So, the documentation below is basically for a future, hopefully working
+version. You have been warned._
 
 
 
