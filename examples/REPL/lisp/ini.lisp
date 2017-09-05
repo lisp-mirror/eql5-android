@@ -57,24 +57,24 @@
 (defun start-swank (&key (loopback "0.0.0.0") log-events
                          (load-contribs t) (setup t) (delete t) (quiet t)
                          (port 4005) (dont-close t) style)
-  (quicklisp)
-  (funcall (sym 'quickload :ql) :swank :verbose t)
-  (funcall (sym 'init :swank-loader)
-           :load-contribs load-contribs
-           :setup setup
-           :delete delete
-           :quiet quiet)
-  (setf (symbol-value (sym '*loopback-interface* :swank)) loopback)
-  (setf (symbol-value (sym '*log-events* :swank)) log-events)
-  (eval (read-from-string "(swank/backend:defimplementation swank/backend:lisp-implementation-program () \"org.lisp.ecl\")"))
-  ;; QRUN: use main thread to start new thread
-  (qrun (lambda () (mp:process-run-function
-                    "SLIME-listener"
-                    (lambda ()
-                      (funcall (sym 'create-server :swank)
-                               :port port
-                               :dont-close dont-close
-                               :style style))))))
+  (flet ((create-server ()
+           (funcall (sym 'create-server :swank)
+                    :port port
+                    :dont-close dont-close
+                    :style style)))
+    (quicklisp)
+    (funcall (sym 'quickload :ql) :swank :verbose t)
+    (funcall (sym 'init :swank-loader)
+             :load-contribs load-contribs
+             :setup setup
+             :delete delete
+             :quiet quiet)
+    (setf (symbol-value (sym '*loopback-interface* :swank)) loopback)
+    (setf (symbol-value (sym '*log-events* :swank)) log-events)
+    (eval (read-from-string "(swank/backend:defimplementation swank/backend:lisp-implementation-program () \"org.lisp.ecl\")"))
+    (if (eql :spawn style)
+        (create-server)
+        (qrun (lambda () (mp:process-run-function "SLIME-listener" 'create-server))))))
 
 (defun stop-swank ()
   (when (find-package :swank)
