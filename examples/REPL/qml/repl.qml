@@ -38,6 +38,12 @@ Rectangle {
                 Lisp.call(textDocument, "editor:set-text-document")
                 Lisp.call("editor:set-delayed-focus")
             }
+
+            Keys.onPressed: {
+                if((event.key == Qt.Key_Return) || (event.key == Qt.Key_Enter)) {
+                    Lisp.call("editor:return-pressed");
+                }
+            }
         }
 
         MouseArea {

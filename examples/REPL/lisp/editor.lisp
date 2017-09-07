@@ -1,3 +1,5 @@
+;;; This is a simplified / adapted version of EQL example 9
+
 (in-package :editor)
 
 (qrequire :quick)
@@ -5,18 +7,21 @@
 (dolist (module (list :network :sql :svg))
   (qrequire module :quiet)) ; load if available
 
-(defvar *max-history*         100)
-(defvar *package-char-dummy*  #\$)
-(defvar *separator*           "#||#")
-(defvar *lisp-match-rule*     nil)
-(defvar *eql-keyword-format*  nil)
-(defvar *lisp-keyword-format* nil)
-(defvar *comment-format*      nil)
-(defvar *parenthesis-color*   "lightslategray")
-(defvar *string-color*        "saddlebrown")
-(defvar *highlighter*         nil)
-(defvar *history-file*        nil)
-(defvar *file*                nil)
+(defvar *max-history*            100)
+(defvar *package-char-dummy*     #\$)
+(defvar *separator*              "#||#")
+(defvar *lisp-match-rule*        nil)
+(defvar *eql-keyword-format*     nil)
+(defvar *lisp-keyword-format*    nil)
+(defvar *comment-format*         nil)
+(defvar *parenthesis-color*      "lightslategray")
+(defvar *string-color*           "saddlebrown")
+(defvar *current-line*           "")
+(defvar *current-depth*          0)
+(defvar *current-keyword-indent* 0)
+(defvar *highlighter*            nil)
+(defvar *history-file*           nil)
+(defvar *file*                   nil)
 
 ;; QML items
 (defvar *qml-edit*     "edit")
@@ -28,18 +33,6 @@
   (with-open-file (s (x:path file) :direction :input)
     (x:let-it (make-string (file-length s))
       (read-sequence x:it s))))
-
-(defun connect-buttons ()
-  (flet ((clicked (name function)
-           (qconnect (find-quick-item name) "clicked()" function)))
-    (clicked "open_file"    'open-file)
-    (clicked "save_file"    'save-file)
-    (clicked "clear"        'clear)
-    (clicked "history_up"   (lambda () (history-move :up)))
-    (clicked "history_down" (lambda () (history-move :down)))
-    (clicked "eval"         'eval-expression)
-    (clicked "font_bigger"  (lambda () (change-font :bigger)))
-    (clicked "font_smaller" (lambda () (change-font :smaller)))))
 
 (defun ini-highlighter ()
   (setf *eql-keyword-format*  (qnew "QTextCharFormat")
@@ -124,9 +117,76 @@
       (let* ((text-block (|block| text-cursor))
              (line (|text| text-block))
              (pos (|positionInBlock| text-cursor)))
+        (setf *current-line* line)
         (when (and (plusp pos)
                    (char= #\) (char line (1- pos))))
           (show-matching-paren text-cursor (subseq line 0 pos) :right))))))
+
+;;; auto-indent
+
+(defparameter *two-spaces-indent-symbols*
+ '(case ccase ecase ctypecase etypecase handler-bind handler-case catch
+   defstruct defun defmacro destructuring-bind do do* dolist dotimes
+   do-all-symbols do-string do-symbols do-with flet labels lambda let let*
+   let-it loop multiple-value-bind prog progn prog1 prog2 qlet typecase unless
+   when when-it when-it* while while-it with-open-file with-output-to-string))
+
+(defun auto-indent-spaces (kw)
+  (when (symbolp kw)
+    (let* ((name (symbol-name kw))
+           (p (x:if-it (position *package-char-dummy* name :from-end t)
+                       (1+ x:it)
+                       0)))
+      (when (find (read* (subseq name p)) *two-spaces-indent-symbols*)
+        2))))
+
+(defun cut-comment (line)
+  (let ((ex #\Space))
+    (dotimes (i (length line))
+      (let ((ch (char line i)))
+        (when (and (char= #\; ch)
+                   (char/= #\\ ex))
+          (return-from cut-comment (subseq line 0 i)))
+        (setf ex ch))))
+  line)
+
+(defun last-expression-indent (line)
+  (let* ((line* (string-right-trim " " (x:string-substitute "  " "\\(" (x:string-substitute "  " "\\)" (cut-comment line)))))
+         (open  (position #\( line* :from-end t))
+         (space (when open (position #\Space line* :start open)))
+         (one   (and open (not space) (not (x:ends-with ")" line*)))))
+    (if one
+        (1+ open)
+        (or (position #\Space (if space line* line) :test 'char/= :start (or space 0))
+            0))))
+
+(defun update-indentations (code indent pos)
+  (flet ((pos-newline (start)
+           (when start
+             (or (position #\Newline code :start start) (length code)))))
+    (let* ((pos-keyword    (paren-match-index code -1))
+           (pos-local      (paren-match-index code -3))
+           (keyword-indent (x:when-it (pos-newline pos-keyword) (- x:it pos-keyword 1)))
+           (auto-indent    (auto-indent-spaces (read* (reverse (subseq code 0 pos-keyword)))))
+           (in-local       (find (read* (reverse (subseq code 0 pos-local))) '(flet labels macrolet)))
+           (local-indent   (x:when-it (and in-local (pos-newline pos-local)) (- x:it pos-local 1))))
+      (setf *current-depth*          (or local-indent (if auto-indent (or keyword-indent pos) pos))
+            *current-keyword-indent* (if local-indent
+                                         (+ 5 (length (symbol-name in-local)))
+                                         (or auto-indent 0))))))
+
+(defun indentation (line)
+  (if (x:empty-string (string-trim " " line))
+      0
+      (+ *current-depth* *current-keyword-indent*)))
+
+(defun return-pressed ()
+  (let ((spaces (indentation *current-line*)))
+    (unless (zerop spaces)
+      (qlater (lambda ()
+                (qml-call *qml-edit* "insert"
+                          (qml-get *qml-edit* "cursorPosition")
+                          (make-string spaces)))))))
 
 ;;; paren highlighting
 
@@ -175,7 +235,11 @@
         (write-line (if right (nreverse text) text) s)))))
 
 (defun left-right-paren (right text-cursor curr-line &optional pos)
-  (paren-match-index (code-parens-only (code-region text-cursor curr-line right) right)))
+  (let ((code (code-parens-only (code-region text-cursor curr-line right) right)))
+    (x:when-it (paren-match-index code)
+      (when right
+        (update-indentations code x:it (- (position #\Newline code :start x:it) x:it 1)))
+      x:it)))
 
 (defun right-paren (text-cursor curr-line)
   (unless (x:ends-with "\\)" curr-line)
@@ -279,9 +343,8 @@
 (defun change-font (to)
   (let ((size (+ (qml-get *qml-edit* "font.pointSize")
                  (if (eql :bigger to) 2 -2))))
-    (qml-set *qml-edit* "font.pointSize" size)
-    (qml-set *qml-output* "font.pointSize" size)
-    (qml-set *qml-status* "font.pointSize" size)))
+    (dolist (item (list *qml-edit* *qml-output* *qml-status*))
+      (qml-set item "font.pointSize" size))))
 
 (defun clear ()
   (qml-call *qml-edit* "clear")
@@ -383,6 +446,18 @@
                        (qml-call "clear" "forceActiveFocus")
                        (qlater (lambda ()
                                  (qml-call "edit" "forceActiveFocus"))))))
+
+(defun connect-buttons ()
+  (flet ((clicked (name function)
+           (qconnect (find-quick-item name) "clicked()" function)))
+    (clicked "open_file"    'open-file)
+    (clicked "save_file"    'save-file)
+    (clicked "clear"        'clear)
+    (clicked "history_up"   (lambda () (history-move :up)))
+    (clicked "history_down" (lambda () (history-move :down)))
+    (clicked "eval"         'eval-expression)
+    (clicked "font_bigger"  (lambda () (change-font :bigger)))
+    (clicked "font_smaller" (lambda () (change-font :smaller)))))
 
 (defun start ()
   (ini-qml "qml/repl.qml")

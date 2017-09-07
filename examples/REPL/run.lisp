@@ -13,4 +13,6 @@
 
 (progn
   (editor:start)
+  (dolist (item (list "edit" "output" "status"))
+    (qml:qml-set item "font.family" "Monospace"))
   (|showMaximized| qml:*quick-view*))

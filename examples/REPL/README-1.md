@@ -141,9 +141,6 @@ To run this example on the desktop, do:
 N.B: Don't use command line option `-qtpl`, as this would interfere with the
 debug dialog.
 
-Note that the selected font "Droid Sans Mono" is obviously not available on
-the desktop.
-
 
 
 ### Reload QML files from android
