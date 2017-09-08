@@ -127,9 +127,10 @@
 (defparameter *two-spaces-indent-symbols*
  '(case ccase ecase ctypecase etypecase handler-bind handler-case catch
    defstruct defun defmacro destructuring-bind do do* dolist dotimes
-   do-all-symbols do-string do-symbols do-with flet labels lambda let let*
-   let-it loop multiple-value-bind prog progn prog1 prog2 qlet typecase unless
-   when when-it when-it* while while-it with-open-file with-output-to-string))
+   do-all-symbols do-symbols flet labels lambda let let* loop
+   multiple-value-bind prog progn prog1 prog2 qlet typecase unless when
+   with-open-file with-output-to-string eql::do-string eql::do-with
+   eql::let-it eql::when-it eql::when-it* eql::while eql::while-it))
 
 (defun auto-indent-spaces (kw)
   (when (symbolp kw)
@@ -180,7 +181,7 @@
       0
       (+ *current-depth* *current-keyword-indent*)))
 
-(defun return-pressed ()
+(defun return-pressed () ; called from QML
   (let ((spaces (indentation *current-line*)))
     (unless (zerop spaces)
       (qlater (lambda ()
@@ -268,7 +269,9 @@
 (defun eval-output (type text)
   (let ((text* (qescape text)))
     (qml-call *qml-output* "append"
-              (format nil "<pre><font face='Droid Sans Mono' color='~A'>~A</font></pre>"
+              (format nil "<pre><font face='~A' color='~A'>~A</font></pre>"
+                      #+android "Droid Sans Mono"
+                      #-android "Monospace"
                       (case type
                         (:output "saddlebrown")
                         (:values "blue")

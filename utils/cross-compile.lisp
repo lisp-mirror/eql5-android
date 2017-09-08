@@ -5,6 +5,8 @@
 ;;;
 ;;; (See example 'REPL' for integrating with  ASDF/Quicklisp)
 
+(pushnew :android *features*)
+
 (require :cmp)
 
 (defpackage :cross

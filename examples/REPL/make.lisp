@@ -24,7 +24,7 @@
 
 (trace c::builder) ; print out all the object files involved
 
-(push :release *features*)
+(pushnew :release *features*)
 
 (defparameter *files* (with-open-file (s "files.txt" :direction :input)
                         (loop :for line = (read-line s nil nil)
