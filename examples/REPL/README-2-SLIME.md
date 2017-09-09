@@ -30,6 +30,9 @@ work on android), you need a tiny patch in `swank.lisp`:
              (check-slime-interrupts))
 ```
 
+In order to install Swank, you need to run `(start-swank)` first, without
+connecting from Slime (before applying the patch).
+
 The easiest way to apply it seems to patch your `swank.lisp` on the PC, then
 copy it over to android; from our android REPL app, eval (adapting the paths):
 
