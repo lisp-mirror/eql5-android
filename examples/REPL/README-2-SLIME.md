@@ -4,8 +4,9 @@ You **can't** _(currently)_ use the **Slime REPL**, as it would randomly
 **freeze** both the android app and Emacs.
 
 That may sound worse than it is: if you use a scratch file as a pseudo REPL,
-everything works without problems (auto-completion etc.); just use `C-M-x` for
-evaluation (the cursor must be inside your expression).
+everything works without problems (auto-completion etc.); just use `C-M-x` to
+eval expressions (the cursor must be inside of them), or `C-c C-e` for simple
+interactive eval.
 
 *So, don't (currently) touch the REPL. You have been warned.*
 
