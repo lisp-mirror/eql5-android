@@ -4,7 +4,7 @@ You **can't** _(currently)_ use the **Slime REPL**, as it would randomly
 **freeze** both the android app and Emacs.
 
 That may sound worse than it is: if you use a scratch file as a pseudo REPL,
-everything works without problems (auto-completion etc.); just use `C-M x` for
+everything works without problems (auto-completion etc.); just use `C-M-x` for
 evaluation (the cursor must be inside your expression).
 
 *So, don't (currently) touch the REPL. You have been warned.*
@@ -141,8 +141,9 @@ Please see file `lisp/qml-lisp` for interacting with QML, especially
 `(qml:reload)`.
 
 In order to be able to interact with your app running on the device, just use
-this REPL example as a template; you'll basically just need the `assets/`
-files and `lisp/ini.lisp`, in order to have Quicklisp and Swank.
+this REPL example as a template; you'll basically just need
+`android-build/assets/lib/*`, `lisp/ini.lisp`, `build/main.cpp` to be able to
+install Quicklisp and Swank.
 
 Then, after having developed a working desktop version, you can try to change
 things (using Slime) directly on the device (using `qml-get`, `qml-set`,

@@ -10,13 +10,6 @@
 
 extern "C" void ini_app(cl_object);
 
-int catch_all_qexec() {
-    int ret = 0;
-    CL_CATCH_ALL_BEGIN(ecl_process_env()) {
-        ret = QApplication::exec(); }
-    CL_CATCH_ALL_END;
-    return ret; }
-
 int main(int argc, char** argv) {
 
     EQL::ini(argv); // best initialized here
@@ -37,10 +30,10 @@ int main(int argc, char** argv) {
     splash->setAlignment(Qt::AlignCenter);
     splash->show();
     qApp->processEvents();
+    splash->deleteLater();
 
     EQL eql;
-    eql.exec(ini_app, "(eql-user::ini)");
+    // we need a fallback restart for connections from Slime
+    eql.exec(ini_app, "(loop (with-simple-restart (restart-qt-events \"Restart Qt event processing.\") (qexec)))");
 
-    delete splash;
-
-    return catch_all_qexec(); }
+    return 0; }

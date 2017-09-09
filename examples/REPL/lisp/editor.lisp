@@ -463,6 +463,7 @@
     (clicked "font_smaller" (lambda () (change-font :smaller)))))
 
 (defun start ()
+  (qlater 'eql-user::ini)
   (ini-qml "qml/repl.qml")
   (connect-buttons)
   (qconnect qml:*quick-view* "statusChanged(QQuickView::Status)" ; for reloading
