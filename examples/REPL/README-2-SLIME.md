@@ -6,7 +6,7 @@ You **can't** _(currently)_ use the **Slime REPL**, as it would randomly
 That may sound worse than it is: if you use a scratch file as a pseudo REPL,
 everything works without problems (auto-completion etc.); just use `C-M-x` to
 eval expressions (the cursor must be inside of them), or `C-c C-e` for simple
-interactive eval.
+interactive eval (with command history, see arrow keys).
 
 *So, don't (currently) touch the REPL. You have been warned.*
 
