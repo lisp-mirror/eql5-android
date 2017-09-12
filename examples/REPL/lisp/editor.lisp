@@ -8,6 +8,7 @@
   (qrequire module :quiet)) ; load if available
 
 (defvar *max-history*            100)
+(defvar *history-file*           ".eql5-lisp-repl-history")
 (defvar *package-char-dummy*     #\$)
 (defvar *separator*              "#||#")
 (defvar *lisp-match-rule*        nil)
@@ -20,7 +21,6 @@
 (defvar *current-depth*          0)
 (defvar *current-keyword-indent* 0)
 (defvar *highlighter*            nil)
-(defvar *history-file*           nil)
 (defvar *file*                   nil)
 
 ;; QML items
@@ -474,7 +474,6 @@
   (eval:ini :output       'eval-output
             :query-dialog 'dialogs:query-dialog
             :debug-dialog 'dialogs:debug-dialog)
-  (setf *history-file* ".eql5-lisp-repl-history")
   (setf *break-on-errors* t))
 
 (defun reload-qml (&optional (url "http://localhost:8080/"))

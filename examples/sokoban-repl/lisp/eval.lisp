@@ -58,8 +58,8 @@
         (let ((exp (read-from-string str)))
           (setf color *color-error*)
           (let ((vals (multiple-value-list (eval exp))))
-                (setf *** ** ** * * (first vals))
-                (append-output (format nil "~{~S~^~%~}" vals) *color-values*))
+            (setf *** ** ** * * (first vals))
+            (append-output (format nil "~{~S~^~%~}" vals) *color-values*))
           (history-add str))
       (error (err)
         (show-error err color))))
@@ -103,7 +103,8 @@
                                                           error-text
                                                           text))
                                    text))))
-      (qml-set *qml-repl-output* "cursorPosition" (qml-get *qml-repl-output* "length")))))
+      (qml-set *qml-repl-output* "cursorPosition"
+               (qml-get *qml-repl-output* "length")))))
 
 (defun append-output (text &optional (color "white"))
   (update-output)
@@ -117,7 +118,7 @@
 ;;; command history
 
 (defvar *max-history*  100)
-(defvar *history-file* nil)
+(defvar *history-file* ".eql5-lisp-repl-history")
 
 (defun saved-history ()
   (let ((ex "")
@@ -138,7 +139,6 @@
 (let ((ex "up")
       down out)
   (defun history-ini ()
-    (setf *history-file* ".eql5-lisp-repl-history")
     (setf up  (saved-history)
           out (open *history-file* :direction :output
                     :if-exists :append :if-does-not-exist :create)))
@@ -170,4 +170,3 @@
         (pop down))))
   (defun history ()
     (append (reverse up) down)))
-
