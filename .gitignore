@@ -10,6 +10,8 @@
 *.qmlc
 *.stash
 *.ts
+*.ecl*
+*.eql*
 *~
 *.~
 #*.*#
