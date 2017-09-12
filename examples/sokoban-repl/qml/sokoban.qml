@@ -181,6 +181,7 @@ Rectangle {
                 color: "white"
                 opacity: 0.8
                 inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+                focus: showRepl.checked
 
                 background: Rectangle {
                     color: "#101010"
@@ -215,7 +216,7 @@ Rectangle {
 
         Rectangle {
             width: main.width
-            height: 4
+            height: 1
             color: "#101010"
             opacity: 0.8
         }
