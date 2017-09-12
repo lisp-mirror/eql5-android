@@ -474,8 +474,7 @@
   (eval:ini :output       'eval-output
             :query-dialog 'dialogs:query-dialog
             :debug-dialog 'dialogs:debug-dialog)
-  (setf *history-file* (x:cc (first (|standardLocations.QStandardPaths| |QStandardPaths.HomeLocation|))
-                             "/.eql5-lisp-repl-history"))
+  (setf *history-file* ".eql5-lisp-repl-history")
   (setf *break-on-errors* t))
 
 (defun reload-qml (&optional (url "http://localhost:8080/"))

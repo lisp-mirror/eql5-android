@@ -168,30 +168,6 @@
               (qml-set "zoom_board_in" "running" t))))
   (level))
 
-(defun key-pressed (object event)
-  (when (and (zerop *running-animations*)
-             (not *solving*))
-    (case (|key| event)
-      (#.|Qt.Key_Up|
-         (sokoban:move :north *maze*))
-      (#.|Qt.Key_Down|
-         (sokoban:move :south *maze*))
-      (#.|Qt.Key_Left|
-         (sokoban:move :west *maze*))
-      (#.|Qt.Key_Right|
-         (sokoban:move :east *maze*))
-      (#.|Qt.Key_N|
-         (change-level :next))
-      (#.|Qt.Key_P|
-         (change-level :previous))
-      (#.|Qt.Key_U|
-         (undo))
-      (#.|Qt.Key_R|
-         (reset-maze))
-      (#.|Qt.Key_S|
-         (solve))))
-  nil) ; event filter
-
 (defun solve ()
   (let ((*solving* t))
     (reset-maze)
@@ -332,12 +308,12 @@
   (qlater 'eql-user::ini)
   (eval:ini)
   (ini-qml "qml/sokoban.qml")
+  (setf eql:*break-on-errors* t)
   (connect)
   (qconnect qml:*quick-view* "statusChanged(QQuickView::Status)" ; for reloading
             (lambda (status)
               (when (= |QQuickView.Ready| status)
                 (connect))))
-  (qadd-event-filter nil |QEvent.KeyPress| 'key-pressed)
   ;; soko
   (setf sokoban:*move-hook* 'move-item
         sokoban:*undo-hook* 'add-undo-step)

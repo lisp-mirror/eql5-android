@@ -2,8 +2,7 @@
   (:use :cl :eql :qml)
   (:export
    #:*eval-thread*
-   #:ini
-   #:feed-top-level))
+   #:ini))
 
 (in-package :eval)
 
@@ -127,8 +126,7 @@
 (let ((ex "up")
       down out)
   (defun history-ini ()
-    (setf *history-file* (x:cc (first (|standardLocations.QStandardPaths| |QStandardPaths.HomeLocation|))
-                                "/.eql5-lisp-repl-history"))
+    (setf *history-file* ".eql5-lisp-repl-history")
     (setf up  (saved-history)
           out (open *history-file* :direction :output
                     :if-exists :append :if-does-not-exist :create)))
