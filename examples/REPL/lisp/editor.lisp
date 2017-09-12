@@ -300,7 +300,7 @@
                   history))))
       (setf history (nthcdr (max 0 (- (length history) *max-history*)) (reverse history)))
       (with-open-file (s *history-file* :direction :output
-                         :if-exists :overwrite)
+                         :if-exists :supersede)
         (dolist (cmd history)
           (write-line (x:string-substitute *separator* (string #\Newline) cmd)
                       s)))
