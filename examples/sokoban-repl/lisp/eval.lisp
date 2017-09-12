@@ -6,23 +6,23 @@
 
 (in-package :eval)
 
-(defvar *qml-input*     "repl_input")
-(defvar *qml-output*    "output")
-(defvar *output-buffer* (make-string-output-stream))
-(defvar *prompt*        t)
-(defvar *eval-thread*   nil)
-(defvar *               nil)
-(defvar **              nil)
-(defvar ***             nil)
+(defvar *qml-repl-input*  "repl_input")
+(defvar *qml-repl-output* "repl_output")
+(defvar *output-buffer*   (make-string-output-stream))
+(defvar *prompt*          t)
+(defvar *eval-thread*     nil)
+(defvar *                 nil)
+(defvar **                nil)
+(defvar ***               nil)
 
 (defun ini ()
   (ini-streams))
 
 (defun ini-streams ()
-  (setf *trace-output* *standard-output*
-        *error-output* *standard-output*) 
   (setf *standard-output* (make-broadcast-stream *standard-output*
-                                                 *output-buffer*)))
+                                                 *output-buffer*))
+  (setf *trace-output* *standard-output*
+        *error-output* *standard-output*))
 
 (defun current-package-name ()
   (if (eql (find-package :cl-user) *package*)
@@ -47,15 +47,19 @@
         ;; N.B. this is only safe because we use "thread-safe.lisp" (like in Slime mode)
         (setf *eval-thread* (mp:process-run-function "EQL5 REPL top-level" (lambda () (do-eval str))))))))
 
+(defvar *color-values*     "skyblue")
+(defvar *color-read-error* "orange")
+(defvar *color-error*      "#ffb0b0")
+
 (defun do-eval (str)
   (start-output-timer)
-  (let ((color "orange"))
+  (let ((color *color-read-error*))
     (handler-case
         (let ((exp (read-from-string str)))
-          (setf color "#ffb0b0")
+          (setf color *color-error*)
           (let ((vals (multiple-value-list (eval exp))))
                 (setf *** ** ** * * (first vals))
-                (append-output (format nil "~{~S~^~%~}" vals) "skyblue"))
+                (append-output (format nil "~{~S~^~%~}" vals) *color-values*))
           (history-add str))
       (error (err)
         (show-error err color))))
@@ -85,17 +89,25 @@
 (defun update-output ()
   (let ((chunk (get-output-stream-string *output-buffer*)))
     (unless (x:empty-string chunk)
-      (qml-call *qml-output* "insert"
-                (qml-get *qml-output* "length")
-                (format nil "<pre><font face='~A'>~A</font></pre>"
-                        #+android "Droid Sans Mono"
-                        #-android "Monospace"
-                        (x:string-substitute "<br>" (string #\Newline) (qescape chunk))))
-      (qml-set *qml-output* "cursorPosition" (qml-get *qml-output* "length")))))
+      (let ((text (x:string-substitute "<br>" (string #\Newline) (qescape chunk))))
+        (qml-call *qml-repl-output* "insert"
+                  (qml-get *qml-repl-output* "length")
+                  (format nil "<pre><font face='~A'>~A</font></pre>"
+                          #+android "Droid Sans Mono"
+                          #-android "Monospace"
+                          (x:if-it (search "[EQL:err]" text)
+                                   (let ((error-text (subseq text x:it)))
+                                     (x:string-substitute (format nil "<font color='~A'>~A</font>"
+                                                                  *color-error*
+                                                                  error-text)
+                                                          error-text
+                                                          text))
+                                   text))))
+      (qml-set *qml-repl-output* "cursorPosition" (qml-get *qml-repl-output* "length")))))
 
 (defun append-output (text &optional (color "white"))
   (update-output)
-  (qml-call *qml-output* "append"
+  (qml-call *qml-repl-output* "append"
             (format nil "<pre><font face='~A' color='~A'>~A</font></pre>"
                     #+android "Droid Sans Mono"
                     #-android "Monospace"
@@ -144,7 +156,7 @@
                            (push x:it up))))))
       (setf ex direction)
       (when exp
-        (qml-set *qml-input* "text" (first exp)))))
+        (qml-set *qml-repl-input* "text" (first exp)))))
   (defun history-add (cmd)
     (unless out
       (history-ini))

@@ -151,12 +151,12 @@ Rectangle {
             Ext.Flickable {
                 id: flickOutput
                 anchors.fill: parent
-                contentWidth: output.paintedWidth
-                contentHeight: output.paintedHeight
+                contentWidth: replOutput.paintedWidth
+                contentHeight: replOutput.paintedHeight
 
                 TextEdit {
-                    id: output
-                    objectName: "output"
+                    id: replOutput
+                    objectName: "repl_output"
                     width: flickOutput.width
                     height: flickOutput.height
                     font.pointSize: 16

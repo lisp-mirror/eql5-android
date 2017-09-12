@@ -308,7 +308,6 @@
   (qlater 'eql-user::ini)
   (eval:ini)
   (ini-qml "qml/sokoban.qml")
-  (setf eql:*break-on-errors* t)
   (connect)
   (qconnect qml:*quick-view* "statusChanged(QQuickView::Status)" ; for reloading
             (lambda (status)
