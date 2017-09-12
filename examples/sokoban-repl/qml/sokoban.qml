@@ -171,7 +171,6 @@ Rectangle {
 
         Row {
             width: main.width
-            spacing: 1
 
             TextField {
                 id: replInput
@@ -202,6 +201,12 @@ Rectangle {
                 text: "<<"
 
                 onClicked: Lisp.call("eval:history-move", "up")
+            }
+            Rectangle {
+                width: 1
+                height: replInput.height
+                color: "#101010"
+                opacity: 0.8
             }
             Button {
                 id: historyDown

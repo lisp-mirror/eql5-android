@@ -307,7 +307,7 @@
       (reverse history))))
 
 (let ((ex :up)
-      down out)
+      up down out)
   (defun history-ini ()
     (setf up  (saved-history)
           out (open *history-file* :direction :output
