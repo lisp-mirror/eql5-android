@@ -149,6 +149,9 @@ this REPL example as a template; you'll basically just need
 `android-build/assets/lib/*`, `lisp/ini.lisp`, `build/main.cpp` to be able to
 install Quicklisp and Swank.
 
+For an example of the above (including a very basic REPL, hidden by default),
+please see example `../sokoban-repl`.
+
 Then, after having developed a working desktop version, you can try to change
 things (using Slime) directly on the device (using `qml-get`, `qml-set`,
 `qml-call` etc.); just make sure to set an `objectName` to every QML item you
