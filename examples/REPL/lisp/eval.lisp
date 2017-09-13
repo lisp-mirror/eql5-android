@@ -124,9 +124,9 @@
   (unless eql::*reloading-qml*
     (qml:qml-set "status_bar" "visible" nil))
   (qml:qml-set "status" "text" "")
-  (write-output :error  *error-output-buffer*)
-  (write-output :trace  *trace-output-buffer*)
   (write-output :output *standard-output-buffer*)
+  (write-output :trace  *trace-output-buffer*)
+  (write-output :error  *error-output-buffer*)
   (when (and *gui-output*
              (or (not *debug-invoked*)
                  (and *debug-invoked*
