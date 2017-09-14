@@ -8,9 +8,11 @@
 
 (in-package :dialogs)
 
-(defvar *qml-file-dialog*       "file_dialog")
+(defvar *file-name*             nil)
 (defvar *file-dialog-component* nil)
 (defvar *file-dialog-instance*  nil)
+
+(defvar *qml-file-dialog*       "file_dialog")
 
 (defun qml-component (file)
   (qnew "QQmlComponent(QQmlEngine*,QUrl)"

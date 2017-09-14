@@ -188,10 +188,7 @@ Rectangle {
                     border.color: "orange"
                 }
 
-                onAccepted: {
-                    Lisp.call("eval:eval-in-thread", text)
-                    clear()
-                }
+                onAccepted: Lisp.call("eval:eval-in-thread", text)
             }
             Button {
                 id: historyUp
