@@ -4,6 +4,7 @@
 (load "lisp/eval")
 (load "lisp/thread-safe")
 (load "lisp/sokoban")
+(load "lisp/dialogs")
 (load "lisp/ini")
 
 (progn

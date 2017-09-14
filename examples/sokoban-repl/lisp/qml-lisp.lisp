@@ -12,6 +12,7 @@
    #:*quick-view*
    #:*caller*
    #:children
+   #:file-to-url
    #:find-quick-item
    #:js
    #:qml-call
@@ -94,9 +95,11 @@
 
 (defun find-quick-item (object-name)
   "Finds the first QQuickItem matching OBJECT-NAME."
-  (if (string= (|objectName| (root-item)) object-name)
-      (root-item)
-      (qt-object-? (qfind-child (root-item) object-name))))
+  (let ((root (root-item)))
+    (unless (qnull root)
+      (if (string= (|objectName| root) object-name)
+          (root-item)
+          (qt-object-? (qfind-child root object-name))))))
 
 (defun quick-item (item/name)
   (cond ((stringp item/name)
@@ -114,6 +117,13 @@
   "Force reloading of QML file after changes made to it."
   (|clearComponentCache| (|engine| *quick-view*))
   (|setSource| *quick-view* (|source| *quick-view*)))
+
+(defun file-to-url (file)
+  "Convert FILE to a QUrl, distinguishing between development and release version."
+  #+release
+  (qnew "QUrl(QString)" (x:cc "qrc:/" file)) ; see "Qt Resource System"
+  #-release
+  (|fromLocalFile.QUrl| file))
 
 ;;; call QML methods
 

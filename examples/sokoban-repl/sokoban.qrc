@@ -8,6 +8,7 @@
     <file>qml/ext/ScaleAnimator.qml</file>
     <file>qml/ext/SequentialAnimation.qml</file>
     <file>qml/ext/Flickable.qml</file>
+    <file>qml/ext/FileDialog.qml</file>
     <file>qml/items/box2.qml</file>
     <file>qml/items/box.qml</file>
     <file>qml/items/player.qml</file>
