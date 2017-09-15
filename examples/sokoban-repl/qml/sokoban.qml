@@ -136,11 +136,14 @@ Rectangle {
         }
         Switch {
             id: showRepl
+
+            onCheckedChanged: Lisp.call("qsoko:show-repl", checked)
         }
     }
 
     Column {
-        visible: showRepl.checked
+        objectName: "repl_container"
+        visible: false
 
         Rectangle {
             width: main.width

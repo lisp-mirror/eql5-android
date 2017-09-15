@@ -33,13 +33,6 @@
 
 (setf qml:*quick-view* (qnew "QQuickView"))
 
-(defun file-to-url (file)
-  "Convert FILE to a QUrl, distinguishing between development and release version."
-  #+release
-  (qnew "QUrl(QString)" (x:cc "qrc:///" file)) ; see "Qt Resource System"
-  #-release
-  (|fromLocalFile.QUrl| file))
-
 (defun qml-component (file)
   (qnew "QQmlComponent(QQmlEngine*,QUrl)"
         (|engine| *quick-view*)
@@ -318,6 +311,20 @@
         sokoban:*undo-hook* 'add-undo-step)
   (qml-set "level" "to" (1- (length *my-mazes*)))
   (set-maze))
+
+;; REPL
+
+(defvar *qml-repl* "repl_container")
+
+(defun show-repl (show) ; called from QML
+  (when show
+    (qml-set *qml-repl* "opacity" 0)
+    (qml-set *qml-repl* "visible" t))
+  (dotimes (n 10)
+    (qml-set *qml-repl* "opacity" (/ (if show (1+ n) (- 9 n)) 10))
+    (qsleep 0.015))
+  (unless show
+    (qml-set *qml-repl* "visible" nil)))
 
 (defun reload-qml (&optional (url "http://localhost:8080/"))
   ;; please see README-1.md in REPL example
