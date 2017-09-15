@@ -91,6 +91,7 @@
   (let ((chunk (get-output-stream-string *output-buffer*)))
     (unless (x:empty-string chunk)
       (let ((text (x:string-substitute "<br>" (string #\Newline) (qescape chunk))))
+        ;; "insert" is cleaner with formatting than "append"
         (qml-call *qml-repl-output* "insert"
                   (qml-get *qml-repl-output* "length")
                   (format nil "<pre><font face='~A'>~A</font></pre>"

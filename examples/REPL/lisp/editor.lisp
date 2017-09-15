@@ -268,8 +268,10 @@
 
 (defun eval-output (type text)
   (let ((text* (qescape text)))
-    (qml-call *qml-output* "append"
-              (format nil "<pre><font face='~A' color='~A'>~A</font></pre>"
+    ;; "insert" is cleaner with formatting than "append"
+    (qml-call *qml-output* "insert"
+              (qml-get *qml-output* "length")
+              (format nil "<pre><font face='~A' color='~A'>~%~A</font></pre>"
                       #+android "Droid Sans Mono"
                       #-android "Monospace"
                       (case type
@@ -280,7 +282,9 @@
                         (t       "black"))
                       (if (eql :values type)
                           (x:string-substitute "<br>" *separator* text*)
-                          (x:string-substitute "<br>" (string #\Newline) text*))))))
+                          (x:string-substitute "<br>" (string #\Newline) text*)))))
+  (qml-set *qml-output* "cursorPosition"
+           (qml-get *qml-output* "length")))
 
 (defun eval-expression ()
   (let ((text (string-trim '(#\Space #\Tab #\Newline #\Return) (qml-get *qml-edit* "text"))))
