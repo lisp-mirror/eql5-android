@@ -72,8 +72,11 @@
 (defun start-swank (&key (loopback "0.0.0.0") log-events
                          (load-contribs t) (setup t) (delete t) (quiet t)
                          (port 4005) (dont-close t) style)
-  (quicklisp)
-  (funcall (sym 'quickload :ql) :swank :verbose t)
+  (if (find-package :quicklisp)
+      (funcall (sym 'quickload :ql) :swank :verbose t)
+      (progn
+        (require :asdf)
+        (funcall (sym 'load-system :asdf) :swank)))
   (funcall (sym 'init :swank-loader)
            :load-contribs load-contribs
            :setup setup

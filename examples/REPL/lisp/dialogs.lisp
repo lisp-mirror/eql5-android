@@ -4,10 +4,12 @@
    #:query-dialog
    #:debug-dialog
    #:get-file-name
-   #:exited))
+   #:exited
+   #:*file-name*))
 
 (in-package :dialogs)
 
+(defvar *file-name*             nil)
 (defvar *file-dialog-component* nil)
 (defvar *file-dialog-instance*  nil)
 (defvar *suspended-thread*      nil)
@@ -36,7 +38,7 @@
         (|engine| *quick-view*)
         (qml:file-to-url file)))
 
-(defun get-file-name (callback &optional save)
+(defun get-file-name (&optional callback save)
   (unless *file-dialog-component*
     (setf *file-dialog-component* (qml-component "qml/ext/FileDialog.qml")))
   ;; new instance on every call to ensure correct size depending on landscape/portrait
@@ -44,9 +46,13 @@
     (qdel *file-dialog-instance*))
   (setf *file-dialog-instance* (qt-object-? (|create| *file-dialog-component*)))
   (|setParent| *file-dialog-instance* (qml:root-item))
-  (qml-set "file_dialog" "callback" (prin1-to-string callback))
+  (when callback
+    (qml-set "file_dialog" "callback" (prin1-to-string callback)))
   (qml-set "file_dialog" "selectExisting" (not save))
   (qml-call "file_dialog" "open"))
+
+(defun set-file-name (name) ; called from QML
+  (setf *file-name* name))
 
 (defun wait-for-closed ()
   (unless (eql (mp:process-name mp:*current-process*)

@@ -359,21 +359,15 @@
 
 ;; open file
 
-(defun trim-file (name)
-  (if (x:starts-with "file://" name)
-      (subseq name #.(length "file://"))
-      name))
-
 (defun open-file ()
   (dialogs:get-file-name 'do-open-file))
 
-(defun do-open-file (name)
-  (let ((name* (trim-file name)))
-    (unless (x:empty-string name*)
-      (setf *file* name*)
-      (if (x:starts-with "fas" (pathname-type name*))
-          (eval* (format nil "(load ~S)" name*))
-          (qml-set *qml-edit* "text" (read-file name*))))))
+(defun do-open-file ()
+  (unless (x:empty-string dialogs:*file-name*)
+    (setf *file* dialogs:*file-name*)
+    (if (x:starts-with "fas" (pathname-type *file*))
+        (eval* (format nil "(load ~S)" *file*))
+        (qml-set *qml-edit* "text" (read-file *file*)))))
 
 ;; save-file
 
@@ -398,16 +392,15 @@
     (when dialog
       (dialogs:get-file-name 'do-save-file :save))))
 
-(defun do-save-file (name)
-  (let ((file (trim-file name))
-        (ok t))
-    (unless (x:empty-string file)
-      (when (probe-file file)
+(defun do-save-file ()
+  (let ((ok t))
+    (unless (x:empty-string dialogs:*file-name*)
+      (when (probe-file dialogs:*file-name*)
         (unless (confirm-save-dialog "Overwrite?"
-                                     (format nil "File already exists; overwrite?<br><br>~S<br>" file))
+                                     (format nil "File already exists; overwrite?<br><br>~S<br>" dialogs:*file-name*))
           (setf ok nil)))
       (when ok
-        (save-to-file file)))))
+        (save-to-file dialogs:*file-name*)))))
 
 ;; log
 

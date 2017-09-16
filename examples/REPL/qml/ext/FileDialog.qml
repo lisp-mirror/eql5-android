@@ -10,5 +10,11 @@ FileDialog {
 
     property string callback
 
-    onAccepted: Lisp.call(callback, Qt.resolvedUrl(fileUrl).toString())
+    onAccepted: {
+        var name = Qt.resolvedUrl(fileUrl).toString().substring("file://".length)
+        Lisp.call("dialogs:set-file-name", name)
+        if(callback.length) {
+            Lisp.call(callback)
+        }
+    }
 }

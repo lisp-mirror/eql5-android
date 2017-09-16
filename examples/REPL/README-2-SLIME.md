@@ -16,8 +16,20 @@ interactive eval (with command history, see arrow keys).
 
 #### * prepare android:
 
+The first time you start Swank, you need to load Quicklisp first (in order to
+install it):
+
+```
+  (quicklisp)
+
+  (start-swank)
+```
+
+(Please note that `(start-swank)` will not work in the Desktop version.)
+
 Currently (that is, as long as the new `:spawn` communication style doesn't
-work on android), you need a tiny patch in `swank.lisp`:
+work on android), you need a tiny patch in `swank.lisp` (so don't connect from
+Slime before having applied the patch):
 
 ```
  (defun repl-input-stream-read (connection stdin)
@@ -30,21 +42,29 @@ work on android), you need a tiny patch in `swank.lisp`:
              (check-slime-interrupts))
 ```
 
-In order to install Swank, you need to run `(start-swank)` first, without
-connecting from Slime (before applying the patch).
-
 The easiest way to apply it seems to patch your `swank.lisp` on the PC, then
-copy it over to android; from our android REPL app, eval (adapting the paths):
+copy it over to android (e.g. in "Documents/"); from the android REPL app,
+eval:
 
 ```
-  (let ((from "/storage/emulated/0/Documents/swank.lisp")
-        (to "quicklisp/dists/quicklisp/software/slime-v2.20/swank.lisp"))
-    (ignore-errors (delete-file to))
-    (|copy.QFile| from to))
+  ;; select 'from' file (under 'Documents')
+  ;; e.g. "Documents/swank.lisp"
+
+  (dialogs:get-file-name)
+  (defvar *from* dialogs:*file-name*)
+
+  ;; select 'to' file (under 'Desktop')
+  ;; e.g. "quicklisp/dists/quicklisp/software/slime-v2.20/swank.lisp"
+
+  (dialogs:get-file-name)
+  (defvar *to* dialogs:*file-name*)
+
+  (delete-file *to*)
+  (|copy.QFile| *from* *to*))
 ```
 
-The above function needs to return `T` as first value, otherwise it didn't copy
-the file.
+The above `copy` function needs to return `T` as first value, otherwise it
+didn't copy the file.
 
 #### * prepare PC:
 
@@ -73,7 +93,7 @@ You only need to physically connect your device via USB (no wlan needed).
   $ adb forward tcp:4005 tcp:4005
 ```
 
-* on the android REPL, run (will be slow, you'll need some patience)
+* on the android REPL, run:
 
 ```
   (start-swank)
@@ -92,7 +112,7 @@ You only need to physically connect your device via USB (no wlan needed).
 You'll need an ssh app, e.g. SSHDroid; run it and activate the ssh daemon.
 It will tell you the IP address of your device.
 
-* on the android REPL, run (will be slow, you'll need some patience)
+* on the android REPL, run:
 
 ```
   (start-swank :loopback "127.0.0.1")
