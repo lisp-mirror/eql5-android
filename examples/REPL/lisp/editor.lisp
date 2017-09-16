@@ -473,8 +473,7 @@
   (qconnect qml:*quick-view* "statusChanged(QQuickView::Status)" ; for reloading
             (lambda (status)
               (when (= |QQuickView.Ready| status)
-                (connect-buttons)
-                (setf eql::*reloading-qml* nil))))
+                (qml-reloaded))))
   (eval:ini :output       'eval-output
             :query-dialog 'dialogs:query-dialog
             :debug-dialog 'dialogs:debug-dialog)
@@ -489,6 +488,8 @@
         (|setSource| qml:*quick-view* (qnew "QUrl(QString)"
                                             (x:string-substitute url "qrc:/" src)))
         (qml:reload)))
-  ;; don't remove message box (won't work without / event queue problem)
-  (|information.QMessageBox| nil "REPL" "Reloading <b>QML</b> files...")
   (values))
+
+(defun qml-reloaded ()
+  (connect-buttons)
+  (setf eql::*reloading-qml* nil))

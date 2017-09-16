@@ -305,7 +305,7 @@
   (qconnect qml:*quick-view* "statusChanged(QQuickView::Status)" ; for reloading
             (lambda (status)
               (when (= |QQuickView.Ready| status)
-                (connect))))
+                (qml-reloaded))))
   ;; soko
   (setf sokoban:*move-hook* 'move-item
         sokoban:*undo-hook* 'add-undo-step)
@@ -334,10 +334,10 @@
         (|setSource| qml:*quick-view* (qnew "QUrl(QString)"
                                             (x:string-substitute url "qrc:/" src)))
         (qml:reload)))
-  ;; don't remove message box (won't work without / event queue problem)
-  (|information.QMessageBox| nil "REPL" "Reloading <b>QML</b> files...")
-  ;; re-ini soko
+  (values))
+
+(defun qml-reloaded ()
+  (connect)
   (let ((*no-delete* t))
     (set-maze))
-  (qml-set "level" "to" (1- (length *my-mazes*)))
-  (values))
+  (qml-set "level" "to" (1- (length *my-mazes*))))
