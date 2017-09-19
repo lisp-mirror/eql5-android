@@ -25,7 +25,7 @@ install it):
   (start-swank)
 ```
 
-(Please note that `(start-swank)` will not work in the Desktop version.)
+(Please note that `(start-swank)` will not work in the desktop version.)
 
 Currently (that is, as long as the new `:spawn` communication style doesn't
 work on android), you need a tiny patch in `swank.lisp` (so don't connect from

@@ -96,3 +96,8 @@
     (funcall (sym 'stop-server :swank) 4005)
     :stopped))
 
+;; convenience
+
+(define-symbol-macro :f (dialogs:get-file-name))
+(define-symbol-macro :r (editor:reload-qml))
+(define-symbol-macro :s (start-swank))
