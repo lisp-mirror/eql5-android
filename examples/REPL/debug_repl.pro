@@ -30,8 +30,5 @@ INSTALLS      += eql
 
 # ECL contrib
 contrib.path  = /assets/lib
-contrib.files += $$ECL_ANDROID/lib/ecl-16.1.3/*.asd
-contrib.files += $$ECL_ANDROID/lib/ecl-16.1.3/*.fas
-contrib.files += $$ECL_ANDROID/lib/ecl-16.1.3/*.doc
-contrib.files += $$ECL_ANDROID/lib/ecl-16.1.3/encodings/*
+contrib.files += $$ECL_ANDROID/lib/ecl-16.1.3/*
 INSTALLS      += contrib
