@@ -100,4 +100,5 @@
 
 (define-symbol-macro :f (dialogs:get-file-name))
 (define-symbol-macro :r (editor:reload-qml))
+(define-symbol-macro :q (quicklisp))
 (define-symbol-macro :s (start-swank))

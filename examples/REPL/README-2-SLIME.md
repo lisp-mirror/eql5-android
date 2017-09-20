@@ -20,7 +20,7 @@ The first time you start Swank, you need to load Quicklisp first (in order to
 install it):
 
 ```
-  (quicklisp)
+  (quicklisp)   ; first time only
 
   (start-swank)
 ```
