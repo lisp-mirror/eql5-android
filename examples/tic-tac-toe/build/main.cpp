@@ -36,10 +36,9 @@ int main(int argc, char** argv) {
     splash->setAlignment(Qt::AlignCenter);
     splash->show();
     qApp->processEvents();
+    splash->deleteLater();
 
     EQL eql;
     eql.exec(ini_app);
-
-    delete splash;
 
     return catch_all_qexec(); }
