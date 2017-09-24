@@ -212,6 +212,6 @@ will only hide the window; you can show it again by entering:
 
 
 
-### Slime (currently not recommended, because not stable yet)
+### Slime
 
 Please see [README-SLIME](README-2-SLIME.md)

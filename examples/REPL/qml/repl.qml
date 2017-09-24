@@ -60,7 +60,7 @@ Rectangle {
             id: cursor
 
             Rectangle {
-                width: 3
+                width: 2
                 color: "blue"
 
                 SequentialAnimation on opacity {

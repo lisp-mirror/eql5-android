@@ -1,74 +1,14 @@
-### IMPORTANT NOTE
-
-You **can't** _(currently)_ use the **Slime REPL**, as it would randomly
-**freeze** both the android app and Emacs.
-
-That may sound worse than it is: if you use a scratch file as a pseudo REPL,
-everything works without problems (auto-completion etc.); just use `C-M-x` to
-eval expressions (the cursor must be inside of them), or `C-c C-e` for simple
-interactive eval (with command history, see arrow keys).
-
-*So, don't (currently) touch the REPL. You have been warned.*
-
-
-
 ### Prepare
 
-#### * prepare android:
+#### Android
 
-The first time you start Swank, you need to load Quicklisp first (in order to
-install it):
+Since a working (and patched) Swank version is already included, just eval
+`(start-swank)`, or simply `:s`, to start the server.
 
-```
-  (quicklisp)   ; first time only
+#### PC
 
-  (start-swank)
-```
-
-(Please note that `(start-swank)` will not work in the desktop version.)
-
-Currently (that is, as long as the new `:spawn` communication style doesn't
-work on android), you need a tiny patch in `swank.lisp` (so don't connect from
-Slime before having applied the patch):
-
-```
- (defun repl-input-stream-read (connection stdin)
-   (loop
-    (let* ((socket (connection.socket-io connection))
-+          (inputs (list socket #-android stdin))
--          (inputs (list socket stdin))
-           (ready (wait-for-input inputs)))
-      (cond ((eq ready :interrupt)
-             (check-slime-interrupts))
-```
-
-The easiest way to apply it seems to patch your `swank.lisp` on the PC, then
-copy it over to android (e.g. in "Documents/"); from the android REPL app,
-eval:
-
-```
-  ;; select 'from' file (under 'Documents')
-  ;; e.g. "Documents/swank.lisp"
-
-  (dialogs:get-file-name)
-  (defvar *from* dialogs:*file-name*)
-
-  ;; select 'to' file (under 'Desktop')
-  ;; e.g. "quicklisp/dists/quicklisp/software/slime-v2.20/swank.lisp"
-
-  (dialogs:get-file-name)
-  (defvar *to* dialogs:*file-name*)
-
-  (delete-file *to*)
-  (|copy.QFile| *from* *to*))
-```
-
-The above `copy` function needs to return `T` as first value, otherwise it
-didn't copy the file.
-
-#### * prepare PC:
-
-On the PC just use the current Slime (v2.20 at the time of writing).
+On the PC you should preferably use Slime v2.19 (newer versions may work, but
+will show a warning on startup).
 
 
 
