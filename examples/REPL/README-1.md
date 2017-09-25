@@ -192,9 +192,6 @@ string if necessary; here: a list):
   Lisp.call("qmsg", ["var x", x, "var y", y])
 ```
 
-To exit the message box (since it has no buttons), just tap anywhere outside of
-it.
-
 --
 
 Since we have all of EQL5 available, you can directly run files like
