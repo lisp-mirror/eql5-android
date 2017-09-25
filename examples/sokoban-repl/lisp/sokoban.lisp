@@ -10,7 +10,6 @@
   (:use :common-lisp :eql :qml)
   (:export
    #:change-level
-   #:eval*
    #:start
    #:reload-qml))
 
@@ -274,33 +273,11 @@
     (pressed "restart"  (reset-maze))
     (pressed "solve"    (solve))))
 
-(defun ini-qml (file)
-  ;; special settings for mobile, taken from Qt example
-  (let ((env (ext:getenv "QT_QUICK_CORE_PROFILE")))
-    (when (and (stringp env)
-               (not (zerop (parse-integer env :junk-allowed t))))
-      (let ((f (|format| *quick-view*)))
-        (|setProfile| f |QSurfaceFormat.CoreProfile|)
-        (|setVersion| f 4 4)
-        (|setFormat| *quick-view* f))))
-  (qconnect (|engine| *quick-view*) "quit()" (qapp) "quit()")
-  (qnew "QQmlFileSelector(QQmlEngine*,QObject*)" (|engine| *quick-view*) *quick-view*)
-  (|setSource| *quick-view* (file-to-url file))
-  (when (= |QQuickView.Error| (|status| *quick-view*))
-    ;; display eventual QML errors
-    (qmsg (list (mapcar '|toString| (|errors| *quick-view*))))
-    (return-from ini-qml))
-  (|setResizeMode| *quick-view* |QQuickView.SizeRootObjectToView|)
-  (let ((platform (|platformName.QGuiApplication|)))
-    (if (find platform '("qnx" "eglfs") :test 'string=)
-        (|showFullScreen| *quick-view*)
-        (|show| *quick-view*))))
-
 (defun start ()
   ;; ini
   (qlater 'eql-user::ini)
   (eval:ini)
-  (ini-qml "qml/sokoban.qml")
+  (qml:ini-quick-view "qml/sokoban.qml")
   (connect)
   (qconnect qml:*quick-view* "statusChanged(QQuickView::Status)" ; for reloading
             (lambda (status)

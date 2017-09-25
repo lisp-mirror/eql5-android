@@ -12,7 +12,9 @@
    #:*quick-view*
    #:*caller*
    #:children
+   #:file-to-url
    #:find-quick-item
+   #:ini-quick-view
    #:js
    #:qml-call
    #:qml-get
@@ -94,9 +96,11 @@
 
 (defun find-quick-item (object-name)
   "Finds the first QQuickItem matching OBJECT-NAME."
-  (if (string= (|objectName| (root-item)) object-name)
-      (root-item)
-      (qt-object-? (qfind-child (root-item) object-name))))
+  (let ((root (root-item)))
+    (unless (qnull root)
+      (if (string= (|objectName| root) object-name)
+          (root-item)
+          (qt-object-? (qfind-child root object-name))))))
 
 (defun quick-item (item/name)
   (cond ((stringp item/name)
@@ -114,6 +118,13 @@
   "Force reloading of QML file after changes made to it."
   (|clearComponentCache| (|engine| *quick-view*))
   (|setSource| *quick-view* (|source| *quick-view*)))
+
+(defun file-to-url (file)
+  "Convert FILE to a QUrl, distinguishing between development and release version."
+  #+release
+  (qnew "QUrl(QString)" (x:cc "qrc:/" file)) ; see "Qt Resource System"
+  #-release
+  (|fromLocalFile.QUrl| file))
 
 ;;; call QML methods
 
@@ -162,4 +173,29 @@
                   (apply 'format nil js-format-string arguments))
          (variant (|evaluate| qml-exp)))
     (qvariant-value variant)))
+
+;;; ini
+
+(defun ini-quick-view (file)
+  (setf *quick-view* (qnew "QQuickView"))
+  ;; special settings for mobile, taken from Qt example
+  (let ((env (ext:getenv "QT_QUICK_CORE_PROFILE")))
+    (when (and (stringp env)
+               (not (zerop (parse-integer env :junk-allowed t))))
+      (let ((f (|format| *quick-view*)))
+        (|setProfile| f |QSurfaceFormat.CoreProfile|)
+        (|setVersion| f 4 4)
+        (|setFormat| *quick-view* f))))
+  (qconnect (|engine| *quick-view*) "quit()" (qapp) "quit()")
+  (qnew "QQmlFileSelector(QQmlEngine*,QObject*)" (|engine| *quick-view*) *quick-view*)
+  (|setSource| *quick-view* (file-to-url file))
+  (when (= |QQuickView.Error| (|status| *quick-view*))
+    ;; display eventual QML errors
+    (qmsg (list (mapcar '|toString| (|errors| *quick-view*))))
+    (return-from ini-quick-view))
+  (|setResizeMode| *quick-view* |QQuickView.SizeRootObjectToView|)
+  (let ((platform (|platformName.QGuiApplication|)))
+    (if (find platform '("qnx" "eglfs") :test 'string=)
+        (|showFullScreen| *quick-view*)
+        (|show| *quick-view*))))
 

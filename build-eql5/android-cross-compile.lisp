@@ -2,9 +2,8 @@
 ;;;
 ;;; This is a much simplified version for EQL5.
 ;;; If you are on 64 bit Linux, you should not need to modify/adapt anything.
-;;;
-;;; (In a future version, there will be integration with ASDF, as in the
-;;; original version.)
+
+(pushnew :android *features*)
 
 (load "lisp/x.lisp")
 

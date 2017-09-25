@@ -26,6 +26,7 @@
 ;; QML items
 (defvar *qml-edit*     "edit")
 (defvar *qml-output*   "output")
+(defvar *qml-clear*    "clear")
 (defvar *qml-status*   "status")
 (defvar *qml-document* nil)
 
@@ -410,29 +411,6 @@
 
 ;; ini
 
-(defun ini-qml (file)
-  (setf qml:*quick-view* (qnew "QQuickView"))
-  ;; special settings for mobile, taken from Qt example
-  (let ((env (ext:getenv "QT_QUICK_CORE_PROFILE")))
-    (when (and (stringp env)
-               (not (zerop (parse-integer env :junk-allowed t))))
-      (let ((f (|format| *quick-view*)))
-        (|setProfile| f |QSurfaceFormat.CoreProfile|)
-        (|setVersion| f 4 4)
-        (|setFormat| *quick-view* f))))
-  (qconnect (|engine| *quick-view*) "quit()" (qapp) "quit()")
-  (qnew "QQmlFileSelector(QQmlEngine*,QObject*)" (|engine| *quick-view*) *quick-view*)
-  (|setSource| *quick-view* (file-to-url file))
-  (when (= |QQuickView.Error| (|status| *quick-view*))
-    ;; display eventual QML errors
-    (qmsg (list (mapcar '|toString| (|errors| *quick-view*))))
-    (return-from ini-qml))
-  (|setResizeMode| *quick-view* |QQuickView.SizeRootObjectToView|)
-  (let ((platform (|platformName.QGuiApplication|)))
-    (if (find platform '("qnx" "eglfs") :test 'string=)
-        (|showFullScreen| *quick-view*)
-        (|show| *quick-view*))))
-
 (defun set-text-document () ; called from QML
   ;; needed because QML-GET can't return QObject* pointers
   (setf *qml-document* (|textDocument| qml:*caller*))
@@ -442,10 +420,13 @@
 (defun set-delayed-focus () ; called from QML
   ;; needed because resizing sometimes gets messed up on startup
   ;; (caused by virtual keyboard)
-  (qsingle-shot 1000 (lambda ()
-                       (qml-call "clear" "forceActiveFocus")
-                       (qlater (lambda ()
-                                 (qml-call "edit" "forceActiveFocus"))))))
+  (qsingle-shot 2000 (lambda ()
+                       (when (= (+ (qml-get *qml-edit* "height")
+                                   (qml-get *qml-output* "height"))
+                                (fourth (|availableGeometry| (|desktop.QApplication|))))
+                         (qml-call *qml-clear* "forceActiveFocus")
+                         (qlater (lambda ()
+                                   (qml-call *qml-edit* "forceActiveFocus")))))))
 
 (defun connect-buttons ()
   (flet ((clicked (name function)
@@ -461,7 +442,7 @@
 
 (defun start ()
   (qlater 'eql-user::ini)
-  (ini-qml "qml/repl.qml")
+  (qml:ini-quick-view "qml/repl.qml")
   (connect-buttons)
   (qconnect qml:*quick-view* "statusChanged(QQuickView::Status)" ; for reloading
             (lambda (status)
@@ -470,7 +451,8 @@
   (eval:ini :output       'eval-output
             :query-dialog 'dialogs:query-dialog
             :debug-dialog 'dialogs:debug-dialog)
-  (setf *break-on-errors* t))
+  (setf *break-on-errors* t)
+  (qlater (lambda () (eval* "(help)"))))
 
 (defun reload-qml (&optional (url "http://localhost:8080/"))
   ;; please see README-1.md

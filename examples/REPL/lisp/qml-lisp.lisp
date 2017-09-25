@@ -14,6 +14,7 @@
    #:children
    #:file-to-url
    #:find-quick-item
+   #:ini-quick-view
    #:js
    #:qml-call
    #:qml-get
@@ -172,4 +173,29 @@
                   (apply 'format nil js-format-string arguments))
          (variant (|evaluate| qml-exp)))
     (qvariant-value variant)))
+
+;;; ini
+
+(defun ini-quick-view (file)
+  (setf *quick-view* (qnew "QQuickView"))
+  ;; special settings for mobile, taken from Qt example
+  (let ((env (ext:getenv "QT_QUICK_CORE_PROFILE")))
+    (when (and (stringp env)
+               (not (zerop (parse-integer env :junk-allowed t))))
+      (let ((f (|format| *quick-view*)))
+        (|setProfile| f |QSurfaceFormat.CoreProfile|)
+        (|setVersion| f 4 4)
+        (|setFormat| *quick-view* f))))
+  (qconnect (|engine| *quick-view*) "quit()" (qapp) "quit()")
+  (qnew "QQmlFileSelector(QQmlEngine*,QObject*)" (|engine| *quick-view*) *quick-view*)
+  (|setSource| *quick-view* (file-to-url file))
+  (when (= |QQuickView.Error| (|status| *quick-view*))
+    ;; display eventual QML errors
+    (qmsg (list (mapcar '|toString| (|errors| *quick-view*))))
+    (return-from ini-quick-view))
+  (|setResizeMode| *quick-view* |QQuickView.SizeRootObjectToView|)
+  (let ((platform (|platformName.QGuiApplication|)))
+    (if (find platform '("qnx" "eglfs") :test 'string=)
+        (|showFullScreen| *quick-view*)
+        (|show| *quick-view*))))
 
