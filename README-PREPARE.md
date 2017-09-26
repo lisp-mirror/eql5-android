@@ -8,24 +8,26 @@ and a few other downloads...).
 Please note that I'm assuming a 64 bit Linux or VirtualBox image.
 
 This project requires *exactly* the following development environment:
-(in order to match the pre-built EQL5 libraries for Android)
+(in order to match the pre-built EQL5 libraries for android)
 
 * ECL 16.1.3 [official release](https://common-lisp.net/project/ecl/static/files/release/ecl-16.1.3.tgz) (not a git snapshot)
 * Qt 5.7.1 [linux-x64-android](https://download.qt.io/archive/qt/5.7/5.7.1/)
 * Android NDK version 10e
 
-(Your desktop EQL5 is completely independent from this project; you don't even
-need it to compile Android apps; a **host ECL** will be sufficient, see below.)
+(The desktop EQL5, from which this port originates, is not strictly needed, at
+least not to compile android apps; a **host ECL** will be sufficient for
+cross-compiling, see below.)
 
-N.B: You will *not* need to build the EQL5 shared libraries for Android; the
+N.B: You will *not* need to build the EQL5 shared libraries for android; the
 cross-compiled versions are already included (see `lib/`).
 But if you prefer to build them by yourself, please see `build-eql5/`.
 
-Since the included EQL5 Android libraries have been built with the above
+Since the included EQL5 android libraries have been built with the above
 versions, you're required to have the exact same versions installed.
 
-Please note: EQL5 for Android is basically the same as EQL5 for the desktop.
-Some modules are not supported on Android, namely the web and multimedia ones.
+Please note: EQL5 for android is basically the same as EQL5 for the desktop.
+Some modules are not supported on android, namely the web and multimedia ones.
+But you can use a `WebView` directly from QML.
 
 --
 
