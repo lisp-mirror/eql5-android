@@ -462,8 +462,8 @@
     (if (x:starts-with "qrc:/" src)
         (|setSource| qml:*quick-view* (qnew "QUrl(QString)"
                                             (x:string-substitute url "qrc:/" src)))
-        (qml:reload)))
-  (values))
+        (qml:reload))
+    src))
 
 (defun qml-reloaded ()
   (connect-buttons)
