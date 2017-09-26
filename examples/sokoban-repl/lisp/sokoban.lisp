@@ -275,7 +275,7 @@
 
 (defun start ()
   ;; ini
-  (qlater 'eql-user::ini)
+  (qlater 'eql-user::ini) ; for Swank, Quicklisp
   (eval:ini)
   (qml:ini-quick-view "qml/sokoban.qml")
   (connect)
@@ -287,7 +287,9 @@
   (setf sokoban:*move-hook* 'move-item
         sokoban:*undo-hook* 'add-undo-step)
   (qml-set "level" "to" (1- (length *my-mazes*)))
-  (set-maze))
+  (set-maze)
+  ;; show help
+  (qlater (lambda () (eval:eval-in-thread "(help)"))))
 
 ;; REPL
 

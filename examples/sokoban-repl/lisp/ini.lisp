@@ -101,3 +101,12 @@
 (define-symbol-macro :r (qsoko:reload-qml))
 (define-symbol-macro :q (quicklisp))
 (define-symbol-macro :s (start-swank))
+
+(defun eql-user::help ()
+  (format t "~%~
+             ~%  :s  (start-swank)           ; adb forward tcp:4005 tcp:4005~
+             ~%  :q  (quicklisp)             ; will install/load it~
+             ~%  :l  (dialogs:load-file)     ; load~
+             ~%  :f  (dialogs:get-file-name) ; see dialogs:*file-name*~
+             ~%  :r  (qsoko:reload-qml)      ; see docu")
+  (values))

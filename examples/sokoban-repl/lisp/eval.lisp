@@ -2,6 +2,7 @@
   (:use :cl :eql :qml)
   (:export
    #:*eval-thread*
+   #:eval-in-thread
    #:ini))
 
 (in-package :eval)
