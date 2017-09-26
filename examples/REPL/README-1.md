@@ -194,6 +194,13 @@ string if necessary; here: a list):
 
 --
 
+**Quicklisp** tip: you only should eval `(quicklisp)` to install new libraries.
+
+To load them, just use `asdf:load-system`, which is much faster than
+`ql:quickload` (on android).
+
+--
+
 Since we have all of EQL5 available, you can directly run files like
 `clock.lisp` (see `../clock/lisp/clock.lisp`).
 

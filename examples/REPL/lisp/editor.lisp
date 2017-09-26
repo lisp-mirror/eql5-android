@@ -441,7 +441,7 @@
     (clicked "font_smaller" (lambda () (change-font :smaller)))))
 
 (defun start ()
-  (qlater 'eql-user::ini)
+  (qlater 'eql-user::ini) ; for Swank, Quicklisp
   (qml:ini-quick-view "qml/repl.qml")
   (connect-buttons)
   (qconnect qml:*quick-view* "statusChanged(QQuickView::Status)" ; for reloading
@@ -452,7 +452,7 @@
             :query-dialog 'dialogs:query-dialog
             :debug-dialog 'dialogs:debug-dialog)
   (setf *break-on-errors* t)
-  (qlater (lambda () (eval* "(help)"))))
+  (qlater (lambda () (eval* "(help)")))) ; show help
 
 (defun reload-qml (&optional (url "http://localhost:8080/"))
   ;; please see README-1.md
