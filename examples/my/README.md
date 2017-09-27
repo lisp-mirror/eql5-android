@@ -1,13 +1,17 @@
 
 ### Info
 
-This is just a basic skeleton for interactively developing android apps.
+This is just a basic skeleton for interactively developing android apps: so,
+it's perfect for playing around, without installing some GB of development
+tools first...
 
-If you want to use the extreme minimum (that is, not installing any of NDK,
-SDK, ECL, Qt5, EQL5), you can just use the **APK** of this example, plus the
-standalone **adb** command line tool for android, and Emacs/Slime on your PC,
-plus a python 3 installation (or any trivial web server, see script
-`web-server.sh`).
+If you want to **use the extreme minimum** (that is, **not** installing any of
+NDK, SDK, ECL, Qt5, EQL5), you can just use the
+[APK](http://lights-of-holiness.eu/tmp/my.apk) of this example, plus the
+standalone
+[adb](https://developer.android.com/studio/releases/platform-tools.html)
+command line tool for android, and Emacs/Slime on your PC, plus a python 3
+installation (or any trivial web server, see script `web-server.sh`).
 
 * connect your device via USB
 
@@ -31,6 +35,8 @@ Now use `lisp/my.lisp` and `qml/my.qml` for development.
 
 ### Build APK
 
+(this obviously needs a full installation of all tools)
+
 ```
   $ ecl-android -shell make.lisp
   $ qmake-android my.pro
@@ -41,4 +47,4 @@ Now use `lisp/my.lisp` and `qml/my.qml` for development.
   $ ./3-build-apk.sh
 ```
 
-(A more detailed description can be found in example "../tic-tac-toe".)
+(a more detailed description can be found in example `../tic-tac-toe`)
