@@ -15,7 +15,8 @@
                 (#.|QQuickView.Ready|
                  (qml-reloaded))
                 (#.|QQuickView.Error|
-                 (qmsg (list (mapcar '|toString| (|errors| *quick-view*))))))))
+                 (qmsg (x:join (mapcar '|toString| (|errors| *quick-view*))
+                               #.(make-string 2 :initial-element #\Newline)))))))
   ;; show help
   (qlater (lambda () (eval:eval-in-thread "(help)"))))
 
@@ -41,7 +42,7 @@
         (|setSource| qml:*quick-view* (qnew "QUrl(QString)"
                                             (x:string-substitute url "qrc:/" src)))
         (qml:reload))
-    src))
+    (|toString| (|source| qml:*quick-view*))))
 
 (defun qml-reloaded ()
   ;; re-ini

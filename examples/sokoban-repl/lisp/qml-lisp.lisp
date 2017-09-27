@@ -191,8 +191,8 @@
   (|setSource| *quick-view* (file-to-url file))
   (when (= |QQuickView.Error| (|status| *quick-view*))
     ;; display eventual QML errors
-    (qmsg (list (mapcar '|toString| (|errors| *quick-view*))))
-    (return-from ini-quick-view))
+    (qmsg (x:join (mapcar '|toString| (|errors| *quick-view*))
+                  #.(make-string 2 :initial-element #\Newline))))
   (|setResizeMode| *quick-view* |QQuickView.SizeRootObjectToView|)
   (let ((platform (|platformName.QGuiApplication|)))
     (if (find platform '("qnx" "eglfs") :test 'string=)

@@ -446,8 +446,12 @@
   (connect-buttons)
   (qconnect qml:*quick-view* "statusChanged(QQuickView::Status)" ; for reloading
             (lambda (status)
-              (when (= |QQuickView.Ready| status)
-                (qml-reloaded))))
+              (case status
+                (#.|QQuickView.Ready|
+                 (qml-reloaded))
+                (#.|QQuickView.Error|
+                 (qmsg (x:join (mapcar '|toString| (|errors| *quick-view*))
+                               #.(make-string 2 :initial-element #\Newline)))))))
   (eval:ini :output       'eval-output
             :query-dialog 'dialogs:query-dialog
             :debug-dialog 'dialogs:debug-dialog)
@@ -463,7 +467,7 @@
         (|setSource| qml:*quick-view* (qnew "QUrl(QString)"
                                             (x:string-substitute url "qrc:/" src)))
         (qml:reload))
-    src))
+    (|toString| (|source| qml:*quick-view*))))
 
 (defun qml-reloaded ()
   (connect-buttons)
