@@ -11,8 +11,11 @@
   (qml:ini-quick-view "qml/my.qml")
   (qconnect qml:*quick-view* "statusChanged(QQuickView::Status)" ; for reloading
             (lambda (status)
-              (when (= |QQuickView.Ready| status)
-                (qml-reloaded))))
+              (case status
+                (#.|QQuickView.Ready|
+                 (qml-reloaded))
+                (#.|QQuickView.Error|
+                 (qmsg (list (mapcar '|toString| (|errors| *quick-view*))))))))
   ;; show help
   (qlater (lambda () (eval:eval-in-thread "(help)"))))
 
@@ -41,5 +44,5 @@
     src))
 
 (defun qml-reloaded ()
-  ;; (see same function in examples 'REPL' and 'sokoban-repl')
+  ;; re-ini
   )
