@@ -1,9 +1,11 @@
 (load "lisp/qml-lisp")
 (load "lisp/eval")
-(load "lisp/thread-safe")
-(load "lisp/my")
 (load "lisp/dialogs")
+(load "lisp/thread-safe")
+(load "package")
 (load "lisp/ini")
+(load "lisp/my-ini")
+(load "lisp/my")
 
 (progn
   (my:start)

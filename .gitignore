@@ -29,6 +29,7 @@ tmp*
 qrc_*.cpp
 android-build
 *.tgz
+a
 b
 r
 r.lisp

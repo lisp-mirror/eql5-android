@@ -9,10 +9,12 @@
 
 (defparameter *files* '("lisp/qml-lisp"
                         "lisp/eval"
-                        "lisp/thread-safe"
-                        "lisp/my"
                         "lisp/dialogs"
-                        "lisp/ini"))
+                        "lisp/thread-safe"
+                        "package"
+                        "lisp/ini"
+                        "lisp/my-ini"
+                        "lisp/my"))
 
 (setf *load-verbose* nil)
 (setf *compile-verbose* t)
