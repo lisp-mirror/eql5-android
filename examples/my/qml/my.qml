@@ -7,6 +7,11 @@ import EQL5 1.0
 Rectangle {
     id: main
     objectName: "main"
+    color: "lightcyan"
+
+    // your QML
+
+
 
     // REPL
     

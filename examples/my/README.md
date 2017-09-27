@@ -6,7 +6,7 @@ it's perfect for playing around, without installing some GB of development
 tools first...
 
 If you want to **use the extreme minimum** (that is, **not** installing any of
-NDK, SDK, ECL, Qt5, EQL5), you can just use the
+NDK, SDK, ECL, Qt5, EQL5, EQL5-Android), you can just use the
 [APK](http://lights-of-holiness.eu/tmp/my.apk) of this example, plus the
 standalone
 [adb](https://developer.android.com/studio/releases/platform-tools.html)
@@ -31,6 +31,8 @@ Now use `lisp/my.lisp` and `qml/my.qml` for development.
 
 * to reload the QML file (after saving the changes) eval `:r` on the PC
 
+(Sometimes the Slime connection doesn't work the first time; in this case you
+need to resart the android app.)
 
 
 ### Build APK

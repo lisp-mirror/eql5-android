@@ -8,6 +8,12 @@
 
 (in-package :my)
 
+;;; your code
+
+
+
+;;; ini
+
 (defun start ()
   ;; ini
   (qlater 'eql-user::ini) ; for Swank, Quicklisp
@@ -22,7 +28,7 @@
   ;; show help
   (qlater (lambda () (eval:eval-in-thread "(help)"))))
 
-;; REPL
+;;; REPL
 
 (defvar *qml-repl* "repl_container")
 
@@ -49,4 +55,3 @@
 (defun qml-reloaded ()
   ;; (see same function in examples 'REPL' and 'sokoban-repl')
   )
-
