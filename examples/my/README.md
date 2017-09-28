@@ -3,7 +3,7 @@
 
 Explaining this example in one sentence could be:
 
-#### Scetching an android app without installing the (gigantic) dev tools
+#### Sketching an android app without installing the (gigantic) dev tools
 
 So, this is just a basic skeleton for interactively developing android apps:
 it's perfect for playing around, without installing some GB of development
@@ -35,7 +35,7 @@ Now use `lisp/my.lisp` and `qml/my.qml` for development.
 
 * to reload the QML file (after saving the changes) eval `:r` on the PC
 
-![screenshot Emacs/Slime](../../screenshots/scetching.png)
+![screenshot Emacs/Slime](../../screenshots/sketching.png)
 
 The above QML window uses
 [qml-mode](https://www.emacswiki.org/emacs/qml-mode.el).
