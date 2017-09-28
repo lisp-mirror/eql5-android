@@ -1,4 +1,4 @@
-import QtQuick 2.3
+import QtQuick 2.7
 import QtQuick.Dialogs 1.2
 import EQL5 1.0
 
