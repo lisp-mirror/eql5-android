@@ -40,6 +40,12 @@ Now use `lisp/my.lisp` and `qml/my.qml` for development.
 The above QML window uses
 [qml-mode](https://www.emacswiki.org/emacs/qml-mode.el).
 
+In order to evaluate the whole file (here: `my.lisp`) after restarting the
+android app, use:
+
+* select all `C-x h`
+* eval region `C-c C-r`
+
 **Note**: Sometimes the Slime connection doesn't work the *first time* you try
 to connect; in this case you generally need to restart the android app, or
 sometimes even Emacs (if in doubt, just restart both of them).
