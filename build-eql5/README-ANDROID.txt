@@ -1,6 +1,6 @@
 
 INFO
-====
+----
 
 If you don't want to use the included EQL5 libs from '../lib/' (or you want to
 use a Qt version different from 5.7.1), just follow the below steps.
@@ -8,7 +8,7 @@ use a Qt version different from 5.7.1), just follow the below steps.
 
 
 IMPORTANT NOTES
-===============
+---------------
 
 You will need EQL5 version >= 17.7.1 (check eql5 -v).
 
@@ -20,7 +20,7 @@ versions you used to build the cross-compiled EQL5 libs.
 
 
 CROSS-COMPILE EQL5
-==================
+------------------
 
 This will compile all supported eql5 libs (I'm assuming you already went
 through '../README-PREPARE.txt').
@@ -87,7 +87,7 @@ Finally copy the libs over to 'eql5-android':
 
 
 NOTE
-====
+----
 
 You may have noticed that there's no executable included, like 'eql5' on the
 desktop; even if you try to compile it, it would still build a shared library

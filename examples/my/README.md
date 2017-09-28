@@ -33,9 +33,12 @@ Now use `lisp/my.lisp` and `qml/my.qml` for development.
 
 ![screenshot Emacs/Slime](../../screenshots/scetching.png)
 
-(Sometimes the Slime connection doesn't work the first time you try to connect;
-in this case you need to restart either Emacs or the android app; if in doubt,
-just restart both of them.)
+The above QML window uses
+[qml-mode](https://www.emacswiki.org/emacs/qml-mode.el).
+
+**Note**: Sometimes the Slime connection doesn't work the *first time* you try
+to connect; in this case you generally need to restart the android app, or
+sometimes even Emacs (if in doubt, just restart both of them).
 
 
 ### Build APK
