@@ -1,7 +1,11 @@
 
 ### Info
 
-This is just a basic skeleton for interactively developing android apps: so,
+Explaining this example in one sentence could be:
+
+#### Scetching an android app without installing the (gigantic) dev tools
+
+So, this is just a basic skeleton for interactively developing android apps:
 it's perfect for playing around, without installing some GB of development
 tools first...
 
