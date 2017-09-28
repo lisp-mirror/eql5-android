@@ -31,6 +31,8 @@ Now use `lisp/my.lisp` and `qml/my.qml` for development.
 
 * to reload the QML file (after saving the changes) eval `:r` on the PC
 
+![screenshot Emacs/Slime](../../screenshots/scetching.png)
+
 (Sometimes the Slime connection doesn't work the first time you try to connect;
 in this case you need to restart either Emacs or the android app; if in doubt,
 just restart both of them.)
