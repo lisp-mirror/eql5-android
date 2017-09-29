@@ -23,7 +23,7 @@ installation (or any trivial web server, see script `web-server.sh`).
 
 * run `$ adb reverse tcp:8080 tcp:8080`
 
-* in this directory run `$ ./web-server.sh` (requires python 3)
+* in this directory run `$ ./web-server.sh` or `$ web-server.bat` (requires python 3)
 
 Now start the **my** app on android and tap on the REPL switch.
 
