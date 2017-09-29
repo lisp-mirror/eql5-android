@@ -38,10 +38,10 @@ Now use `lisp/my.lisp` and `qml/my.qml` for development.
 ![screenshot Emacs/Slime](../../screenshots/sketching.png)
 
 The above QML window uses
-[qml-mode](https://www.emacswiki.org/emacs/qml-mode.el).
+[qml-mode](https://www.emacswiki.org/emacs/qml-mode.el). In `my.qml` you can
+of course link to any other file or picture present on the PC.
 
-In order to evaluate the whole file (here: `my.lisp`) after restarting the
-android app, use:
+In order to evaluate the whole `my.lisp` after restarting the android app, use:
 
 * select all `C-x h`
 * eval region `C-c C-r`
