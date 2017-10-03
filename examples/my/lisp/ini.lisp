@@ -96,13 +96,13 @@
 
 ;; convenience
 
-(define-symbol-macro :f (dialogs:get-file-name))
-(define-symbol-macro :l (dialogs:load-file))
-(define-symbol-macro :r (my:reload-qml))
-(define-symbol-macro :q (quicklisp))
 (define-symbol-macro :s (start-swank))
+(define-symbol-macro :q (quicklisp))
+(define-symbol-macro :l (dialogs:load-file))
+(define-symbol-macro :f (dialogs:get-file-name))
+(define-symbol-macro :r (my:reload-qml))
 
-(defun eql-user::help ()
+(defun help ()
   (format t "~%~
              ~%  :s  (start-swank)           ; adb forward tcp:4005 tcp:4005~
              ~%  :q  (quicklisp)             ; will install/load it~

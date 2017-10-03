@@ -10,7 +10,8 @@ it's perfect for playing around, without installing some GB of development
 tools first...
 
 If you want to **use the extreme minimum** (that is, **not** installing any of
-NDK, SDK, ECL, Qt5, EQL5, EQL5-Android), you can just use the
+NDK, SDK, JDK, ECL, Qt5, EQL5-Android - except the sources of this example),
+you can just use the
 [APK](http://lights-of-holiness.eu/tmp/my.apk) of this example, plus the
 standalone
 [adb](https://developer.android.com/studio/releases/platform-tools.html)
