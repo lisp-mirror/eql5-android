@@ -24,11 +24,12 @@
 (defvar *file*                   nil)
 
 ;; QML items
-(defvar *qml-edit*     "edit")
-(defvar *qml-output*   "output")
-(defvar *qml-clear*    "clear")
-(defvar *qml-status*   "status")
-(defvar *qml-document* nil)
+(defvar *qml-edit*           "edit")
+(defvar *qml-output*         "output")
+(defvar *qml-clear*          "clear")
+(defvar *qml-status*         "status")
+(defvar *qml-clipboard-menu* "clipboard_menu")
+(defvar *qml-document*        nil)
 
 (defun read-file (file)
   (with-open-file (s (x:path file) :direction :input)
@@ -118,7 +119,8 @@
       (let* ((text-block (|block| text-cursor))
              (line (|text| text-block))
              (pos (|positionInBlock| text-cursor)))
-        (setf *current-line* line)
+        (setf *current-line*  line
+              *cursor-indent* pos)
         (when (and (plusp pos)
                    (char= #\) (char line (1- pos))))
           (show-matching-paren text-cursor (subseq line 0 pos) :right))))))
@@ -403,6 +405,79 @@
       (when ok
         (save-to-file dialogs:*file-name*)))))
 
+;; select all, cut, copy, paste
+
+(defvar *copied-text*         "")
+(defvar *selection-start*     0)
+(defvar *cursor-indent-copy*  0)
+(defvar *cursor-indent-paste* 0)
+
+(defun copy-paste (pos) ; called from QML
+  (select-expression pos)
+  (show-clipboard-menu))
+
+(defun select-expression (pos)
+  (let ((text (qml-get *qml-edit* "text"))
+        (start pos)
+        ch)
+    (when (< pos (length text))
+      (x:while (char/= #\( (setf ch (char text start)))
+        (when (or (minusp (decf start))
+                  (find ch '(#\Newline #\) )))
+          (return-from select-expression)))
+      (x:when-it (end-position (subseq text start))
+        (let ((end (+ start x:it)))
+          (setf *selection-start* start
+                *copied-text*     (subseq text start end))
+          (qml-call *qml-edit* "select" start end))))))
+
+(defun show-clipboard-menu ()
+  (qml-call *qml-clipboard-menu* "open"))
+
+(defun select-all ()
+  (setf *selection-start* nil)
+  (qml-call *qml-edit* "selectAll"))
+
+(defun cut ()
+  (copy)
+  (qml-call *qml-edit* "remove" *selection-start* (+ *selection-start* (length *copied-text*))))
+
+(defun copy ()
+  (if *selection-start*
+      (let* ((snip (qml-call *qml-edit* "getText" (max 0 (- *selection-start* 100)) *selection-start*))
+             (nl (position #\Newline snip :from-end t)))
+        (setf *cursor-indent-copy* (if nl (- (length snip) (1+ nl)) 0)))
+      (setf *copied-text*     (qml-get *qml-edit* "text")
+            *selection-start* 0)))
+
+(defun paste ()
+  "Paste text adapting the indentation."
+  (let* ((lines (x:split *copied-text* #\Newline))
+         (diff (- *cursor-indent* *cursor-indent-copy*))
+         (text (with-output-to-string (s)
+                 (write-line (first lines) s)
+                 (dolist (line (rest lines))
+                   (when (plusp diff)
+                     (write-string (make-string diff) s))
+                   (write-line (subseq line (if (minusp diff) (- diff) 0)) s)))))
+    (qml-call *qml-edit* "insert"
+              (qml-get *qml-edit* "cursorPosition")
+              (subseq text 0 (1- (length text))))))
+
+(defun connect-menu-buttons ()
+  (flet ((clicked (name function &optional (hide t))
+           (qconnect (find-quick-item name) "clicked()"
+                     (lambda ()
+                       (if (stringp function)
+                           (qml-call *qml-edit* function)
+                           (funcall function))
+                       (when hide
+                         (qml-call *qml-clipboard-menu* "close"))))))
+    (clicked "select_all" 'select-all nil)
+    (clicked "cut"        'cut)
+    (clicked "copy"       'copy)
+    (clicked "paste"      'paste)))
+
 ;; log
 
 (defun log-output ()
@@ -420,7 +495,7 @@
 (defun set-delayed-focus () ; called from QML
   ;; needed because resizing sometimes gets messed up on startup
   ;; (caused by virtual keyboard)
-  (qsingle-shot 2000 (lambda ()
+  (qsingle-shot 1000 (lambda ()
                        (when (= (+ (qml-get *qml-edit* "height")
                                    (qml-get *qml-output* "height"))
                                 (fourth (|availableGeometry| (|desktop.QApplication|))))
@@ -444,6 +519,7 @@
   (qlater 'eql-user::ini) ; for Swank, Quicklisp
   (qml:ini-quick-view "qml/repl.qml")
   (connect-buttons)
+  (connect-menu-buttons)
   (qconnect qml:*quick-view* "statusChanged(QQuickView::Status)" ; for reloading
             (lambda (status)
               (case status
@@ -471,4 +547,5 @@
 
 (defun qml-reloaded ()
   (connect-buttons)
+  (connect-menu-buttons)
   (setf eql::*reloading-qml* nil))

@@ -11,4 +11,3 @@ Image {
         onPressed: parent.pressed()
     }
 }
-

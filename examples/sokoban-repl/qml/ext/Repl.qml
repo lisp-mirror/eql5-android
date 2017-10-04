@@ -19,7 +19,7 @@ Item {
         Switch {
             id: showRepl
 
-            onCheckedChanged: Lisp.call("my:show-repl", checked)
+            onCheckedChanged: Lisp.call("qsoko:show-repl", checked)
         }
     }
 

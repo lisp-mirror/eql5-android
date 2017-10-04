@@ -97,24 +97,15 @@ To get the text (or better: html) of the output window, do:
 
 ### Developing a GUI interactively, using QML
 
-Well, you might be tempted to do this directly on the device: but this is not
-a good idea (if you understood the nature of Qt5); simply develop your app on
-the desktop first!
+You can either use the EQL5 desktop version to build your app on the desktop
+first, or you use the approach shown in example `../my`, which is fully
+interactive for both Lisp and QML.
 
-Please see file `lisp/qml-lisp` for interacting with QML, especially
-`(qml:reload)`.
+Example `../sokoban-repl` integrates a simple REPL, hidden by default (the
+same REPL as in example `../my`).
 
-In order to be able to interact with your app running on the device, just use
-this REPL example as a template; you'll basically just need
-`android-build/assets/lib/*`, `lisp/ini.lisp`, `build/main.cpp` to be able to
-install Quicklisp and Swank.
-
-For an example of the above (including a very basic REPL, hidden by default),
-please see example `../sokoban-repl`.
-
-Then, after having developed a working desktop version, you can try to change
-things (using Slime) directly on the device (using `qml-get`, `qml-set`,
-`qml-call` etc.); just make sure to set an `objectName` to every QML item you
+See also file `lisp/qml-lisp` for interacting with QML, especially
+`(qml:reload)`. Make sure to set an `objectName` to every QML item you
 want to change interactively.
 
 --

@@ -48,8 +48,8 @@ In order to evaluate the whole `my.lisp` after restarting the android app, use:
 * eval region `C-c C-r`
 
 **Note**: Sometimes the Slime connection doesn't work the *first time* you try
-to connect; in this case you generally need to restart the android app, or
-sometimes even Emacs (if in doubt, just restart both of them).
+to connect; just try to connect a second time; if this doesn't work, you
+generally need to restart the android app, or sometimes even Emacs.
 
 
 ### Build APK

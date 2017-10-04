@@ -28,6 +28,7 @@ Rectangle {
             height: flickEdit.height
             font.family: "Droid Sans Mono"
             font.pointSize: 18
+            selectionColor: "firebrick"
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
             cursorDelegate: cursor
             focus: true
@@ -53,6 +54,10 @@ Rectangle {
                 // seems necessary to move cursor by tapping
                 edit.forceActiveFocus()
                 edit.cursorPosition = edit.positionAt(mouse.x, mouse.y)
+            }
+
+            onPressAndHold: {
+                Lisp.call("editor:copy-paste", edit.cursorPosition)
             }
         }
 
@@ -201,7 +206,7 @@ Rectangle {
         }
     }
 
-    // not visible dialog instances (will be called from Lisp)
+    // not visible dialog / menu instances (will be called from Lisp)
 
     Ext.QueryDialog {
         objectName: "query_dialog"
@@ -209,5 +214,9 @@ Rectangle {
 
     Ext.DebugDialog {
         objectName: "debug_dialog"
+    }
+
+    Ext.ClipboardMenu {
+        objectName: "clipboard_menu"
     }
 }

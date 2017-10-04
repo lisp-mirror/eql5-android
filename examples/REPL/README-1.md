@@ -130,6 +130,17 @@ only show the last line of the output you would see on a console).
 
 
 
+### Copy and Paste
+
+Tap and hold on the beginning (or inside) of an expression (e.g. on `defun`) to
+select the whole expression, and to show the popup menu for copy and paste. If
+you paste the expression to a different indentation level, the indentation will
+be automatically adapted.
+
+The icons for this menu are taken from `fontawesome-webfont.ttf` (included).
+
+
+
 ### Desktop notes
 
 To run this example on the desktop, do:
