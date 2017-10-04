@@ -137,6 +137,9 @@ select the whole expression, and to show the popup menu for copy and paste. If
 you paste the expression to a different indentation level, the indentation will
 be automatically adapted.
 
+To paste the selected text, simply tap and hold where you want to paste it, to
+show the popup menu again.
+
 The icons for this menu are taken from `fontawesome-webfont.ttf` (included).
 
 

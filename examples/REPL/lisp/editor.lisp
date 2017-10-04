@@ -410,7 +410,6 @@
 (defvar *copied-text*         "")
 (defvar *selection-start*     0)
 (defvar *cursor-indent-copy*  0)
-(defvar *cursor-indent-paste* 0)
 
 (defun copy-paste (pos) ; called from QML
   (select-expression pos)
@@ -435,7 +434,8 @@
   (qml-call *qml-clipboard-menu* "open"))
 
 (defun select-all ()
-  (setf *selection-start* nil)
+  (setf *selection-start*    nil
+        *cursor-indent-copy* 0)
   (qml-call *qml-edit* "selectAll"))
 
 (defun cut ()
