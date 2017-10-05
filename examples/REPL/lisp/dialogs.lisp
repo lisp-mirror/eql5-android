@@ -14,24 +14,32 @@
 (defvar *file-dialog-instance*  nil)
 (defvar *suspended-thread*      nil)
 
+(defvar *qml-query-dialog* "query_dialog")
+(defvar *qml-query-text*   "query_text")
+(defvar *qml-query-input*  "query_input")
+(defvar *qml-debug-dialog* "debug_dialog")
+(defvar *qml-debug-text*   "debug_text")
+(defvar *qml-debug-input*  "debug_input")
+(defvar *qml-file-dialog*  "file_dialog")
+
 (defun query-dialog (query)
   (unless (x:empty-string query)
-    (qml-set "query_text" "text" query))
-  (qml-call "query_input" "clear")
-  (qml-call "query_dialog" "open")
+    (qml-set *qml-query-text* "text" query))
+  (qml-call *qml-query-input* "clear")
+  (qml-call *qml-query-dialog* "open")
   (wait-for-closed)
-  (qml-get "query_input" "text"))
+  (qml-get *qml-query-input* "text"))
 
 (defun debug-dialog (messages)
-  (qml-call "debug_text" "clear")
+  (qml-call *qml-debug-text* "clear")
   (dolist (text/color messages)
-    (qml-call "debug_text" "append"
+    (qml-call *qml-debug-text* "append"
               (format nil "<pre><font face='Droid Sans Mono' color='~A'>~A</font></pre>"
                       (cdr text/color)
                       (x:string-substitute "<br>" (string #\Newline) (qescape (car text/color))))))
-  (qml-call "debug_dialog" "open")
+  (qml-call *qml-debug-dialog* "open")
   (wait-for-closed)
-  (qml-get "debug_input" "text"))
+  (qml-get *qml-debug-input* "text"))
 
 (defun qml-component (file)
   (qnew "QQmlComponent(QQmlEngine*,QUrl)"
@@ -47,9 +55,9 @@
   (setf *file-dialog-instance* (qt-object-? (|create| *file-dialog-component*)))
   (|setParent| *file-dialog-instance* (qml:root-item))
   (when callback
-    (qml-set "file_dialog" "callback" (prin1-to-string callback)))
-  (qml-set "file_dialog" "selectExisting" (not save))
-  (qml-call "file_dialog" "open"))
+    (qml-set *qml-file-dialog* "callback" (prin1-to-string callback)))
+  (qml-set *qml-file-dialog* "selectExisting" (not save))
+  (qml-call *qml-file-dialog* "open"))
 
 (defun set-file-name (name) ; called from QML
   (setf *file-name* name))

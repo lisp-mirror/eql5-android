@@ -6,7 +6,7 @@ import "." as Ext
 Popup {
     x: (Screen.desktopAvailableWidth - width) / 2
     y: 4
-    topMargin: 0
+    opacity: 0.9
     modal: true
 
     Row {
