@@ -290,10 +290,14 @@
            (qml-get *qml-output* "length")))
 
 (defun eval-expression ()
-  (let ((text (string-trim '(#\Space #\Tab #\Newline #\Return) (qml-get *qml-edit* "text"))))
+  (let ((text (if *clipboard-mode*
+                  *copied-text*
+                  (string-trim '(#\Space #\Tab #\Newline #\Return)
+                               (qml-get *qml-edit* "text")))))
     (eval* text)
     (history-add text)
-    (qml-call *qml-edit* "clear")))
+    (unless *clipboard-mode*
+      (qml-call *qml-edit* "clear"))))
 
 (defun saved-history ()
   (let ((ex "")
@@ -410,6 +414,7 @@
 (defvar *copied-text*        "")
 (defvar *selection-start*    0)
 (defvar *cursor-indent-copy* 0)
+(defvar *clipboard-mode*     nil)
 
 (defun copy-paste (pos) ; called from QML
   (select-expression pos)
@@ -473,7 +478,12 @@
     (clicked "select_all" 'select-all nil)
     (clicked "cut"        'cut)
     (clicked "copy"       'copy)
-    (clicked "paste"      'paste)))
+    (clicked "paste"      'paste))
+  (qconnect (find-quick-item *qml-clipboard-menu*) "closed()"
+            (lambda ()
+              ;; a hack to know if clipboard menu has been shown when clicking on 'Eval'
+              (setf *clipboard-mode* t)
+              (qsingle-shot 250 (lambda () (setf *clipboard-mode* nil)))))) ; see 'eval-expression'
 
 ;; log
 

@@ -7,7 +7,6 @@ Popup {
     x: (Screen.desktopAvailableWidth - width) / 2
     y: 4
     opacity: 0.9
-    modal: true
 
     Row {
         id: menuButtonRow

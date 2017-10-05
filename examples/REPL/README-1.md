@@ -130,7 +130,7 @@ only show the last line of the output you would see on a console).
 
 
 
-### Copy and Paste
+### Copy, Paste, Eval one expression
 
 Tap and hold on the beginning (or inside) of an expression (e.g. on `defun`) to
 select the whole expression, and to show the popup menu for copy and paste. If
@@ -139,6 +139,8 @@ be automatically adapted.
 
 To paste the selected text, simply tap and hold where you want to paste it, to
 show the popup menu again.
+
+To eval the selected expression only, just click on the **Eval** button.
 
 The icons for this menu are taken from `fontawesome-webfont.ttf` (included).
 
