@@ -108,7 +108,7 @@ Rectangle {
         width: parent.width
         height: command.font.pixelSize + 10
         border.width: 1
-        border.color: "gray"
+        border.color: command.focus ? "red" : "gray"
 
         TextEdit {
             id: command
