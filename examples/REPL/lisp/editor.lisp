@@ -25,6 +25,7 @@
 
 ;; QML items
 (defvar *qml-edit*           "edit")
+(defvar *qml-command*        "command")
 (defvar *qml-output*         "output")
 (defvar *qml-clear*          "clear")
 (defvar *qml-status*         "status")
@@ -62,9 +63,12 @@
                                  (t t))))
       (values exp x))))
 
-(defun end-position (expr)
+(defun end-position (str &optional simple)
   (multiple-value-bind (x end)
-      (read* expr)
+      (if simple
+          (ignore-errors (read-from-string (code-parens-only str)
+                                           nil nil :preserve-whitespace t))
+          (read* str))
     (when (numberp end)
       end)))
 
@@ -258,13 +262,15 @@
         (when (/= from ex-from)
           (setf ex-from from)
           (qsingle-shot 500 (lambda () (setf ex-from -1)))
-          (qml-set *qml-edit* "readOnly" t)
-          (qml-set *qml-edit* "selectionColor" "gray")
-          (qml-call *qml-edit* "select" from (1+ from))
-          (qsleep 0.1)
-          (qml-set *qml-edit* "readOnly" nil)
-          (qml-set *qml-edit* "cursorPosition" pos)
-          (qml-set *qml-edit* "selectionColor" color))))))
+          (let ((content-y (qml-get "flick_edit" "contentY")))
+            (qml-set *qml-edit* "readOnly" t)
+            (qml-set *qml-edit* "selectionColor" "gray")
+            (qml-call *qml-edit* "select" from (1+ from))
+            (qsleep 0.1)
+            (qml-set *qml-edit* "readOnly" nil)
+            (qml-set *qml-edit* "cursorPosition" pos)
+            (qml-set *qml-edit* "selectionColor" color)
+            (qml-set "flick_edit" "contentY" content-y)))))))
 
 (defun eval* (text)
   (eval:feed-top-level text))
@@ -289,15 +295,12 @@
   (qml-set *qml-output* "cursorPosition"
            (qml-get *qml-output* "length")))
 
-(defun eval-expression ()
-  (let ((text (if *clipboard-mode*
-                  *copied-text*
-                  (string-trim '(#\Space #\Tab #\Newline #\Return)
-                               (qml-get *qml-edit* "text")))))
+(defun eval-expression (&optional single (history t))
+  (let ((text (string-trim '(#\Space #\Tab #\Newline #\Return)
+                           (or single (qml-get *qml-edit* "text")))))
     (eval* text)
-    (history-add text)
-    (unless *clipboard-mode*
-      (qml-call *qml-edit* "clear"))))
+    (when (and single history)
+      (history-add text))))
 
 (defun saved-history ()
   (let ((ex "")
@@ -307,46 +310,38 @@
         (x:while-it (read-line s nil nil)
           (when (string/= ex x:it)
             (setf ex x:it)
-            (push (x:string-substitute (string #\Newline) *separator* x:it)
-                  history))))
+            (push x:it history))))
       (setf history (nthcdr (max 0 (- (length history) *max-history*)) (reverse history)))
       (with-open-file (s *history-file* :direction :output
                          :if-exists :supersede)
         (dolist (cmd history)
-          (write-line (x:string-substitute *separator* (string #\Newline) cmd)
-                      s)))
+          (write-line cmd s)))
       (reverse history))))
 
-(let ((ex :up)
-      up down out)
+(let (up down out)
   (defun history-ini ()
     (setf up  (saved-history)
           out (open *history-file* :direction :output
                     :if-exists :append :if-does-not-exist :create)))
   (defun history-move (direction)
-    (setf *file* nil)
     (unless out
       (history-ini))
-    (let (exp)
-      (dotimes (n (if (eql direction ex) 1 2))
-        (setf exp (case direction
-                    (:up
-                     (x:when-it (pop up)
-                       (push x:it down)))
-                    (:down
-                     (x:when-it (pop down)
-                       (push x:it up))))))
-      (setf ex direction)
+    (let ((exp (case direction
+                 (:up
+                  (x:when-it (pop up)
+                    (push x:it down)))
+                 (:down
+                  (x:when-it (pop down)
+                    (push x:it up))))))
       (when exp
-        (qml-set *qml-edit* "text" (first exp)))))
+        (qml-set *qml-command* "text" (first exp)))))
   (defun history-add (cmd)
     (unless out
       (history-ini))
     (when (or (not up)
               (and up (string/= cmd (first up))))
       (push cmd up)
-      (princ (x:string-substitute *separator* (string #\Newline) cmd)
-             out)
+      (princ cmd out)
       (terpri out)
       (force-output out)
       (when (and down (string= cmd (first down)))
@@ -355,10 +350,10 @@
     (append (reverse up) down)))
 
 (defun change-font (to)
-  (let ((size (+ (qml-get *qml-edit* "font.pointSize")
-                 (if (eql :bigger to) 2 -2))))
-    (dolist (item (list *qml-edit* *qml-output* *qml-status*))
-      (qml-set item "font.pointSize" size))))
+  (let ((size (+ (qml-get *qml-edit* "font.pixelSize")
+                 (if (eql :bigger to) 3 -3))))
+    (dolist (item (list *qml-edit* *qml-command* *qml-output* *qml-status*))
+      (qml-set item "font.pixelSize" size))))
 
 (defun clear ()
   (qml-call *qml-edit* "clear")
@@ -414,7 +409,6 @@
 (defvar *copied-text*        "")
 (defvar *selection-start*    0)
 (defvar *cursor-indent-copy* 0)
-(defvar *clipboard-mode*     nil)
 
 (defun copy-paste (pos) ; called from QML
   (select-expression pos)
@@ -429,7 +423,7 @@
         (when (or (minusp (decf start))
                   (find ch '(#\Newline #\) )))
           (return-from select-expression)))
-      (x:when-it (end-position (subseq text start))
+      (x:when-it (end-position (subseq text start) :simple)
         (let ((end (+ start x:it)))
           (setf *selection-start* start
                 *copied-text*     (subseq text start end))
@@ -478,12 +472,8 @@
     (clicked "select_all" 'select-all nil)
     (clicked "cut"        'cut)
     (clicked "copy"       'copy)
-    (clicked "paste"      'paste))
-  (qconnect (find-quick-item *qml-clipboard-menu*) "closed()"
-            (lambda ()
-              ;; a hack to know if clipboard menu has been shown when clicking on 'Eval'
-              (setf *clipboard-mode* t)
-              (qsingle-shot 250 (lambda () (setf *clipboard-mode* nil)))))) ; see 'eval-expression'
+    (clicked "paste"      'paste)
+    (clicked "eval_exp"   (lambda () (eval-expression *copied-text* nil)))))
 
 ;; log
 
@@ -538,8 +528,7 @@
   (eval:ini :output       'eval-output
             :query-dialog 'dialogs:query-dialog
             :debug-dialog 'dialogs:debug-dialog)
-  (setf *break-on-errors* t)
-  (qlater (lambda () (eval* "(help)")))) ; show help
+  (setf *break-on-errors* t))
 
 (defun reload-qml (&optional (url "http://localhost:8080/"))
   ;; please see README-1.md

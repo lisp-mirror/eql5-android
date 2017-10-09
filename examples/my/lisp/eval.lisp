@@ -139,8 +139,7 @@
           (write-line cmd s)))
       (reverse history))))
 
-(let ((ex "up")
-      up down out)
+(let (up down out)
   (defun history-ini ()
     (setf up  (saved-history)
           out (open *history-file* :direction :output
@@ -149,15 +148,12 @@
     (setf *file* nil)
     (unless out
       (history-ini))
-    (let (exp)
-      (dotimes (n (if (string= direction ex) 1 2))
-        (setf exp (cond ((string= "up" direction)
-                         (x:when-it (pop up)
-                           (push x:it down)))
-                        ((string= "down" direction)
-                         (x:when-it (pop down)
-                           (push x:it up))))))
-      (setf ex direction)
+    (let ((exp (cond ((string= "up" direction)
+                      (x:when-it (pop up)
+                        (push x:it down)))
+                     ((string= "down" direction)
+                      (x:when-it (pop down)
+                        (push x:it up))))))
       (when exp
         (qml-set *qml-repl-input* "text" (first exp)))))
   (defun history-add (cmd)

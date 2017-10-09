@@ -108,10 +108,7 @@
 (defun set-eval-state (evaluating)
   (unless (or eql::*reloading-qml*
               (and (find-package :swank) evaluating))
-    (qml:qml-set "eval" "enabled" (not evaluating))
-    (qml:qml-set "eval" "text" (if evaluating
-                                   "<font color='red'><b>Evaluating</b></font>"
-                                   "<b>Eval</b>"))))
+    (qml:qml-set "eval" "enabled" (not evaluating))))
 
 (defun start-top-level ()
   (set-eval-state t)

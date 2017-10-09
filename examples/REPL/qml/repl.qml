@@ -10,7 +10,7 @@ Rectangle {
     width: 900; height: 600 // for desktop
 
     function halfHeight() {
-        return (Screen.desktopAvailableHeight - Qt.inputMethod.keyboardRectangle.height) / 2
+        return (Screen.desktopAvailableHeight - Qt.inputMethod.keyboardRectangle.height - commandRect.height) / 2
     }
 
     Ext.Flickable {
@@ -27,11 +27,10 @@ Rectangle {
             width: flickEdit.width
             height: flickEdit.height
             font.family: "Droid Sans Mono"
-            font.pointSize: 18
+            font.pixelSize: 18
             selectionColor: "firebrick"
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
             cursorDelegate: cursor
-            focus: true
 
             onCursorRectangleChanged: flickEdit.ensureVisible(cursorRectangle)
 
@@ -51,7 +50,7 @@ Rectangle {
             anchors.fill: parent
 
             onPressed: {
-                // seems necessary to move cursor by tapping
+                // seems necessary to consistently move cursor by tapping
                 edit.forceActiveFocus()
                 edit.cursorPosition = edit.positionAt(mouse.x, mouse.y)
             }
@@ -80,10 +79,63 @@ Rectangle {
     }
 
     Rectangle {
+        width: buttonsTop.width
+        height: buttonsTop.height
+        anchors.horizontalCenter: parent.horizontalCenter
+        opacity: 0.7
+
+        Row {
+            id: buttonsTop
+            padding: 4
+            spacing: 6
+
+            Ext.MenuButton {
+                objectName: "font_smaller"
+                text: "\uf010"
+                font.pixelSize: 15
+            }
+            Ext.MenuButton {
+                objectName: "font_bigger"
+                text: "\uf00e"
+                font.pixelSize: 25
+            }
+        }
+    }
+
+    Rectangle {
+        id: commandRect
+        y: flickEdit.height
+        width: parent.width
+        height: command.font.pixelSize + 10
+        border.width: 1
+        border.color: "gray"
+
+        TextEdit {
+            id: command
+            objectName: "command"
+            anchors.fill: parent
+            padding: 4
+            font.family: "Droid Sans Mono"
+            font.pixelSize: 18
+            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+            cursorDelegate: cursor
+            focus: true
+
+            Keys.onPressed: {
+                if((event.key == Qt.Key_Return) || (event.key == Qt.Key_Enter)) {
+                    event.accepted = true
+                    Lisp.call("editor:eval-expression", text)
+                    clear()
+                }
+            }
+        }
+    }
+
+    Rectangle {
         id: rectOutput
         objectName: "rect_output"
         color: "lavender"
-        y: flickEdit.height
+        y: flickEdit.height + commandRect.height
         width: main.width
         height: main.halfHeight()
 
@@ -98,7 +150,7 @@ Rectangle {
                 objectName: "output"
                 width: flickOutput.width
                 height: flickOutput.height
-                font.pointSize: 18
+                font.pixelSize: 18
                 textFormat: TextEdit.RichText
                 readOnly: true
 
@@ -120,88 +172,59 @@ Rectangle {
                 id: status
                 objectName: "status"
                 font.family: "Droid Sans Mono"
-                font.pointSize: 18
-            }
-        }
-    }
-
-    function halfButtonWidth() {
-        return evalLisp.width / 2 - 3
-    }
-
-    Rectangle {
-        y: rectOutput.y - fontSize.height / 2
-        width: fontSize.width
-        height: fontSize.height
-        anchors.horizontalCenter: rectOutput.horizontalCenter
-
-        Row {
-            id: fontSize
-            padding: 4
-            spacing: 6
-
-            property int pointSize: evalLisp.font.pointSize
-
-            Button {
-                objectName: "font_smaller"
-                width: halfButtonWidth()
-                font.family: "Droid Sans Mono"
-                text: "Aa"
-                font.pointSize: fontSize.pointSize - 3
-            }
-            Button {
-                objectName: "font_bigger"
-                width: halfButtonWidth()
-                font.family: "Droid Sans Mono"
-                text: "Aa"
-                font.pointSize: fontSize.pointSize + 3
+                font.pixelSize: 18
             }
         }
     }
 
     Rectangle {
-        width: buttons.width
-        height: buttons.height
+        width: buttonsRight.width
+        height: buttonsRight.height
         anchors.right: parent.right
 
         Column {
-            id: buttons
-            objectName: "buttons"
+            id: buttonsRight
+            padding: 4
+            spacing: 8
+
+            Ext.Button {
+                objectName: "clear"
+                text: "\uf014"
+            }
+            Ext.Button {
+                objectName: "open_file"
+                text: "\uf115"
+            }
+            Ext.Button {
+                objectName: "save_file"
+                text: "\uf0c7"
+            }
+            Ext.Button {
+                objectName: "eval"
+                text: "\u03bb" // lambda
+            }
+        }
+    }
+
+    Rectangle {
+        width: buttonsBottom.width
+        height: buttonsBottom.height
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: rectOutput.top
+        opacity: 0.7
+
+        Row {
+            id: buttonsBottom
             padding: 4
             spacing: 6
 
-            Button {
-                objectName: "open_file"
-                text: "File..."
+            Ext.MenuButton {
+                objectName: "history_up"
+                text: "\uf100"
             }
-            Button {
-                objectName: "save_file"
-                text: "Save..."
-            }
-            Button {
-                id: clear
-                objectName: "clear"
-                text: "Clear"
-            }
-            Row {
-                spacing: 6
-
-                Button {
-                    objectName: "history_up"
-                    width: halfButtonWidth()
-                    text: "<<"
-                }
-                Button {
-                    objectName: "history_down"
-                    width: halfButtonWidth()
-                    text: ">>"
-                }
-            }
-            Button {
-                id: evalLisp
-                height: clear.height * 2
-                objectName: "eval"
-                text: "<b>Eval</b>"
+            Ext.MenuButton {
+                objectName: "history_down"
+                text: "\uf101"
             }
         }
     }

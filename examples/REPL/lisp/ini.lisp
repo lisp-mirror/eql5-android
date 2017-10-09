@@ -36,6 +36,7 @@
 (defun post-install ()
   (when (copy-asset-files *assets-lib*)
     (touch-file ".eql5-ini")
+    (qsingle-shot 1000 (lambda () (editor::eval* "(help)")))
     :done))
 
 (defun ini ()
@@ -44,8 +45,9 @@
     (if (probe-file .eclrc)
         (load .eclrc)
         (touch-file .eclrc)))
-  (unless (probe-file ".eql5-ini")
-    (qlater (lambda () (editor::eval* "(post-install)")))))
+  (qlater (lambda () (editor::eval* (if (probe-file ".eql5-ini")
+                                        "(help)"
+                                        "(post-install)")))))
 
 ;; Quicklisp setup (stolen from 'ecl-android')
 
@@ -105,5 +107,7 @@
   (format t "  :s  (start-swank)           ; adb forward tcp:4005 tcp:4005~
            ~%  :q  (quicklisp)             ; will install/load it~
            ~%  :f  (dialogs:get-file-name) ; see dialogs:*file-name*~
-           ~%  :r  (editor:reload-qml)     ; see docu")
+           ~%  :r  (editor:reload-qml)     ; see docu~
+           ~%~
+           ~%  tap and hold to select/copy/paste/eval expression (e.g. on 'defun')")
   (values))

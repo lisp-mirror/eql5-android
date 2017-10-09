@@ -6,7 +6,6 @@ import "." as Ext
 Popup {
     x: (Screen.desktopAvailableWidth - width) / 2
     y: 4
-    opacity: 0.9
 
     Row {
         id: menuButtonRow
@@ -27,6 +26,10 @@ Popup {
         Ext.MenuButton {
             objectName: "paste"
             text: "\uf0ea"
+        }
+        Ext.MenuButton {
+            objectName: "eval_exp"
+            text: "\u03bb" // lambda
         }
     }
 }

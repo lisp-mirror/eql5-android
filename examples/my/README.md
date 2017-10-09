@@ -20,9 +20,9 @@ installation (or any trivial web server, see script `web-server.sh`).
 
 * connect your device via USB
 
-* run `$ adb forward tcp:4005 tcp:4005`
+* run `$ adb forward tcp:4005 tcp:4005` (port of Swank)
 
-* run `$ adb reverse tcp:8080 tcp:8080`
+* run `$ adb reverse tcp:8080 tcp:8080` (port of web server)
 
 * in this directory run `$ ./web-server.sh` or `$ web-server.bat` (requires python 3)
 

@@ -2,10 +2,10 @@ import QtQuick 2.0
 import QtQuick.Controls 2.0
 
 Button {
-    width: 42
-    height: 42
+    width: 56
+    height: 56
     font.family: fontAwesome.name
-    font.pixelSize: 28
+    font.pixelSize: 36
     focusPolicy: Qt.NoFocus
 
     FontLoader {
