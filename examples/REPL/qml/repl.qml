@@ -90,6 +90,14 @@ Rectangle {
             spacing: 6
 
             Ext.MenuButton {
+                text: "\uf0e2"
+                onClicked: edit.undo()
+            }
+            Ext.MenuButton {
+                text: "\uf01e"
+                onClicked: edit.redo()
+            }
+            Ext.MenuButton {
                 objectName: "font_smaller"
                 text: "\uf010"
                 font.pixelSize: 15
@@ -185,7 +193,7 @@ Rectangle {
         Column {
             id: buttonsRight
             padding: 4
-            spacing: 8
+            spacing: 6
 
             Ext.Button {
                 objectName: "clear"
