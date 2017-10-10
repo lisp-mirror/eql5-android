@@ -402,7 +402,8 @@
                                      (format nil "File already exists; overwrite?<br><br>~S<br>" dialogs:*file-name*))
           (setf ok nil)))
       (when ok
-        (save-to-file dialogs:*file-name*)))))
+        (setf *file* dialogs:*file-name*)
+        (save-to-file *file*)))))
 
 ;; select all, cut, copy, paste
 
