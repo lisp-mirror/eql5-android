@@ -10,69 +10,73 @@ Rectangle {
     width: 900; height: 600 // for desktop
 
     function halfHeight() {
-        return (Screen.desktopAvailableHeight - Qt.inputMethod.keyboardRectangle.height - commandRect.height) / 2
+        return (Screen.desktopAvailableHeight - Qt.inputMethod.keyboardRectangle.height - rectCommand.height) / 2
     }
 
-    Ext.Flickable {
-        id: flickEdit
-        objectName: "flick_edit"
+    Rectangle {
         width: main.width
         height: main.halfHeight()
-        contentWidth: edit.paintedWidth
-        contentHeight: edit.paintedHeight
 
-        TextEdit {
-            id: edit
-            objectName: "edit"
-            width: flickEdit.width
-            height: flickEdit.height
-            font.family: "Droid Sans Mono"
-            font.pixelSize: 18
-            selectionColor: "firebrick"
-            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-            cursorDelegate: cursor
+        Ext.Flickable {
+            id: flickEdit
+            objectName: "flick_edit"
+            anchors.fill: parent
+            contentWidth: edit.paintedWidth
+            contentHeight: edit.paintedHeight
 
-            onCursorRectangleChanged: flickEdit.ensureVisible(cursorRectangle)
+            TextEdit {
+                id: edit
+                objectName: "edit"
+                width: flickEdit.width
+                height: flickEdit.height
+                font.family: "Droid Sans Mono"
+                font.pixelSize: 18
+                selectionColor: "firebrick"
+                inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+                cursorDelegate: cursor
 
-            Component.onCompleted: {
-                Lisp.call(textDocument, "editor:set-text-document")
-                Lisp.call("editor:set-delayed-focus")
-            }
+                onCursorRectangleChanged: flickEdit.ensureVisible(cursorRectangle)
 
-            Keys.onPressed: {
-                if((event.key == Qt.Key_Return) || (event.key == Qt.Key_Enter)) {
-                    Lisp.call("editor:return-pressed");
+                Component.onCompleted: {
+                    Lisp.call(textDocument, "editor:set-text-document")
+                    Lisp.call("editor:set-delayed-focus")
+                }
+
+                Keys.onPressed: {
+                    if((event.key == Qt.Key_Return) || (event.key == Qt.Key_Enter)) {
+                        Lisp.call("editor:return-pressed");
+                    }
                 }
             }
-        }
 
-        MouseArea {
-            anchors.fill: parent
+            MouseArea {
+                anchors.fill: parent
 
-            onPressed: {
-                // seems necessary to consistently move cursor by tapping
-                edit.forceActiveFocus()
-                edit.cursorPosition = edit.positionAt(mouse.x, mouse.y)
+                onPressed: {
+                    // seems necessary to consistently move cursor by tapping
+                    edit.forceActiveFocus()
+                    edit.cursorPosition = edit.positionAt(mouse.x, mouse.y)
+                }
+
+                onPressAndHold: {
+                    Lisp.call("editor:copy-paste", edit.cursorPosition)
+                }
             }
 
-            onPressAndHold: {
-                Lisp.call("editor:copy-paste", edit.cursorPosition)
-            }
-        }
+            Component {
+                id: cursor
 
-        Component {
-            id: cursor
+                Rectangle {
+                    width: 2
+                    color: "blue"
 
-            Rectangle {
-                width: 2
-                color: "blue"
+                    SequentialAnimation on opacity {
+                        running: true
+                        loops: Animation.Infinite
 
-                SequentialAnimation on opacity {
-                    running: true
-                    loops: Animation.Infinite
-
-                    NumberAnimation { to: 0; duration: 500; easing.type: "OutQuad" }
-                    NumberAnimation { to: 1; duration: 500; easing.type: "InQuad" }
+                        NumberAnimation { to: 0; duration: 500; easing.type: "OutQuad" }
+                        NumberAnimation { to: 1; duration: 500; easing.type: "InQuad" }
+                    }
                 }
             }
         }
@@ -111,11 +115,10 @@ Rectangle {
     }
 
     Rectangle {
-        id: commandRect
+        id: rectCommand
         y: flickEdit.height
         width: parent.width
-        height: command.font.pixelSize + 10
-        border.width: 1
+        height: command.font.pixelSize + 12
         border.color: command.focus ? "red" : "gray"
 
         TextEdit {
@@ -143,7 +146,7 @@ Rectangle {
         id: rectOutput
         objectName: "rect_output"
         color: "lavender"
-        y: flickEdit.height + commandRect.height
+        y: flickEdit.height + rectCommand.height
         width: main.width
         height: main.halfHeight()
 
@@ -227,11 +230,11 @@ Rectangle {
             spacing: 6
 
             Ext.MenuButton {
-                objectName: "history_up"
+                objectName: "history_back"
                 text: "\uf100"
             }
             Ext.MenuButton {
-                objectName: "history_down"
+                objectName: "history_forward"
                 text: "\uf101"
             }
         }

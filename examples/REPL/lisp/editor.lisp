@@ -7,8 +7,6 @@
 (dolist (module (list :network :sql :svg))
   (qrequire module :quiet)) ; load if available
 
-(defvar *max-history*            100)
-(defvar *history-file*           ".eql5-lisp-repl-history")
 (defvar *package-char-dummy*     #\$)
 (defvar *separator*              "#||#")
 (defvar *lisp-match-rule*        nil)
@@ -25,6 +23,7 @@
 
 ;; QML items
 (defvar *qml-edit*           "edit")
+(defvar *qml-flick-edit*     "flick_edit")
 (defvar *qml-command*        "command")
 (defvar *qml-output*         "output")
 (defvar *qml-clear*          "clear")
@@ -262,7 +261,7 @@
         (when (/= from ex-from)
           (setf ex-from from)
           (qsingle-shot 500 (lambda () (setf ex-from -1)))
-          (let ((content-y (qml-get "flick_edit" "contentY")))
+          (let ((content-y (qml-get *qml-flick-edit* "contentY")))
             (qml-set *qml-edit* "readOnly" t)
             (qml-set *qml-edit* "selectionColor" "gray")
             (qml-call *qml-edit* "select" from (1+ from))
@@ -270,7 +269,7 @@
             (qml-set *qml-edit* "readOnly" nil)
             (qml-set *qml-edit* "cursorPosition" pos)
             (qml-set *qml-edit* "selectionColor" color)
-            (qml-set "flick_edit" "contentY" content-y)))))))
+            (qml-set *qml-flick-edit* "contentY" content-y)))))))
 
 (defun eval* (text)
   (eval:feed-top-level text))
@@ -302,52 +301,59 @@
     (when (and single history)
       (history-add text))))
 
-(defun saved-history ()
-  (let ((ex "")
-        history)
-    (when (probe-file *history-file*)
-      (with-open-file (s *history-file* :direction :input)
-        (x:while-it (read-line s nil nil)
-          (when (string/= ex x:it)
-            (setf ex x:it)
-            (push x:it history))))
-      (setf history (nthcdr (max 0 (- (length history) *max-history*)) (reverse history)))
-      (with-open-file (s *history-file* :direction :output
-                         :if-exists :supersede)
-        (dolist (cmd history)
-          (write-line cmd s)))
-      (reverse history))))
+;; command history
 
-(let (up down out)
+(defvar *history*       (make-array 0 :adjustable t :fill-pointer t))
+(defvar *history-index* nil)
+(defvar *history-file*  ".eql5-lisp-repl-history")
+(defvar *max-history*   100)
+
+(defun read-saved-history ()
+  (when (probe-file *history-file*)
+    (let ((i -1))
+      (labels ((index ()
+                 (mod i *max-history*))
+               (next-index ()
+                 (incf i)
+                 (index)))
+        (let ((tmp (make-array *max-history*))) ; ring buffer
+          (with-open-file (s *history-file* :direction :input)
+            (x:while-it (read-line s nil nil)
+              (setf (svref tmp (next-index)) x:it)))
+          (next-index)
+          (dotimes (n (min i *max-history*))
+            (x:while (not (svref tmp (index)))
+              (next-index))
+            (vector-push-extend (svref tmp (index))
+                                *history*)
+            (next-index))
+          (setf *history-index* (length *history*))))))) ; 1 after last
+
+(let (out)
   (defun history-ini ()
-    (setf up  (saved-history)
-          out (open *history-file* :direction :output
+    (read-saved-history)
+    (setf out (open *history-file* :direction :output
                     :if-exists :append :if-does-not-exist :create)))
-  (defun history-move (direction)
+  (defun history-add (line)
     (unless out
       (history-ini))
-    (let ((exp (case direction
-                 (:up
-                  (x:when-it (pop up)
-                    (push x:it down)))
-                 (:down
-                  (x:when-it (pop down)
-                    (push x:it up))))))
-      (when exp
-        (qml-set *qml-command* "text" (first exp)))))
-  (defun history-add (cmd)
+    (let ((len (length *history*)))
+      (when (or (zerop len)
+                (string/= line (aref *history* (1- len))))
+        (vector-push-extend line *history*)
+        (setf *history-index* (length *history*)) ; 1 after last
+        (write-line line out)
+        (force-output out))))
+  (defun history-move (dir)
     (unless out
       (history-ini))
-    (when (or (not up)
-              (and up (string/= cmd (first up))))
-      (push cmd up)
-      (princ cmd out)
-      (terpri out)
-      (force-output out)
-      (when (and down (string= cmd (first down)))
-        (pop down))))
-  (defun history ()
-    (append (reverse up) down)))
+    (when *history-index*
+      (setf *history-index* (if (eql :back dir)
+                                (max (1- *history-index*) 0)
+                                (min (1+ *history-index*) (1- (length *history*)))))
+      (qml-set *qml-command* "text" (aref *history* *history-index*)))))
+
+;; etc.
 
 (defun change-font (to)
   (let ((size (+ (qml-get *qml-edit* "font.pixelSize")
@@ -504,14 +510,14 @@
 (defun connect-buttons ()
   (flet ((clicked (name function)
            (qconnect (find-quick-item name) "clicked()" function)))
-    (clicked "open_file"    'open-file)
-    (clicked "save_file"    'save-file)
-    (clicked "clear"        'clear)
-    (clicked "history_up"   (lambda () (history-move :up)))
-    (clicked "history_down" (lambda () (history-move :down)))
-    (clicked "eval"         'eval-expression)
-    (clicked "font_bigger"  (lambda () (change-font :bigger)))
-    (clicked "font_smaller" (lambda () (change-font :smaller)))))
+    (clicked "open_file"       'open-file)
+    (clicked "save_file"       'save-file)
+    (clicked "clear"           'clear)
+    (clicked "history_back"    (lambda () (history-move :back)))
+    (clicked "history_forward" (lambda () (history-move :forward)))
+    (clicked "eval"            'eval-expression)
+    (clicked "font_bigger"     (lambda () (change-font :bigger)))
+    (clicked "font_smaller"    (lambda () (change-font :smaller)))))
 
 (defun start ()
   (qlater 'eql-user::ini) ; for Swank, Quicklisp
