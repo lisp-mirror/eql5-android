@@ -301,7 +301,7 @@
     (when (and single history)
       (history-add text))))
 
-;; command history
+;;; command history
 
 (defvar *history*       (make-array 0 :adjustable t :fill-pointer t))
 (defvar *history-index* nil)
@@ -320,14 +320,13 @@
           (with-open-file (s *history-file* :direction :input)
             (x:while-it (read-line s nil nil)
               (setf (svref tmp (next-index)) x:it)))
-          (next-index)
-          (dotimes (n (min i *max-history*))
-            (x:while (not (svref tmp (index)))
-              (next-index))
-            (vector-push-extend (svref tmp (index))
-                                *history*)
-            (next-index))
-          (setf *history-index* (length *history*))))))) ; 1 after last
+          (let ((max (min (1+ i) *max-history*)))
+            (when (< max *max-history*)
+              (setf i -1))
+            (dotimes (n max)
+              (vector-push-extend (svref tmp (next-index))
+                                  *history*))
+            (setf *history-index* (length *history*)))))))) ; 1 after last
 
 (let (out)
   (defun history-ini ()
@@ -353,7 +352,7 @@
                                 (min (1+ *history-index*) (1- (length *history*)))))
       (qml-set *qml-command* "text" (aref *history* *history-index*)))))
 
-;; etc.
+;;; etc.
 
 (defun change-font (to)
   (let ((size (+ (qml-get *qml-edit* "font.pixelSize")
@@ -365,7 +364,7 @@
   (qml-call *qml-edit* "clear")
   (setf *file* nil))
 
-;; open file
+;;; open file
 
 (defun open-file ()
   (dialogs:get-file-name 'do-open-file))
@@ -377,7 +376,7 @@
         (eval* (format nil "(load ~S)" *file*))
         (qml-set *qml-edit* "text" (read-file *file*)))))
 
-;; save-file
+;;; save-file
 
 (defun save-to-file (file &optional (qml-item *qml-edit*) append)
   (with-open-file (s file :direction :output
@@ -411,7 +410,7 @@
         (setf *file* dialogs:*file-name*)
         (save-to-file *file*)))))
 
-;; select all, cut, copy, paste
+;;; select all, cut, copy, paste
 
 (defvar *copied-text*        "")
 (defvar *selection-start*    0)
@@ -482,13 +481,13 @@
     (clicked "paste"      'paste)
     (clicked "eval_exp"   (lambda () (eval-expression *copied-text* nil)))))
 
-;; log
+;;; log
 
 (defun log-output ()
   (save-to-file "output-log.htm" *qml-output* :append)
   t)
 
-;; ini
+;;; ini
 
 (defun set-text-document () ; called from QML
   ;; needed because QML-GET can't return QObject* pointers
