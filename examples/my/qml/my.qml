@@ -14,19 +14,4 @@ Rectangle {
 
     // your QML
 
-    FocusScope {
-
-        Row {
-
-            TextEdit {
-                width: 200
-                height: 200
-                text: "abc"
-            }
-
-            Button {
-                text: "OK"
-            }
-        }
-    }
 }

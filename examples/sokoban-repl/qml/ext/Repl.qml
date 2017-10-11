@@ -60,7 +60,7 @@ Item {
             TextField {
                 id: replInput
                 objectName: "repl_input"
-                width: repl.parent.width - historyUp.width - historyDown.width
+                width: repl.parent.width - historyBack.width - historyForward.width
                 font.family: "Droid Sans Mono"
                 color: "white"
                 opacity: 0.8
@@ -76,13 +76,13 @@ Item {
                 onAccepted: Lisp.call("eval:eval-in-thread", text)
             }
             Button {
-                id: historyUp
-                objectName: "history_up"
+                id: historyBack
+                objectName: "history_back"
                 width: 55
                 height: replInput.height
                 text: "<<"
 
-                onClicked: Lisp.call("eval:history-move", "up")
+                onClicked: Lisp.call("eval:history-move", "back")
             }
             Rectangle {
                 width: 1
@@ -91,13 +91,13 @@ Item {
                 opacity: 0.8
             }
             Button {
-                id: historyDown
-                objectName: "history_down"
+                id: historyForward
+                objectName: "history_forward"
                 width: 55
                 height: replInput.height
                 text: ">>"
 
-                onClicked: Lisp.call("eval:history-move", "down")
+                onClicked: Lisp.call("eval:history-move", "forward")
             }
         }
 
