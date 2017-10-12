@@ -340,9 +340,9 @@
       (when (or (zerop len)
                 (string/= line (aref *history* (1- len))))
         (vector-push-extend line *history*)
-        (setf *history-index* (length *history*)) ; 1 after last
         (write-line line out)
-        (force-output out))))
+        (force-output out)))
+    (setf *history-index* (length *history*))) ; 1 after last
   (defun history-move (dir)
     (unless out
       (history-ini))
@@ -367,6 +367,7 @@
 ;;; open file
 
 (defun open-file ()
+  (confirm-save-changes)
   (dialogs:get-file-name 'do-open-file))
 
 (defun do-open-file ()
@@ -382,7 +383,8 @@
   (with-open-file (s file :direction :output
                      :if-exists (if append :append :supersede)
                      :if-does-not-exist :create)
-    (write-sequence (qml-get qml-item "text") s)))
+    (write-sequence (qml-get qml-item "text") s)
+    (|clearUndoRedoStacks| *qml-document*)))
 
 (defun confirm-save-dialog (title text)
   (= |QMessageBox.Save|
@@ -409,6 +411,13 @@
       (when ok
         (setf *file* dialogs:*file-name*)
         (save-to-file *file*)))))
+
+(defun confirm-save-changes ()
+  (when (and *file*
+             (qml-get *qml-edit* "canUndo")
+             (confirm-save-dialog "Save changes?"
+                                  (format nil "Save changes to current file?<br><br>~S<br>" *file*)))
+    (save-to-file *file*)))
 
 ;;; select all, cut, copy, paste
 

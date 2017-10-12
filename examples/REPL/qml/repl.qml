@@ -14,6 +14,7 @@ Rectangle {
     }
 
     Rectangle {
+        id: rectEdit
         width: main.width
         height: main.halfHeight()
 
