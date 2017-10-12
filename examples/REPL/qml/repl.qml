@@ -50,6 +50,20 @@ Rectangle {
                 }
             }
 
+            MouseArea {
+                anchors.fill: parent
+
+                onPressed: {
+                    // seems necessary to consistently move cursor by tapping
+                    edit.forceActiveFocus()
+                    edit.cursorPosition = edit.positionAt(mouse.x, mouse.y)
+                }
+
+                onPressAndHold: {
+                    Lisp.call("editor:copy-paste", edit.cursorPosition)
+                }
+            }
+
             Component {
                 id: cursor
 
@@ -65,20 +79,6 @@ Rectangle {
                         NumberAnimation { to: 1; duration: 500; easing.type: "InQuad" }
                     }
                 }
-            }
-        }
-
-        MouseArea {
-            anchors.fill: parent
-
-            onPressed: {
-                // seems necessary to consistently move cursor by tapping
-                edit.forceActiveFocus()
-                edit.cursorPosition = edit.positionAt(mouse.x, mouse.y)
-            }
-
-            onPressAndHold: {
-                Lisp.call("editor:copy-paste", edit.cursorPosition)
             }
         }
     }
