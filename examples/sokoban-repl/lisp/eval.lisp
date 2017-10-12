@@ -157,9 +157,9 @@
       (when (or (zerop len)
                 (string/= line (aref *history* (1- len))))
         (vector-push-extend line *history*)
-        (setf *history-index* (length *history*)) ; 1 after last
         (write-line line out)
-        (force-output out))))
+        (force-output out)))
+    (setf *history-index* (length *history*))) ; 1 after last
   (defun history-move (dir)
     (unless out
       (history-ini))
@@ -168,4 +168,3 @@
                                 (max (1- *history-index*) 0)
                                 (min (1+ *history-index*) (1- (length *history*)))))
       (qml-set *qml-repl-input* "text" (aref *history* *history-index*)))))
-
