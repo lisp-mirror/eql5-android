@@ -421,6 +421,7 @@
 
 ;;; select all, cut, copy, paste
 
+(defvar *selected-text*      "")
 (defvar *copied-text*        "")
 (defvar *selection-start*    0)
 (defvar *cursor-indent-copy* 0)
@@ -441,7 +442,7 @@
       (x:when-it (end-position (subseq text start) :simple)
         (let ((end (+ start x:it)))
           (setf *selection-start* start
-                *copied-text*     (subseq text start end))
+                *selected-text*   (subseq text start end))
           (qml-call *qml-edit* "select" start end))))))
 
 (defun select-all ()
@@ -456,9 +457,11 @@
 
 (defun copy ()
   (if *selection-start*
-      (let* ((snip (qml-call *qml-edit* "getText" (max 0 (- *selection-start* 100)) *selection-start*))
-             (nl (position #\Newline snip :from-end t)))
-        (setf *cursor-indent-copy* (if nl (- (length snip) (1+ nl)) 0)))
+      (progn
+        (setf *copied-text* *selected-text*)
+        (let* ((snip (qml-call *qml-edit* "getText" (max 0 (- *selection-start* 100)) *selection-start*))
+               (nl (position #\Newline snip :from-end t)))
+          (setf *cursor-indent-copy* (if nl (- (length snip) (1+ nl)) 0))))
       (setf *copied-text*        (qml-get *qml-edit* "text")
             *selection-start*    0
             *cursor-indent-copy* 0)))
