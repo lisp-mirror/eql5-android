@@ -491,7 +491,7 @@
     (clicked "cut"        'cut)
     (clicked "copy"       'copy)
     (clicked "paste"      'paste)
-    (clicked "eval_exp"   (lambda () (eval-expression *copied-text* nil)))))
+    (clicked "eval_exp"   (lambda () (eval-expression *selected-text* nil)))))
 
 ;;; log
 
