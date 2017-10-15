@@ -3,6 +3,7 @@
 *.ver
 *.*history
 *.lib
+*.my
 *.o
 *.obj
 *.so*

@@ -3,7 +3,8 @@
 ;;; EQL5 code.
 ;;;
 ;;; It defines all symbols and macros of EQL5, defining also dummy functions
-;;; for all wrapper function symbols and functions defined in "ecl_fun.cpp".
+;;; (stubs) for all wrapper function symbols and functions defined in
+;;; "ecl_fun.cpp".
 ;;;
 ;;; Of course there are limitations to this approach: you can't have any EQL5
 ;;; function call in a top-level form; this would give you strange compile-time
@@ -12,12 +13,12 @@
 ;;;
 ;;; Example:
 ;;;
-;;;   (defvar *w* (qnew "QPixmap"))  ; WRONG!
+;;;   (defvar *pix* (qnew "QPixmap"))  ; WRONG!
 ;;;
-;;;   (defvar *w* nil)               ; OK
+;;;   (defvar *pix* nil)               ; OK
 ;;;
 ;;;   (defun ini ()
-;;;     (setf *w* (qnew "QPixamp"))) ; OK
+;;;     (setf *pix* (qnew "QPixamp"))) ; OK
 ;;;
 
 (defpackage :x

@@ -23,7 +23,7 @@ CROSS-COMPILE EQL5
 ------------------
 
 This will compile all supported eql5 libs (I'm assuming you already went
-through '../README-PREPARE.txt').
+through '../README-PREPARE.md').
 
 - copy all files from this directory to your eql5 desktop installation, and
   switch to it:
