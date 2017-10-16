@@ -137,10 +137,14 @@ select the whole expression, and to show the popup menu for copy and paste. If
 you paste the expression to a different indentation level, the indentation will
 be automatically adapted.
 
-To paste the selected text, simply tap and hold where you want to paste it, to
-show the popup menu again.
+To paste the selected text, simply tap and hold where you want to paste it, in
+order to show the popup menu again. This is typically an empty line. Note that
+you'll need to tap-and-hold inside the (invisible) enclosing rectangle of the
+current text (the popup menu will not show if you tap-and-hold a line below the
+last cursor position, or far right of the current text).
 
-To eval the selected expression only, just click on the **Eval** button.
+To eval the selected expression only, just click on the lambda button of the
+popup menu.
 
 The icons for this menu are taken from `fontawesome-webfont.ttf` (included).
 
@@ -187,7 +191,7 @@ which is perfect for editing QML files (e.g. `qtcreator my.qml`)
 ### Tips
 
 On first startup, if some resizing went wrong (caused by the virtual keyboard),
-try to tap on the `Clear` button first; then tap in the input field above; this
+try to tap on the trash button first; then tap in the editor field above; this
 should display the virtual keyboard, and resize all the fields accordingly.
 
 If the output window has too much contents (thousands of lines, may happen
@@ -220,8 +224,8 @@ To load them, just use `asdf:load-system`, which is much faster than
 Since we have all of EQL5 available, you can directly run files like
 `clock.lisp` (see `../clock/lisp/clock.lisp`).
 
-So, if you copy the file to your device, you can open it using the `File...`
-button, and run it with `Eval`.
+So, if you copy the file to your device, you can open it using the open
+button, and load it with the lambda button.
 
 Close the clock window using the back button on your device (triangle). This
 will only hide the window; you can show it again by entering:
