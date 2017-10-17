@@ -80,6 +80,7 @@ Item {
                 objectName: "history_back"
                 width: 55
                 height: replInput.height
+                focusPolicy: Qt.NoFocus
                 text: "<<"
 
                 onClicked: Lisp.call("eval:history-move", "back")
@@ -95,6 +96,7 @@ Item {
                 objectName: "history_forward"
                 width: 55
                 height: replInput.height
+                focusPolicy: Qt.NoFocus
                 text: ">>"
 
                 onClicked: Lisp.call("eval:history-move", "forward")
