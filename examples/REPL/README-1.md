@@ -104,6 +104,16 @@ This will build the APK, which needs to be copied and installed manually
 (the reason is that the `--install` option would uninstall all app files,
 including eventual previously installed Quicklisp libs etc.).
 
+In order to set the app icons (3 different resolutions) and the app name
+you need to run:
+
+```
+  $ qtcreator android-sources/AndroidManifest.xml
+```
+
+(The above manifest file is a copy of `android-build/AndroidManifest.xml`,
+created during the first build of the apk.)
+
 
 
 ### First launch / prebuilt ECL libs
@@ -125,7 +135,7 @@ To get **Quicklisp**, simply eval:
   (quicklisp)
 ```
 
-In the status bar at the bottom you can follow the progress (also it will
+In the status bar at the bottom you can follow the progress (although it will
 only show the last line of the output you would see on a console).
 
 

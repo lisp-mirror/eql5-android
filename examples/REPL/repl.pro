@@ -12,3 +12,5 @@ MOC_DIR     = ./tmp/
 SOURCES     += build/main.cpp
 
 RESOURCES   = repl.qrc
+
+ANDROID_PACKAGE_SOURCE_DIR = android-sources
