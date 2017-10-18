@@ -5,6 +5,7 @@
    #:debug-dialog
    #:get-file-name
    #:exited
+   #:reset
    #:*file-name*))
 
 (in-package :dialogs)
@@ -72,3 +73,7 @@
   (when *suspended-thread*
     (mp:process-resume *suspended-thread*)))
 
+(defun reset ()
+  "Needs to be called after reloading the QML files."
+  (setf *file-dialog-component* nil
+        *file-dialog-instance*  nil))

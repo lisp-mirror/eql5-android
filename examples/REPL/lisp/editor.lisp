@@ -562,5 +562,5 @@
 (defun qml-reloaded ()
   (connect-buttons)
   (connect-menu-buttons)
-  (setf dialogs::*file-dialog-instance* nil)
+  (dialogs:reset)
   (setf eql::*reloading-qml* nil))

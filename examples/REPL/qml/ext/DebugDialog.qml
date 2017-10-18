@@ -40,7 +40,7 @@ Dialog {
             id: input
             objectName: "debug_input"
             width: parent.width
-            text: ":r1"
+            text: ":q"
             font.family: "Droid Sans Mono"
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
         }

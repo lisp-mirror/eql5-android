@@ -144,7 +144,7 @@
   (setf *debug-invoked* t)
   (let ((cmd (funcall *gui-debug-dialog* (list (cons (get-output-stream-string *error-output-buffer*) "red")
                                                (cons (get-output-stream-string *terminal-out-buffer*) "black")))))
-    (format nil "~A~%" (if (x:empty-string cmd) ":r1" cmd))))
+    (format nil "~A~%" (if (x:empty-string cmd) ":q" cmd))))
 
 ;; status bar & log mode
 
