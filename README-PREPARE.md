@@ -1,4 +1,11 @@
 
+Preamble
+--------
+
+This project currently only works well on android **tablets**. But there is work in progress to adapt the dialogs and button sizes to the phone, too.
+
+
+
 Aknowledgements
 ---------------
 
