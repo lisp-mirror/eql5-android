@@ -5,7 +5,9 @@ import "ext/" as Ext
 import EQL5 1.0
 
 Rectangle {
-    width: 900; height: 600
+    id: main
+
+    property bool isPhone: (Math.max(width, height) < 1000) // trivial but seems reliable
 
     Row {
         // adapt 'level' and 'board' scale to screen size

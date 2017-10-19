@@ -6,7 +6,8 @@ import EQL5 1.0
 
 Rectangle {
     id: main
-    width: 900; height: 600
+
+    property bool isPhone: (Math.max(width, height) < 1000) // trivial but seems reliable
 
     Ext.Repl {}
 
