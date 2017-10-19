@@ -8,7 +8,7 @@ FileDialog {
     width: Screen.desktopAvailableWidth
     height: Screen.desktopAvailableHeight
     title: "Please choose a file"
-    nameFilters: [ "Lisp files (*.lisp *.lsp *.fas*)", "All files (*.*)" ]
+    nameFilters: ["Lisp files (*.lisp *.lsp *.fas?)", "All files (*)"]
     folder: shortcuts.documents
 
     property string callback
