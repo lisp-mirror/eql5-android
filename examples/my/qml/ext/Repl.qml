@@ -44,7 +44,6 @@ Item {
                     objectName: "repl_output"
                     width: flickOutput.width
                     height: flickOutput.height
-                    font.pointSize: 16
                     textFormat: TextEdit.RichText
                     color: "white"
                     readOnly: true

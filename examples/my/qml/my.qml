@@ -10,6 +10,13 @@ Rectangle {
     objectName: "main"
     color: "lightcyan"
 
+    FontLoader {
+        id: fontAwesome
+        source: "fonts/fontawesome-webfont.ttf"
+    }
+
+    Ext.FileBrowser {}
+
     Ext.Repl {}
 
     // your QML
