@@ -2,7 +2,12 @@
 Preamble
 --------
 
-This project currently only works well on android **tablets**. But there is work in progress to adapt the dialogs and button sizes to the phone, too.
+The examples of this project were all written using a **tablet**; if you want
+to try them on a **phone**, please see examples `sokoban-repl` and `my`, which
+will (more or less) adapt themselves to smaller screens.
+
+Please pay attention that the `REPL` example will only work on a **tablet**,
+and only in **portrait** orientation!
 
 
 
