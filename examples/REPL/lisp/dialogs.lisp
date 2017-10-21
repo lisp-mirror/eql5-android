@@ -24,10 +24,12 @@
 
 (defun query-dialog (query)
   (unless (x:empty-string query)
-    (qml-set *qml-query-text* "text" query))
+    (qml-set *qml-query-text* "text" (string-trim '(#\Newline) query)))
   (qml-call *qml-query-input* "clear")
-  (qml-call *qml-query-dialog* "open")
+  (qml-set *qml-query-dialog* "visible" t)
+  (qml-call *qml-query-input* "forceActiveFocus")
   (wait-for-closed)
+  (qml-set *qml-query-dialog* "visible" nil)
   (qml-get *qml-query-input* "text"))
 
 (defun debug-dialog (messages)
@@ -37,8 +39,10 @@
               (format nil "<pre><font face='Droid Sans Mono' color='~A'>~A</font></pre>"
                       (cdr text/color)
                       (x:string-substitute "<br>" (string #\Newline) (qescape (car text/color))))))
-  (qml-call *qml-debug-dialog* "open")
+  (qml-set *qml-debug-dialog* "visible" t)
+  (qml-call *qml-debug-input* "forceActiveFocus")
   (wait-for-closed)
+  (qml-set *qml-debug-dialog* "visible" nil)
   (qml-get *qml-debug-input* "text"))
 
 (defun wait-for-closed ()

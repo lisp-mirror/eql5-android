@@ -1,31 +1,58 @@
-import QtQuick 2.3
-import QtQuick.Dialogs 1.2
+import QtQuick 2.7
 import QtQuick.Controls 2.0
+import "." as Ext
 import EQL5 1.0
 
-Dialog {
-    title: "Query Dialog"
-    standardButtons: StandardButton.Ok | StandardButton.Cancel
+Rectangle {
+    anchors.fill: parent
+    color: "lightgray"
+    visible: false
+    z: 2
 
-    function exit() { Lisp.call("dialogs:exited") }
-
-    onAccepted: exit()
-    onRejected: { input.clear(); exit() }
-    
     Column {
         anchors.fill: parent
 
-        Text {
-            objectName: "query_text"
+        Rectangle {
+            width: parent.width
+            height: cancel.height
+            color: "#505050"
+
+            Text {
+                x: 8
+                anchors.verticalCenter: parent.verticalCenter
+                color: "white"
+                font.bold: true
+                font.pixelSize: 18
+                text: "Query Dialog"
+            }
+
+            Ext.DialogButton {
+                id: cancel
+                x: parent.width - width
+                text: "\uf00d"
+
+                onClicked: {
+                    queryInput.clear()
+                    Lisp.call("dialogs:exited")
+                }
+            }
         }
 
         TextField {
-            id: input
+            id: queryInput
             objectName: "query_input"
             width: parent.width
-            font.family: "Droid Sans Mono"
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+
+            onAccepted: Lisp.call("dialogs:exited")
+        }
+
+        Text {
+            objectName: "query_text"
+            width: parent.width
+            leftPadding: 8
+            rightPadding: 8
+            topPadding: 8
         }
     }
 }
-

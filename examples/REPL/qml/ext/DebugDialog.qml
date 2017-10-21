@@ -1,22 +1,80 @@
-import QtQuick 2.3
-import QtQuick.Dialogs 1.2
+import QtQuick 2.7
 import QtQuick.Controls 2.0
+import QtQuick.Window 2.2
+import "." as Ext
 import EQL5 1.0
 
-Dialog {
-    title: "Debug Dialog"
-    standardButtons: StandardButton.Ok | StandardButton.Cancel
+Rectangle {
+    anchors.fill: parent
+    color: "lightgray"
+    visible: false
+    z: 2
 
-    function exit() { Lisp.call("dialogs:exited") }
-
-    onAccepted: exit()
-    onRejected: { input.clear(); exit() }
-    
     Column {
+        anchors.fill: parent
+
+        Rectangle {
+            width: parent.width
+            height: cancel.height
+            color: "#505050"
+
+            Text {
+                x: 8
+                anchors.verticalCenter: parent.verticalCenter
+                color: "white"
+                font.bold: true
+                font.pixelSize: 18
+                text: "Debug Dialog"
+            }
+
+            Ext.DialogButton {
+                id: cancel
+                x: parent.width - width
+                text: "\uf00d"
+
+                onClicked: {
+                    debugInput.text = ":q"
+                    Lisp.call("dialogs:exited")
+                }
+            }
+        }
+
+        TextField {
+            id: debugInput
+            objectName: "debug_input"
+            width: parent.width
+            font.family: "Droid Sans Mono"
+            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+            text: ":q"
+
+            onAccepted: Lisp.call("dialogs:exited")
+        }
+
+        Text {
+            id: label
+            width: parent.width
+            leftPadding: 8
+            rightPadding: 8
+            topPadding: 8
+            bottomPadding: 8
+            text: "Enter expression / command (:r1 etc. for restarts, :h for help)"
+        }
+
+        Rectangle {
+            width: parent.width
+            height: 1
+            color: "gray"
+        }
+
         Flickable {
             id: flickText
-            width: 500
-            height: 250
+            width: parent.width
+            height: Screen.desktopAvailableHeight
+                    - Qt.inputMethod.keyboardRectangle.height
+                    - cancel.height
+                    - debugInput.height
+                    - label.height
+                    - 10
             contentWidth: text.paintedWidth
             contentHeight: text.paintedHeight
             clip: true
@@ -26,23 +84,12 @@ Dialog {
                 objectName: "debug_text"
                 width: flickText.width
                 height: flickText.height
+                leftPadding: 8
+                rightPadding: 8
+                topPadding: 8
                 textFormat: TextEdit.RichText
                 readOnly: true
             }
-        }
-
-        Text {
-            id: command
-            text: "Enter debug command (:r1 for restart 1 etc., :h for help)"
-        }
-
-        TextField {
-            id: input
-            objectName: "debug_input"
-            width: parent.width
-            text: ":q"
-            font.family: "Droid Sans Mono"
-            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
         }
     }
 }

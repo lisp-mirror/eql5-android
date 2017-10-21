@@ -9,8 +9,8 @@
     <file>qml/ext/SequentialAnimation.qml</file>
     <file>qml/ext/Flickable.qml</file>
     <file>qml/ext/FileBrowser.qml</file>
-    <file>qml/ext/FileBrowserButton.qml</file>
     <file>qml/ext/FileDelegate.qml</file>
+    <file>qml/ext/DialogButton.qml</file>
     <file>qml/ext/Repl.qml</file>
     <file>qml/items/box2.qml</file>
     <file>qml/items/box.qml</file>

@@ -46,19 +46,19 @@ Rectangle {
                     spacing: 4
 
                     // folder up
-                    Ext.FileBrowserButton {
+                    Ext.DialogButton {
                         text: "\uf062"
                         onClicked: Lisp.call("dialogs:set-file-browser-path", urlToString(folderModel.parentFolder))
                     }
 
                     // documents
-                    Ext.FileBrowserButton {
+                    Ext.DialogButton {
                         text: "\uf15b"
                         onClicked: Lisp.call("dialogs:set-file-browser-path", ":documents")
                     }
 
                     // home
-                    Ext.FileBrowserButton {
+                    Ext.DialogButton {
                         text: "\uf015"
                         onClicked: Lisp.call("dialogs:set-file-browser-path", ":home")
                     }
@@ -78,7 +78,7 @@ Rectangle {
             }
 
             // cancel
-            Ext.FileBrowserButton {
+            Ext.DialogButton {
                 x: header.width - width
                 text: "\uf00d"
 
