@@ -399,7 +399,7 @@
       (save-to-file *file*)
       (setf dialog nil))
     (when dialog
-      (dialogs:get-file-name 'do-save-file :save))))
+      (dialogs:get-file-name 'do-save-file))))
 
 (defun do-save-file ()
   (let ((ok t))
@@ -562,5 +562,4 @@
 (defun qml-reloaded ()
   (connect-buttons)
   (connect-menu-buttons)
-  (dialogs:reset)
   (setf eql::*reloading-qml* nil))

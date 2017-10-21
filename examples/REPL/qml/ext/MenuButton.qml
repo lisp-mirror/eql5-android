@@ -7,9 +7,4 @@ Button {
     font.family: fontAwesome.name
     font.pixelSize: 28
     focusPolicy: Qt.NoFocus
-
-    FontLoader {
-        id: fontAwesome
-        source: "../fonts/fontawesome-webfont.ttf"
-    }
 }

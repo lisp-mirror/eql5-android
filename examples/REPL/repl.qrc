@@ -5,7 +5,9 @@
     <file>qml/ext/Flickable.qml</file>
     <file>qml/ext/QueryDialog.qml</file>
     <file>qml/ext/DebugDialog.qml</file>
-    <file>qml/ext/FileDialog.qml</file>
+    <file>qml/ext/FileBrowser.qml</file>
+    <file>qml/ext/FileBrowserButton.qml</file>
+    <file>qml/ext/FileDelegate.qml</file>
     <file>qml/ext/Button.qml</file>
     <file>qml/ext/MenuButton.qml</file>
     <file>qml/ext/ClipboardMenu.qml</file>

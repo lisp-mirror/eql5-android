@@ -16,7 +16,7 @@ Rectangle {
     Rectangle {
         id: rectEdit
         width: main.width
-        height: main.halfHeight()
+        height: halfHeight()
 
         Ext.Flickable {
             id: flickEdit
@@ -149,7 +149,7 @@ Rectangle {
         color: "lavender"
         y: flickEdit.height + rectCommand.height
         width: main.width
-        height: main.halfHeight()
+        height: halfHeight()
 
         Ext.Flickable {
             id: flickOutput
@@ -241,7 +241,18 @@ Rectangle {
         }
     }
 
+    // icon font
+
+    FontLoader {
+        id: fontAwesome
+        source: "fonts/fontawesome-webfont.ttf"
+    }
+
     // not visible dialog / menu instances (will be called from Lisp)
+
+    Ext.FileBrowser {
+        objectName: "file_browser"
+    }
 
     Ext.QueryDialog {
         objectName: "query_dialog"

@@ -5,15 +5,13 @@
    #:debug-dialog
    #:get-file-name
    #:exited
-   #:reset
    #:*file-name*))
 
 (in-package :dialogs)
 
-(defvar *file-name*             nil)
-(defvar *file-dialog-component* nil)
-(defvar *file-dialog-instance*  nil)
-(defvar *suspended-thread*      nil)
+(defvar *file-name*        nil)
+(defvar *callback*         nil)
+(defvar *suspended-thread* nil)
 
 (defvar *qml-query-dialog* "query_dialog")
 (defvar *qml-query-text*   "query_text")
@@ -21,7 +19,8 @@
 (defvar *qml-debug-dialog* "debug_dialog")
 (defvar *qml-debug-text*   "debug_text")
 (defvar *qml-debug-input*  "debug_input")
-(defvar *qml-file-dialog*  "file_dialog")
+(defvar *qml-file-browser* "file_browser")
+(defvar *qml-folder-model* "folder_model")
 
 (defun query-dialog (query)
   (unless (x:empty-string query)
@@ -42,27 +41,6 @@
   (wait-for-closed)
   (qml-get *qml-debug-input* "text"))
 
-(defun qml-component (file)
-  (qnew "QQmlComponent(QQmlEngine*,QUrl)"
-        (|engine| *quick-view*)
-        (qml:file-to-url file)))
-
-(defun get-file-name (&optional callback save)
-  (unless *file-dialog-component*
-    (setf *file-dialog-component* (qml-component "qml/ext/FileDialog.qml")))
-  ;; new instance on every call to ensure correct size depending on landscape/portrait
-  (when *file-dialog-instance*
-    (qdel *file-dialog-instance*))
-  (setf *file-dialog-instance* (qt-object-? (|create| *file-dialog-component*)))
-  (|setParent| *file-dialog-instance* (qml:root-item))
-  (when callback
-    (qml-set *qml-file-dialog* "callback" (prin1-to-string callback)))
-  (qml-set *qml-file-dialog* "selectExisting" (not save))
-  (qml-call *qml-file-dialog* "open"))
-
-(defun set-file-name (name) ; called from QML
-  (setf *file-name* name))
-
 (defun wait-for-closed ()
   (unless (eql (mp:process-name mp:*current-process*)
                'si:top-level)
@@ -73,7 +51,32 @@
   (when *suspended-thread*
     (mp:process-resume *suspended-thread*)))
 
-(defun reset ()
-  "Needs to be called after reloading the QML files."
-  (setf *file-dialog-component* nil
-        *file-dialog-instance*  nil))
+;; file browser
+
+(let ((1st t))
+  (defun get-file-name (&optional callback)
+    (|hide| (|inputMethod.QGuiApplication|))
+    (when 1st
+      (setf 1st nil)
+      (set-file-browser-path ":documents"))
+    (setf *callback* callback)
+    (qml-set *qml-file-browser* "visible" t)))
+
+(defun set-file-name (name) ; called from QML
+  (setf *file-name* name)
+  (when *callback*
+    (funcall *callback*)))
+
+(defun location (name)
+  (first (|standardLocations.QStandardPaths|
+          (cond ((string= ":home" name)
+                 |QStandardPaths.HomeLocation|)
+                ((string= ":documents" name)
+                 |QStandardPaths.DocumentsLocation|)))))
+
+(defun set-file-browser-path (path) ; called from QML
+  (qlet ((url "QUrl(QString)"
+              (x:cc "file://" (if (x:starts-with ":" path)
+                                  (location path)
+                                  path))))
+    (qml-set *qml-folder-model* "folder" url)))
