@@ -8,12 +8,15 @@
     <file>qml/ext/ScaleAnimator.qml</file>
     <file>qml/ext/SequentialAnimation.qml</file>
     <file>qml/ext/Flickable.qml</file>
-    <file>qml/ext/FileDialog.qml</file>
+    <file>qml/ext/FileBrowser.qml</file>
+    <file>qml/ext/FileBrowserButton.qml</file>
+    <file>qml/ext/FileDelegate.qml</file>
     <file>qml/ext/Repl.qml</file>
     <file>qml/items/box2.qml</file>
     <file>qml/items/box.qml</file>
     <file>qml/items/player.qml</file>
     <file>qml/items/static.qml</file>
+    <file>qml/fonts/fontawesome-webfont.ttf</file>
 
     <file>qml/img/down.png</file>
     <file>qml/img/goal.png</file>

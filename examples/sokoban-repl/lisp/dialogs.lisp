@@ -3,45 +3,54 @@
   (:export
    #:load-file
    #:get-file-name
+   #:location
    #:*file-name*
-   #:*qml-file-dialog*))
+   #:*qml-file-browser*))
 
 (in-package :dialogs)
 
-(defvar *file-name*             nil)
-(defvar *file-dialog-component* nil)
-(defvar *file-dialog-instance*  nil)
+(defvar *file-name* nil)
+(defvar *callback*  nil)
 
-(defvar *qml-file-dialog*       "file_dialog")
+(defvar *qml-file-browser* "file_browser")
+(defvar *qml-folder-model* "folder_model")
 
-(defun qml-component (file)
-  (qnew "QQmlComponent(QQmlEngine*,QUrl)"
-        (|engine| *quick-view*)
-        (qml:file-to-url file)))
-
-(defun get-file-name (&key callback save)
-  (unless *file-dialog-component*
-    (setf *file-dialog-component* (qml-component "qml/ext/FileDialog.qml")))
-  ;; new instance on every call to ensure correct size depending on landscape/portrait
-  (when *file-dialog-instance*
-    (qdel *file-dialog-instance*))
-  (setf *file-dialog-instance* (qt-object-? (|create| *file-dialog-component*)))
-  (|setParent| *file-dialog-instance* (qml:root-item))
-  (when callback
-    (qml-set *qml-file-dialog* "callback" (prin1-to-string callback)))
-  (qml-set *qml-file-dialog* "selectExisting" (not save))
-  (qml-call *qml-file-dialog* "open"))
+(let ((1st t))
+  (defun get-file-name (&optional callback)
+    (when 1st
+      (setf 1st nil)
+      (set-file-browser-path ":documents"))
+    (setf *callback* callback)
+    (qml-set *qml-file-browser* "visible" t)))
 
 (defun set-file-name (name) ; called from QML
-  (setf *file-name* name))
+  (setf *file-name* name)
+  (|hide| (|inputMethod.QGuiApplication|))
+  (when *callback*
+    (funcall *callback*)))
 
 (defun load-file ()
-  (get-file-name :callback 'do-load-file))
+  (get-file-name 'do-load-file))
 
-(defun do-load-file (&optional (name *file-name*)) ; called from QML
-  (unless (x:empty-string name)
-    (let ((type (pathname-type name)))
+(defun do-load-file ()
+  (unless (x:empty-string *file-name*)
+    (let ((type (pathname-type *file-name*)))
       (when (or (x:starts-with "fas" type)
                 (find type '("lisp" "lsp") :test 'string=))
-        (eval::append-output (prin1-to-string (load name))
+        (eval::append-output (prin1-to-string (load *file-name*))
                              eval::*color-values*)))))
+
+(defun location (name)
+  (first (|standardLocations.QStandardPaths|
+          (cond ((string= ":home" name)
+                 |QStandardPaths.HomeLocation|)
+                ((string= ":documents" name)
+                 |QStandardPaths.DocumentsLocation|)))))
+
+(defun set-file-browser-path (path) ; called from QML
+  (qlet ((url "QUrl(QString)"
+              (x:cc "file://" (if (x:starts-with ":" path)
+                                  (location path)
+                                  path))))
+    (qml-set *qml-folder-model* "folder" url)))
+
