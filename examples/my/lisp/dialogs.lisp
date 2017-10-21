@@ -4,7 +4,6 @@
    #:load-file
    #:get-file-name
    #:location
-   #:reset
    #:*file-name*
    #:*qml-file-browser*))
 

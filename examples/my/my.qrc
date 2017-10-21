@@ -3,6 +3,7 @@
 
     <file>qml/my.qml</file>
     <file>qml/ext/FileBrowser.qml</file>
+    <file>qml/ext/FileBrowserButton.qml</file>
     <file>qml/ext/FileDelegate.qml</file>
     <file>qml/ext/Flickable.qml</file>
     <file>qml/ext/Repl.qml</file>

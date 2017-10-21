@@ -36,15 +36,38 @@ Rectangle {
             width: fileBrowser.width
             height: headerColumn.height
             z: 2
-            border.width: 1
-            border.color: "lightgray"
+            color: "#505050"
 
             Column {
                 id: headerColumn
 
+                Row {
+                    id: buttonRow
+                    spacing: 4
+
+                    // folder up
+                    Ext.FileBrowserButton {
+                        text: "\uf062"
+                        onClicked: Lisp.call("dialogs:set-file-browser-path", urlToString(folderModel.parentFolder))
+                    }
+
+                    // documents
+                    Ext.FileBrowserButton {
+                        text: "\uf15b"
+                        onClicked: Lisp.call("dialogs:set-file-browser-path", ":documents")
+                    }
+
+                    // home
+                    Ext.FileBrowserButton {
+                        text: "\uf015"
+                        onClicked: Lisp.call("dialogs:set-file-browser-path", ":home")
+                    }
+                }
+
                 TextField {
                     id: path
                     width: fileBrowser.width
+                    inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
                     text: urlToString(folderModel.folder)
 
                     onAccepted: {
@@ -52,43 +75,12 @@ Rectangle {
                         Lisp.call("dialogs:set-file-name", text)
                     }
                 }
-
-                Row {
-                    id: buttonRow
-                    spacing: 4
-
-                    Button {
-                        id: folderUp
-                        width: 1.2 * height
-                        font.family: fontAwesome.name
-                        font.pixelSize: 24
-                        text: "\uf062"
-
-                        onClicked: Lisp.call("dialogs:set-file-browser-path", urlToString(folderModel.parentFolder))
-                    }
-                    Button {
-                        width: 1.2 * height
-                        font.family: fontAwesome.name
-                        font.pixelSize: 24
-                        text: "\uf015"
-
-                        onClicked: Lisp.call("dialogs:set-file-browser-path", ":home")
-                    }
-                    Button {
-                        width: 1.2 * height
-                        font.family: fontAwesome.name
-                        font.pixelSize: 20
-                        text: "\uf15b"
-
-                        onClicked: Lisp.call("dialogs:set-file-browser-path", ":documents")
-                    }
-                }
             }
 
-            Button {
+            // cancel
+            Ext.FileBrowserButton {
                 x: header.width - width
-                y: buttonRow.y
-                text: "Cancel"
+                text: "\uf00d"
 
                 onClicked: {
                     fileBrowser.visible = false
