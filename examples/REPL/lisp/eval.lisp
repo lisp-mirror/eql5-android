@@ -142,7 +142,7 @@
 (defun handle-debug-io ()
   (set-eval-state nil)
   (setf *debug-invoked* t)
-  (let ((cmd (funcall *gui-debug-dialog* (list (cons (get-output-stream-string *error-output-buffer*) "red")
+  (let ((cmd (funcall *gui-debug-dialog* (list (cons (get-output-stream-string *error-output-buffer*) "#d00000")
                                                (cons (get-output-stream-string *terminal-out-buffer*) "black")))))
     (format nil "~A~%" (if (x:empty-string cmd) ":q" cmd))))
 

@@ -5,7 +5,7 @@ import EQL5 1.0
 
 Rectangle {
     anchors.fill: parent
-    color: "lightgray"
+    color: "#f0f0f0"
     visible: false
     z: 2
 
@@ -42,6 +42,7 @@ Rectangle {
             id: queryInput
             objectName: "query_input"
             width: parent.width
+            font.family: "Droid Sans Mono"
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
 
             onAccepted: Lisp.call("dialogs:exited")

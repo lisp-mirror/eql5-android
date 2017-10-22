@@ -6,7 +6,7 @@ import EQL5 1.0
 
 Rectangle {
     anchors.fill: parent
-    color: "lightgray"
+    color: "#f0f0f0"
     visible: false
     z: 2
 
