@@ -22,9 +22,7 @@ file using a file dialog:
 If you only want to select a file, call:
 
 ```
-  (dialogs:get-file-name)         ; for read
-
-  (dialogs:get-file-name :save t) ; for write
+  (dialogs:get-file-name)
 ```
 
 The selected file is stored in `dialogs:*file-name*`.
