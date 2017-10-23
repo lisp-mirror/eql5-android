@@ -525,7 +525,9 @@
     (when (= all (incf curr))
       (ini-highlighters)
       (qconnect *qml-document-edit*    "cursorPositionChanged(QTextCursor)" 'cursor-position-changed)
-      (qconnect *qml-document-command* "cursorPositionChanged(QTextCursor)" 'cursor-position-changed))))
+      (qconnect *qml-document-command* "cursorPositionChanged(QTextCursor)" 'cursor-position-changed)))
+  (defun reset-documents ()
+    (setf curr 0)))
 
 (defun set-delayed-focus () ; called from QML
   ;; needed because resizing sometimes gets messed up on startup
@@ -584,4 +586,5 @@
 (defun qml-reloaded ()
   (connect-buttons)
   (connect-menu-buttons)
+  (reset-documents)
   (setf eql::*reloading-qml* nil))

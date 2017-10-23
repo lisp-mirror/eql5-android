@@ -27,7 +27,8 @@ Rectangle {
             id: folderModel
             objectName: "folder_model"
             showDirsFirst: true
-            nameFilters: ["*.lisp", "*.lsp", "*.asd", "*.fas", ".fasb", ".fasc"]
+            showHidden: true
+            nameFilters: ["*.lisp", "*.lsp", "*.asd", "*.fas", ".fasb", ".fasc", ".eclrc"]
         }
 
         header: Rectangle {
