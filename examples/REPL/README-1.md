@@ -142,16 +142,12 @@ only show the last line of the output you would see on a console).
 
 ### Copy, Paste, Eval one expression
 
+(works both in the editor and the command line)
+
 Tap and hold on the beginning (or inside) of an expression (e.g. on `defun`) to
 select the whole expression, and to show the popup menu for copy and paste. If
 you paste the expression to a different indentation level, the indentation will
 be automatically adapted.
-
-To paste the selected text, simply tap and hold where you want to paste it, in
-order to show the popup menu again. This is typically an empty line. Note that
-you'll need to tap-and-hold inside the (invisible) enclosing rectangle of the
-current text (the popup menu will not show if you tap-and-hold a line below the
-last cursor position, or far right of the current text).
 
 To eval the selected expression only, just click on the lambda button of the
 popup menu.

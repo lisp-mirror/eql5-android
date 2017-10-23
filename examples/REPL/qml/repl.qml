@@ -48,19 +48,17 @@ Rectangle {
                         Lisp.call("editor:return-pressed");
                     }
                 }
-            }
 
-            MouseArea {
-                anchors.fill: parent
+                MouseArea {
+                    anchors.fill: parent
 
-                onPressed: {
-                    // seems necessary to consistently move cursor by tapping
-                    edit.forceActiveFocus()
-                    edit.cursorPosition = edit.positionAt(mouse.x, mouse.y)
-                }
+                    onPressed: {
+                        // seems necessary to consistently move cursor by tapping
+                        edit.forceActiveFocus()
+                        edit.cursorPosition = edit.positionAt(mouse.x, mouse.y)
+                    }
 
-                onPressAndHold: {
-                    Lisp.call("editor:copy-paste", edit.cursorPosition)
+                    onPressAndHold: Lisp.call("editor:copy-paste", edit.cursorPosition)
                 }
             }
 
@@ -129,6 +127,7 @@ Rectangle {
             padding: 4
             font.family: "Droid Sans Mono"
             font.pixelSize: 18
+            selectionColor: "firebrick"
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
             cursorDelegate: cursor
             focus: true
@@ -141,6 +140,18 @@ Rectangle {
                     Lisp.call("editor:eval-expression", text)
                     clear()
                 }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+
+                onPressed: {
+                    // seems necessary to consistently move cursor by tapping
+                    command.forceActiveFocus()
+                    command.cursorPosition = command.positionAt(mouse.x, mouse.y)
+                }
+
+                onPressAndHold: Lisp.call("editor:copy-paste", command.cursorPosition)
             }
         }
     }

@@ -259,12 +259,15 @@
   (unless (x:ends-with "\\)" curr-line)
     (left-right-paren :right text-cursor curr-line)))
 
+(defun active-edit ()
+  (if (qml-get *qml-edit* "activeFocus")
+      *qml-edit*
+      *qml-command*))
+
 (let ((ex-from -1))
   (defun show-matching-paren (text-cursor line type)
     (x:when-it (right-paren text-cursor line)
-      (let* ((edit (if (qml-get *qml-edit* "activeFocus")
-                       *qml-edit*
-                       *qml-command*))
+      (let* ((edit (active-edit))
              (set-y (string= edit *qml-edit*))
              (pos (|position| text-cursor))
              (from (- pos x:it 1))
@@ -443,9 +446,10 @@
   (qml-call *qml-clipboard-menu* "open"))
 
 (defun select-expression (pos)
-  (let ((text (qml-get *qml-edit* "text"))
-        (start pos)
-        ch)
+  (let* ((edit (active-edit))
+         (text (qml-get edit "text"))
+         (start pos)
+         ch)
     (when (< pos (length text))
       (x:while (char/= #\( (setf ch (char text start)))
         (when (or (minusp (decf start))
@@ -455,42 +459,47 @@
         (let ((end (+ start x:it)))
           (setf *selection-start* start
                 *selected-text*   (subseq text start end))
-          (qml-call *qml-edit* "select" start end))))))
+          (qml-call edit "select" start end))))))
 
 (defun select-all ()
   (setf *selection-start* nil)
-  (qml-call *qml-edit* "selectAll"))
+  (qml-call (active-edit) "selectAll"))
 
 (defun cut ()
   (copy)
-  (qml-call *qml-edit* "remove"
+  (qml-call (active-edit) "remove"
             *selection-start*
             (+ *selection-start* (length *copied-text*))))
 
 (defun copy ()
-  (if *selection-start*
-      (progn
-        (setf *copied-text* *selected-text*)
-        (let* ((snip (qml-call *qml-edit* "getText" (max 0 (- *selection-start* 100)) *selection-start*))
-               (nl (position #\Newline snip :from-end t)))
-          (setf *cursor-indent-copy* (if nl (- (length snip) (1+ nl)) 0))))
-      (setf *copied-text*        (qml-get *qml-edit* "text")
-            *selection-start*    0
-            *cursor-indent-copy* 0)))
+  (let ((edit (active-edit)))
+    (if *selection-start*
+        (progn
+          (setf *copied-text* *selected-text*)
+          (let* ((snip (qml-call edit "getText" (max 0 (- *selection-start* 100)) *selection-start*))
+                 (nl (position #\Newline snip :from-end t)))
+            (setf *cursor-indent-copy* (if nl (- (length snip) (1+ nl)) 0))))
+        (setf *copied-text*        (qml-get edit "text")
+              *selection-start*    0
+              *cursor-indent-copy* 0))))
 
 (defun paste ()
   "Paste text adapting the indentation."
-  (let* ((lines (x:split *copied-text* #\Newline))
-         (diff (- *cursor-indent* *cursor-indent-copy*))
-         (text (with-output-to-string (s)
-                 (write-line (first lines) s)
-                 (dolist (line (rest lines))
-                   (when (plusp diff)
-                     (write-string (make-string diff) s))
-                   (write-line (subseq line (if (minusp diff) (- diff) 0)) s)))))
-    (qml-call *qml-edit* "insert"
-              (qml-get *qml-edit* "cursorPosition")
-              (subseq text 0 (1- (length text))))))
+  (let ((edit (active-edit)))
+    (when (and (string= *qml-command* edit)
+               (find #\Newline *copied-text*))
+      (return-from paste))
+    (let* ((lines (x:split *copied-text* #\Newline))
+           (diff (- *cursor-indent* *cursor-indent-copy*))
+           (text (with-output-to-string (s)
+                   (write-line (first lines) s)
+                   (dolist (line (rest lines))
+                     (when (plusp diff)
+                       (write-string (make-string diff) s))
+                     (write-line (subseq line (if (minusp diff) (- diff) 0)) s)))))
+      (qml-call edit "insert"
+                (qml-get edit "cursorPosition")
+                (subseq text 0 (1- (length text)))))))
 
 (defun connect-menu-buttons ()
   (flet ((clicked (name function &optional (hide t))
