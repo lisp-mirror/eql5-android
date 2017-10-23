@@ -18,25 +18,27 @@
 (defvar *current-line*           "")
 (defvar *current-depth*          0)
 (defvar *current-keyword-indent* 0)
-(defvar *highlighter*            nil)
+(defvar *highlighter-edit*       nil)
+(defvar *highlighter-command*    nil)
 (defvar *file*                   nil)
 
 ;; QML items
-(defvar *qml-edit*           "edit")
-(defvar *qml-flick-edit*     "flick_edit")
-(defvar *qml-command*        "command")
-(defvar *qml-output*         "output")
-(defvar *qml-clear*          "clear")
-(defvar *qml-status*         "status")
-(defvar *qml-clipboard-menu* "clipboard_menu")
-(defvar *qml-document*        nil)
+(defvar *qml-edit*             "edit")
+(defvar *qml-flick-edit*       "flick_edit")
+(defvar *qml-command*          "command")
+(defvar *qml-output*           "output")
+(defvar *qml-clear*            "clear")
+(defvar *qml-status*           "status")
+(defvar *qml-clipboard-menu*   "clipboard_menu")
+(defvar *qml-document-edit*    nil)
+(defvar *qml-document-command* nil)
 
 (defun read-file (file)
   (with-open-file (s (x:path file) :direction :input)
     (x:let-it (make-string (file-length s))
       (read-sequence x:it s))))
 
-(defun ini-highlighter ()
+(defun ini-highlighters ()
   (setf *eql-keyword-format*  (qnew "QTextCharFormat")
         *lisp-keyword-format* (qnew "QTextCharFormat")
         *comment-format*      (qnew "QTextCharFormat")
@@ -46,9 +48,12 @@
   (x:do-with *comment-format*
     (|setForeground| (qnew "QBrush(QColor)" "#80A080"))
     (|setFontItalic| t))
-  (setf *highlighter* (qnew "QSyntaxHighlighter(QTextDocument*)" *qml-document*))
-  (qoverride *highlighter* "highlightBlock(QString)"
-             (lambda (str) (highlight-block *highlighter* str))))
+  (setf *highlighter-edit*    (qnew "QSyntaxHighlighter(QTextDocument*)" *qml-document-edit*)
+        *highlighter-command* (qnew "QSyntaxHighlighter(QTextDocument*)" *qml-document-command*))
+  (qoverride *highlighter-edit* "highlightBlock(QString)"
+             (lambda (str) (highlight-block *highlighter-edit* str)))
+  (qoverride *highlighter-command* "highlightBlock(QString)"
+             (lambda (str) (highlight-block *highlighter-command* str))))
 
 (defun read* (str &optional (start 0))
   (setf *try-read-error* nil)
@@ -230,7 +235,9 @@
       (return-from paren-match-index i))))
 
 (defun code-region (text-cursor curr-line &optional right)
-  (let ((max (|blockCount| *qml-document*)))
+  (let ((max (|blockCount| (if (qml-get *qml-edit* "activeFocus")
+                               *qml-document-edit*
+                               *qml-document-command*))))
     (with-output-to-string (s)
       (write-line (if right (nreverse curr-line) curr-line) s)
       (do* ((n (|blockNumber| text-cursor) (+ n (if right -1 1)))
@@ -255,21 +262,26 @@
 (let ((ex-from -1))
   (defun show-matching-paren (text-cursor line type)
     (x:when-it (right-paren text-cursor line)
-      (let* ((pos (|position| text-cursor))
+      (let* ((edit (if (qml-get *qml-edit* "activeFocus")
+                       *qml-edit*
+                       *qml-command*))
+             (set-y (string= edit *qml-edit*))
+             (pos (|position| text-cursor))
              (from (- pos x:it 1))
-             (color (qml-get *qml-edit* "selectionColor")))
+             (color (qml-get edit "selectionColor")))
         (when (/= from ex-from)
           (setf ex-from from)
           (qsingle-shot 500 (lambda () (setf ex-from -1)))
-          (let ((content-y (qml-get *qml-flick-edit* "contentY")))
-            (qml-set *qml-edit* "readOnly" t)
-            (qml-set *qml-edit* "selectionColor" "gray")
-            (qml-call *qml-edit* "select" from (1+ from))
+          (let ((content-y (when set-y (qml-get *qml-flick-edit* "contentY"))))
+            (qml-set edit "readOnly" t)
+            (qml-set edit "selectionColor" "gray")
+            (qml-call edit "select" from (1+ from))
             (qsleep 0.1)
-            (qml-set *qml-edit* "readOnly" nil)
-            (qml-set *qml-edit* "cursorPosition" pos)
-            (qml-set *qml-edit* "selectionColor" color)
-            (qml-set *qml-flick-edit* "contentY" content-y)))))))
+            (qml-set edit "readOnly" nil)
+            (qml-set edit "cursorPosition" pos)
+            (qml-set edit "selectionColor" color)
+            (when set-y
+              (qml-set *qml-flick-edit* "contentY" content-y))))))))
 
 (defun eval* (text)
   (eval:feed-top-level text))
@@ -384,7 +396,7 @@
                      :if-exists (if append :append :supersede)
                      :if-does-not-exist :create)
     (write-sequence (qml-get qml-item "text") s)
-    (|clearUndoRedoStacks| *qml-document*)))
+    (|clearUndoRedoStacks| *qml-document-edit*)))
 
 (defun confirm-save-dialog (title text)
   (= |QMessageBox.Save|
@@ -501,11 +513,19 @@
 
 ;;; ini
 
-(defun set-text-document () ; called from QML
-  ;; needed because QML-GET can't return QObject* pointers
-  (setf *qml-document* (|textDocument| qml:*caller*))
-  (ini-highlighter)
-  (qconnect *qml-document* "cursorPositionChanged(QTextCursor)" 'cursor-position-changed))
+(let ((curr 0)
+      (all 2))
+  (defun set-text-document (name) ; called from QML
+    ;; needed because QML-GET can't return QObject* pointers
+    (setf (symbol-value (cond ((string= *qml-edit* name)
+                               '*qml-document-edit*)
+                              ((string= *qml-command* name)
+                               '*qml-document-command*)))
+          (|textDocument| qml:*caller*))
+    (when (= all (incf curr))
+      (ini-highlighters)
+      (qconnect *qml-document-edit*    "cursorPositionChanged(QTextCursor)" 'cursor-position-changed)
+      (qconnect *qml-document-command* "cursorPositionChanged(QTextCursor)" 'cursor-position-changed))))
 
 (defun set-delayed-focus () ; called from QML
   ;; needed because resizing sometimes gets messed up on startup

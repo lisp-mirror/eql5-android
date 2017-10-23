@@ -39,7 +39,7 @@ Rectangle {
                 onCursorRectangleChanged: flickEdit.ensureVisible(cursorRectangle)
 
                 Component.onCompleted: {
-                    Lisp.call(textDocument, "editor:set-text-document")
+                    Lisp.call(textDocument, "editor:set-text-document", objectName)
                     Lisp.call("editor:set-delayed-focus")
                 }
 
@@ -132,6 +132,8 @@ Rectangle {
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
             cursorDelegate: cursor
             focus: true
+
+            Component.onCompleted: Lisp.call(textDocument, "editor:set-text-document", objectName)
 
             Keys.onPressed: {
                 if((event.key == Qt.Key_Return) || (event.key == Qt.Key_Enter)) {
