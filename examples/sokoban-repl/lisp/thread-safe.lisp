@@ -18,8 +18,6 @@
 
 (in-package :eql)
 
-(setf *slime-mode* :thread-safe)
-
 (defmacro wrap-in-qrun* (names &rest arguments)
   (let* ((fun (if (atom names) names (first names)))
          (alias (unless (atom names) (second names)))

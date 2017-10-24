@@ -34,11 +34,13 @@
 
 (defun do-load-file ()
   (unless (x:empty-string *file-name*)
-    (let ((type (pathname-type *file-name*)))
-      (when (or (x:starts-with "fas" type)
-                (find type '("lisp" "lsp") :test 'string=))
-        (eval::append-output (prin1-to-string (load *file-name*))
-                             eval::*color-values*)))))
+    (if (probe-file *file-name*)
+        (let ((type (pathname-type *file-name*)))
+          (when (or (x:starts-with "fas" type)
+                    (find type '("lisp" "lsp") :test 'string=))
+            (eval::append-output (prin1-to-string (load *file-name*))
+                                 eval::*color-values*)))
+        (qmsg (format nil "File does not exist:~%~%~S" *file-name*)))))
 
 (defun location (name)
   (first (|standardLocations.QStandardPaths|

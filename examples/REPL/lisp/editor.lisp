@@ -387,10 +387,13 @@
 
 (defun do-open-file ()
   (unless (x:empty-string dialogs:*file-name*)
-    (setf *file* dialogs:*file-name*)
-    (if (x:starts-with "fas" (pathname-type *file*))
-        (eval* (format nil "(load ~S)" *file*))
-        (qml-set *qml-edit* "text" (read-file *file*)))))
+    (if (probe-file dialogs:*file-name*)
+        (progn
+          (setf *file* dialogs:*file-name*)
+          (if (x:starts-with "fas" (pathname-type *file*))
+              (eval* (format nil "(load ~S)" *file*))
+              (qml-set *qml-edit* "text" (read-file *file*))))
+        (qmsg (format nil "File does not exist:~%~%~S" dialogs:*file-name*)))))
 
 ;;; save-file
 
