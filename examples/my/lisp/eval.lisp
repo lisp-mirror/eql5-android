@@ -49,7 +49,7 @@
         (setf *eval-thread* (mp:process-run-function "EQL5 REPL top-level" (lambda () (do-eval str))))))))
 
 (defvar *color-values*     "skyblue")
-(defvar *color-read-error* "orange")
+(defvar *color-read-error* "#ffd540")
 (defvar *color-error*      "#ffb0b0")
 
 (defun do-eval (str)
