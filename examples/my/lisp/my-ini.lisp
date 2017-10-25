@@ -6,7 +6,6 @@
   ;; ini
   (qlater 'eql-user::ini) ; for Swank, Quicklisp
   (eval:ini)
-  (setf eql:*break-on-errors* t)
   ;; QML ini
   (qml:ini-quick-view "qml/my.qml")
   (qconnect qml:*quick-view* "statusChanged(QQuickView::Status)" ; for reloading

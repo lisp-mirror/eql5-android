@@ -581,8 +581,7 @@
                                #.(make-string 2 :initial-element #\Newline)))))))
   (eval:ini :output       'eval-output
             :query-dialog 'dialogs:query-dialog
-            :debug-dialog 'dialogs:debug-dialog)
-  (setf *break-on-errors* t))
+            :debug-dialog 'dialogs:debug-dialog))
 
 (defun reload-qml (&optional (url "http://localhost:8080/"))
   ;; please see README-1.md
