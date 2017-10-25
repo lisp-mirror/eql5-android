@@ -50,12 +50,14 @@ Rectangle {
                 }
 
                 MouseArea {
-                    anchors.fill: parent
+                    width: rectEdit.width
+                    height: Math.max(rectEdit.height, edit.paintedHeight)
 
                     onPressed: {
                         // seems necessary to consistently move cursor by tapping
                         edit.forceActiveFocus()
                         edit.cursorPosition = edit.positionAt(mouse.x, mouse.y)
+                        Qt.inputMethod.show()
                     }
 
                     onPressAndHold: Lisp.call("editor:copy-paste", edit.cursorPosition)
