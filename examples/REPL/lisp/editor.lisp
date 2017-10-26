@@ -587,6 +587,7 @@
   ;; please see README-1.md
   "Reload QML file from an url, directly on the device."
   (setf eql::*reloading-qml* t)
+  (reset-documents)
   (let ((src (|toString| (|source| qml:*quick-view*))))
     (if (x:starts-with "qrc:/" src)
         (|setSource| qml:*quick-view* (qnew "QUrl(QString)"
@@ -597,5 +598,4 @@
 (defun qml-reloaded ()
   (connect-buttons)
   (connect-menu-buttons)
-  (reset-documents)
   (setf eql::*reloading-qml* nil))
