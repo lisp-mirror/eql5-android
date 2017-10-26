@@ -57,6 +57,7 @@ Rectangle {
                         // seems necessary to consistently move cursor by tapping
                         edit.forceActiveFocus()
                         edit.cursorPosition = edit.positionAt(mouse.x, mouse.y)
+                        Qt.inputMethod.show() // needed for edge case (since we have 2 input fields)
                     }
 
                     onPressAndHold: Lisp.call("editor:copy-paste", edit.cursorPosition)
@@ -150,6 +151,7 @@ Rectangle {
                     // seems necessary to consistently move cursor by tapping
                     command.forceActiveFocus()
                     command.cursorPosition = command.positionAt(mouse.x, mouse.y)
+                    Qt.inputMethod.show() // needed for edge case (since we have 2 input fields)
                 }
 
                 onPressAndHold: Lisp.call("editor:copy-paste", command.cursorPosition)
