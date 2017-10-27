@@ -48,7 +48,7 @@
         ;; N.B. this is only safe because we use "thread-safe.lisp" (like in Slime mode)
         (setf *eval-thread* (mp:process-run-function "EQL5 REPL top-level" (lambda () (do-eval str))))))))
 
-(defvar *color-values*     "skyblue")
+(defvar *color-values*     "#b0e0ff")
 (defvar *color-read-error* "#ffd540")
 (defvar *color-error*      "#ffb0b0")
 
