@@ -12,7 +12,7 @@ tools first...
 If you want to **use the extreme minimum** (that is, **not** installing any of
 NDK, SDK, JDK, ECL, Qt5, EQL5-Android - except the sources of this example),
 you can just use the
-[APK](http://lights-of-holiness.eu/tmp/my.apk) of this example, plus the
+[APK](https://lights-of-holiness.eu/tmp/my.apk) of this example, plus the
 standalone
 [adb](https://developer.android.com/studio/releases/platform-tools.html)
 command line tool for android, and Emacs/Slime on your PC, plus a python 3
