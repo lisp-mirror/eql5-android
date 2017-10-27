@@ -120,7 +120,8 @@ Rectangle {
         y: flickEdit.height
         width: parent.width
         height: command.font.pixelSize + 12
-        border.color: command.focus ? "red" : "gray"
+        border.width: 1.5
+        border.color: command.focus ? "#0066ff" : "lightgray"
 
         TextEdit {
             id: command
