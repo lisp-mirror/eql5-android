@@ -6,6 +6,7 @@ import EQL5 1.0
 
 Rectangle {
     id: fileBrowser
+    objectName: "file_browser"
     anchors.fill: parent
     visible: false
     z: 2
