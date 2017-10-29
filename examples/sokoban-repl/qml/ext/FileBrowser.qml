@@ -6,7 +6,6 @@ import EQL5 1.0
 
 Rectangle {
     id: fileBrowser
-    objectName: "file_browser"
     anchors.fill: parent
     visible: false
     z: 2
@@ -28,7 +27,8 @@ Rectangle {
             id: folderModel
             objectName: "folder_model"
             showDirsFirst: true
-            nameFilters: ["*.lisp", "*.lsp", "*.fas", ".fasb", ".fasc"]
+            showHidden: true
+            nameFilters: ["*.lisp", "*.lsp", "*.asd", "*.fas", ".fasb", ".fasc", ".eclrc"]
         }
 
         header: Rectangle {
