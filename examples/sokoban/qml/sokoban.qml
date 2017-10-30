@@ -9,12 +9,19 @@ Rectangle {
 
     property bool isPhone: (Math.max(width, height) < 1000) // trivial but seems reliable
 
+    FontLoader {
+        id: fontAwesome
+        source: "fonts/fontawesome-webfont.ttf"
+    }
+
+    function isLandscape() { return (Screen.primaryOrientation == Qt.LandscapeOrientation) }
+
     Row {
-        // adapt 'level' and 'board' scale to screen size
-        scale: (Screen.primaryOrientation == Qt.LandscapeOrientation)
-                   ? ((Screen.desktopAvailableHeight - 2 * buttons.height) / board.height)
-                   : ((Screen.desktopAvailableWidth - 2 * arrows.width - 2 * level.width) / board.width)
         anchors.centerIn: parent
+        // adapt 'level' and 'board' scale to screen size
+        scale: isLandscape()
+                   ? ((Screen.desktopAvailableHeight - 10) / board.height)
+                   : ((Screen.desktopAvailableWidth - 10) / (board.width + 2 * level.width))
 
         Slider {
             id: level
@@ -41,67 +48,76 @@ Rectangle {
     }
 
     Row {
-        id: buttons
-        objectName: "buttons"
-        spacing: 15
-        padding: 15
-        anchors.horizontalCenter: parent.horizontalCenter
+        id: buttons1
+        objectName: "buttons1"
+        spacing: isPhone ? 10 : 15
+        padding: 10
         anchors.bottom: parent.bottom
 
         Ext.Button {
             objectName: "previous"
-            source: "img/previous.png"
+            text: "\uf048"
         }
         Ext.Button {
             objectName: "next"
-            source: "img/next.png"
+            text: "\uf051"
         }
+    }
+
+    Row {
+        id: buttons2
+        objectName: "buttons2"
+        spacing: isPhone ? 10 : 15
+        padding: 10
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+
         Ext.Button {
             objectName: "undo"
-            source: "img/undo.png"
+            text: "\uf112"
         }
         Ext.Button {
             objectName: "restart"
-            source: "img/restart.png"
+            text: "\uf0e2"
         }
         Ext.Button {
             objectName: "solve"
-            source: "img/solve.png"
+            text: "\uf04b"
         }
     }
 
     // container for arrow buttons
     Item {
         id: arrows
+        y: buttons1.y - height - (main.isPhone ? 25 : 50)
         width: up.width * 3
         height: up.height * 3
-        anchors.margins: 15
-        anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.margins: 10
+        anchors.horizontalCenter: buttons2.horizontalCenter
 
-        Ext.Button {
+        Ext.ArrowButton {
             id: up
             objectName: "up"
-            source: "img/up.png"
+            text: "\uf01b"
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
-        Ext.Button {
+        Ext.ArrowButton {
             objectName: "left"
-            source: "img/left.png"
+            text: "\uf190"
             anchors.verticalCenter: parent.verticalCenter
         }
 
-        Ext.Button {
+        Ext.ArrowButton {
             objectName: "right"
-            source: "img/right.png"
+            text: "\uf18e"
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
         }
 
-        Ext.Button {
+        Ext.ArrowButton {
             objectName: "down"
-            source: "img/down.png"
+            text: "\uf01a"
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
         }

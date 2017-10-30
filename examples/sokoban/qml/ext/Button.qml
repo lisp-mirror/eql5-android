@@ -1,17 +1,9 @@
-import QtQuick 2.0
+import QtQuick 2.7
+import QtQuick.Controls 2.0
 
-Image {
-    scale: 1.2
-    opacity: 0.8
-
-    width: main.isPhone ? 30 : 50
+Button {
+    width: main.isPhone ? 32 : 50
     height: width
-
-    signal pressed()
-
-    MouseArea {
-        anchors.fill: parent
-        onPressed: parent.pressed()
-    }
+    font.pixelSize: width - 6
+    opacity: 0.8
 }
-
