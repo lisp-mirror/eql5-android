@@ -15,7 +15,6 @@
 (defvar *comment-format*         nil)
 (defvar *parenthesis-color*      "lightslategray")
 (defvar *string-color*           "saddlebrown")
-(defvar *current-line*           "")
 (defvar *current-depth*          0)
 (defvar *current-keyword-indent* 0)
 (defvar *highlighter-edit*       nil)
@@ -124,19 +123,28 @@
                 (setf ex ch)))))))
     (defun cursor-position-changed (text-cursor)
       (setf cache-matches t)
-      (if (and (qml-get *qml-command* "activeFocus")
-               (> (|blockCount| *qml-document-command*) 1))
-          (let ((line (qml-get *qml-command* "text")))
-            (qml-call *qml-command* "clear")
-            (eval-expression line))
-          (let* ((text-block (|block| text-cursor))
-                 (line (|text| text-block))
-                 (pos (|positionInBlock| text-cursor)))
-            (setf *current-line*  line
-                  *cursor-indent* pos)
-            (when (and (plusp pos)
-                       (char= #\) (char line (1- pos))))
-              (show-matching-paren text-cursor (subseq line 0 pos) :right)))))))
+      (let* ((text-block (|block| text-cursor))
+             (line (|text| text-block))
+             (pos (|positionInBlock| text-cursor)))
+        (setf *cursor-indent* pos)
+        (when (and (plusp pos)
+                   (char= #\) (char line (1- pos))))
+          (show-matching-paren text-cursor (subseq line 0 pos) :right))))))
+
+(let ((old 1))
+  (defun edit-line-count-changed (new)
+    (when (> new old)
+      (return-pressed (1- old)))
+    (setf old new)))
+
+(let ((old 1))
+  (defun command-line-count-changed (new)
+    (if (> new old)
+        (let ((line (qml-get *qml-command* "text")))
+          (qml-call *qml-command* "clear")
+          (eval-expression (subseq line 0 (position #\Newline line))) ; don't change
+          (setf old 1))
+    (setf old new))))
 
 ;;; auto-indent
 
@@ -197,13 +205,12 @@
       0
       (+ *current-depth* *current-keyword-indent*)))
 
-(defun return-pressed () ; called from QML
-  (let ((spaces (indentation *current-line*)))
+(defun return-pressed (line-number)
+  (let ((spaces (indentation (|text| (|findBlockByLineNumber| *qml-document-edit* line-number)))))
     (unless (zerop spaces)
-      (qlater (lambda ()
-                (qml-call *qml-edit* "insert"
-                          (qml-get *qml-edit* "cursorPosition")
-                          (make-string spaces)))))))
+      (qml-call *qml-edit* "insert"
+                (qml-get *qml-edit* "cursorPosition")
+                (make-string spaces)))))
 
 ;;; paren highlighting
 
@@ -240,7 +247,7 @@
       (return-from paren-match-index i))))
 
 (defun code-region (text-cursor curr-line &optional right)
-  (let ((max (|blockCount| (if (qml-get *qml-edit* "activeFocus")
+  (let ((max (|lineCount| (if (qml-get *qml-edit* "activeFocus")
                                *qml-document-edit*
                                *qml-document-command*))))
     (with-output-to-string (s)
@@ -541,6 +548,8 @@
           (|textDocument| qml:*caller*))
     (when (= all (incf curr))
       (ini-highlighters)
+      (qconnect *qml-document-edit*    "blockCountChanged(int)" 'edit-line-count-changed)
+      (qconnect *qml-document-command* "blockCountChanged(int)" 'command-line-count-changed)
       (qconnect *qml-document-edit*    "cursorPositionChanged(QTextCursor)" 'cursor-position-changed)
       (qconnect *qml-document-command* "cursorPositionChanged(QTextCursor)" 'cursor-position-changed)))
   (defun reset-documents ()

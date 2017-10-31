@@ -43,12 +43,6 @@ Rectangle {
                     Lisp.call("editor:set-delayed-focus")
                 }
 
-                Keys.onPressed: {
-                    if((event.key == Qt.Key_Return) || (event.key == Qt.Key_Enter)) {
-                        Lisp.call("editor:return-pressed");
-                    }
-                }
-
                 MouseArea {
                     width: rectEdit.width
                     height: Math.max(rectEdit.height, edit.paintedHeight)
