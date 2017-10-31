@@ -124,14 +124,19 @@
                 (setf ex ch)))))))
     (defun cursor-position-changed (text-cursor)
       (setf cache-matches t)
-      (let* ((text-block (|block| text-cursor))
-             (line (|text| text-block))
-             (pos (|positionInBlock| text-cursor)))
-        (setf *current-line*  line
-              *cursor-indent* pos)
-        (when (and (plusp pos)
-                   (char= #\) (char line (1- pos))))
-          (show-matching-paren text-cursor (subseq line 0 pos) :right))))))
+      (if (and (qml-get *qml-command* "activeFocus")
+               (> (|blockCount| *qml-document-command*) 1))
+          (let ((line (qml-get *qml-command* "text")))
+            (qml-call *qml-command* "clear")
+            (eval-expression line))
+          (let* ((text-block (|block| text-cursor))
+                 (line (|text| text-block))
+                 (pos (|positionInBlock| text-cursor)))
+            (setf *current-line*  line
+                  *cursor-indent* pos)
+            (when (and (plusp pos)
+                       (char= #\) (char line (1- pos))))
+              (show-matching-paren text-cursor (subseq line 0 pos) :right)))))))
 
 ;;; auto-indent
 

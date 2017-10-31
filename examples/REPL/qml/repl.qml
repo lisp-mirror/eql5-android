@@ -137,14 +137,6 @@ Rectangle {
 
             Component.onCompleted: Lisp.call(textDocument, "editor:set-text-document", objectName)
 
-            Keys.onPressed: {
-                if((event.key == Qt.Key_Return) || (event.key == Qt.Key_Enter)) {
-                    event.accepted = true
-                    Lisp.call("editor:eval-expression", text)
-                    clear()
-                }
-            }
-
             MouseArea {
                 anchors.fill: parent
 

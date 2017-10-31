@@ -5,8 +5,9 @@ Please see both the **sokoban** and **REPL** docu in parent directories.
 
 This is an example of how to add a (very simple) REPL to any android app.
 
-The APK is of course bigger (5.7 MB), because it includes the contribs needed
-for Quicklisp etc., plus a working (patched) Swank version.
+The APK is big here (15 MB), because it includes all of Qt5 (widgets and QML,
+since the **ministro** service seems not to work on some devices), plus the
+contribs needed for Quicklisp etc., plus a working (patched) Swank version.
 
 
 

@@ -96,6 +96,10 @@ Remember to run `2-install-lib.sh` after recompiling.
 
 ### Build APK file
 
+The following script will build a full version, including all of Qt5 (both
+widgets and QML), because the **ministro** service for the Qt libs seems not
+to work on some devices:
+
 ```
   ./3-build-apk.sh
 ```

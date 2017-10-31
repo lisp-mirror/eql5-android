@@ -13,3 +13,4 @@ SOURCES     += build/main.cpp
 
 RESOURCES   = sokoban.qrc
 
+ANDROID_PACKAGE_SOURCE_DIR = android-sources
