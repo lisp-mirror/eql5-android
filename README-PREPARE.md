@@ -9,6 +9,10 @@ will (more or less) adapt themselves to smaller screens.
 Please pay attention that the `REPL` example will only work on a **tablet**,
 and only in **portrait** orientation!
 
+(There is *work in progress* to make all examples adapt to smaller screens,
+like those of phones; this refers especially to the `REPL` example; once
+completed, that example will be published on the Play Store.)
+
 
 
 Aknowledgements
