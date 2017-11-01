@@ -57,7 +57,7 @@ Rectangle {
             rightPadding: 8
             topPadding: 8
             bottomPadding: 8
-            text: "Enter expression / command (:r1 etc. for restarts, :h for help)"
+            text: "Enter <font face='Droid Sans Mono'>:r1</font> etc. for restarts, <font face='Droid Sans Mono'>:h</font> for help"
         }
 
         Rectangle {

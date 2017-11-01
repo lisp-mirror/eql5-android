@@ -9,8 +9,11 @@ Rectangle {
     objectName: "main"
     width: 900; height: 600 // for desktop
 
+    property bool isPhone: (Math.max(width, height) < 1000) // trivial but seems reliable
+
     function halfHeight() {
-        return (Screen.desktopAvailableHeight - Qt.inputMethod.keyboardRectangle.height - rectCommand.height) / 2
+        var x = Qt.inputMethod.keyboardRectangle.width / Screen.width // needed for high dpi scaling
+        return (Screen.desktopAvailableHeight - (Qt.inputMethod.keyboardRectangle.height / (x ? x : 1)) - rectCommand.height) / 2
     }
 
     Rectangle {
@@ -99,12 +102,12 @@ Rectangle {
             Ext.MenuButton {
                 objectName: "font_smaller"
                 text: "\uf010"
-                font.pixelSize: 15
+                font.pixelSize: main.isPhone ? 10 : 15
             }
             Ext.MenuButton {
                 objectName: "font_bigger"
                 text: "\uf00e"
-                font.pixelSize: 25
+                font.pixelSize: main.isPhone ? 16 : 25
             }
         }
     }

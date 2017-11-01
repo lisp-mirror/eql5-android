@@ -131,6 +131,8 @@
                    (char= #\) (char line (1- pos))))
           (show-matching-paren text-cursor (subseq line 0 pos) :right))))))
 
+;; the following are workarounds because QML 'Keys' doesn't work on all devices
+
 (let ((old 1))
   (defun edit-line-count-changed (new)
     (when (> new old)
@@ -140,9 +142,9 @@
 (let ((old 1))
   (defun command-line-count-changed (new)
     (if (> new old)
-        (let ((line (qml-get *qml-command* "text")))
+        (let ((line (remove #\Newline (qml-get *qml-command* "text"))))
           (qml-call *qml-command* "clear")
-          (eval-expression (subseq line 0 (position #\Newline line))) ; don't change
+          (eval-expression line)
           (setf old 1))
     (setf old new))))
 
@@ -583,6 +585,8 @@
 (defun start ()
   (qlater 'eql-user::ini) ; for Swank, Quicklisp
   (qml:ini-quick-view "qml/repl.qml")
+  (when (qml-get nil "isPhone")
+    (change-font :smaller))
   (connect-buttons)
   (connect-menu-buttons)
   (qconnect qml:*quick-view* "statusChanged(QQuickView::Status)" ; for reloading
@@ -610,6 +614,8 @@
     (|toString| (|source| qml:*quick-view*))))
 
 (defun qml-reloaded ()
+  (when (qml-get nil "isPhone")
+    (change-font :smaller))
   (connect-buttons)
   (connect-menu-buttons)
   (setf eql::*reloading-qml* nil))
