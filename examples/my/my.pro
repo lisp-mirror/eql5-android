@@ -13,3 +13,4 @@ SOURCES     += build/main.cpp
 
 RESOURCES   = my.qrc
 
+ANDROID_PACKAGE_SOURCE_DIR = android-sources

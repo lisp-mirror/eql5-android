@@ -45,6 +45,7 @@ Item {
                     width: flickOutput.width
                     height: flickOutput.height
                     textFormat: TextEdit.RichText
+                    font.pixelSize: 14
                     color: "white"
                     readOnly: true
 
@@ -61,6 +62,7 @@ Item {
                 objectName: "repl_input"
                 width: repl.parent.width - historyBack.width - historyForward.width
                 font.family: "Droid Sans Mono"
+                font.pixelSize: 14
                 color: "white"
                 opacity: 0.8
                 inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
@@ -77,7 +79,7 @@ Item {
             Button {
                 id: historyBack
                 objectName: "history_back"
-                width: 55
+                width: main.isPhone ? 40 : 55
                 height: replInput.height
                 focusPolicy: Qt.NoFocus
                 text: "<<"
@@ -93,7 +95,7 @@ Item {
             Button {
                 id: historyForward
                 objectName: "history_forward"
-                width: 55
+                width: historyBack.width
                 height: replInput.height
                 focusPolicy: Qt.NoFocus
                 text: ">>"

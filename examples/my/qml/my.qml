@@ -10,6 +10,8 @@ Rectangle {
     objectName: "main"
     color: "lightcyan"
 
+    property bool isPhone: (Math.max(width, height) < 1000) // trivial but seems reliable
+
     FontLoader {
         id: fontAwesome
         source: "fonts/fontawesome-webfont.ttf"
