@@ -4,6 +4,7 @@ import "." as Ext
 import EQL5 1.0
 
 Rectangle {
+    id: dialog
     anchors.fill: parent
     color: "#f0f0f0"
     visible: false
@@ -13,6 +14,7 @@ Rectangle {
         anchors.fill: parent
 
         Rectangle {
+            id: menu
             width: parent.width
             height: cancel.height
             color: "#505050"
@@ -51,6 +53,7 @@ Rectangle {
         Text {
             objectName: "query_text"
             width: parent.width
+            height: dialog.height - menu.height - queryInput.height - main.keyboardHeight()
             leftPadding: 8
             rightPadding: 8
             topPadding: 8

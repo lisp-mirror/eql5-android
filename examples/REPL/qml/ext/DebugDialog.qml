@@ -5,6 +5,7 @@ import "." as Ext
 import EQL5 1.0
 
 Rectangle {
+    id: dialog
     anchors.fill: parent
     color: "#f0f0f0"
     visible: false
@@ -14,6 +15,7 @@ Rectangle {
         anchors.fill: parent
 
         Rectangle {
+            id: menu
             width: parent.width
             height: cancel.height
             color: "#505050"
@@ -57,10 +59,11 @@ Rectangle {
             rightPadding: 8
             topPadding: 8
             bottomPadding: 8
-            text: "Enter <font face='Droid Sans Mono'>:r1</font> etc. for restarts, <font face='Droid Sans Mono'>:h</font> for help"
+            text: "<b>:r1</b> etc. restarts / <b>:h</b> help / <b>:q</b> quit"
         }
 
         Rectangle {
+            id: line
             width: parent.width
             height: 1
             color: "gray"
@@ -69,12 +72,12 @@ Rectangle {
         Flickable {
             id: flickText
             width: parent.width
-            height: Screen.desktopAvailableHeight
-                    - Qt.inputMethod.keyboardRectangle.height
+            height: dialog.height
                     - cancel.height
                     - debugInput.height
                     - label.height
-                    - 10
+                    - line.height
+                    - main.keyboardHeight()
             contentWidth: text.paintedWidth
             contentHeight: text.paintedHeight
             clip: true

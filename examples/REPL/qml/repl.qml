@@ -11,9 +11,13 @@ Rectangle {
 
     property bool isPhone: (Math.max(width, height) < 1000) // trivial but seems reliable
 
-    function halfHeight() {
+    function keyboardHeight() {
         var x = Qt.inputMethod.keyboardRectangle.width / Screen.width // needed for high dpi scaling
-        return (Screen.desktopAvailableHeight - (Qt.inputMethod.keyboardRectangle.height / (x ? x : 1)) - rectCommand.height) / 2
+        return (Qt.inputMethod.keyboardRectangle.height / (x ? x : 1))
+    }
+
+    function halfHeight() {
+        return (Screen.desktopAvailableHeight - keyboardHeight() - rectCommand.height) / 2
     }
 
     Rectangle {

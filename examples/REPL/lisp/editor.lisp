@@ -131,13 +131,15 @@
                    (char= #\) (char line (1- pos))))
           (show-matching-paren text-cursor (subseq line 0 pos) :right))))))
 
-;; the following are workarounds because QML 'Keys' doesn't work on all devices
+;;; the following are workarounds because QML 'Keys' doesn't work on all devices
 
 (let ((old 1))
   (defun edit-line-count-changed (new)
     (when (> new old)
       (return-pressed (1- old)))
-    (setf old new)))
+    (setf old new))
+  (defun reset-line-count ()
+    (setf old 1)))
 
 (let ((old 1))
   (defun command-line-count-changed (new)
@@ -391,7 +393,8 @@
 
 (defun clear ()
   (qml-call *qml-edit* "clear")
-  (setf *file* nil))
+  (setf *file* nil)
+  (reset-line-count))
 
 ;;; open file
 
@@ -406,7 +409,9 @@
           (setf *file* dialogs:*file-name*)
           (if (x:starts-with "fas" (pathname-type *file*))
               (eval* (format nil "(load ~S)" *file*))
-              (qml-set *qml-edit* "text" (read-file *file*))))
+              (progn
+                (qml-set *qml-edit* "text" (read-file *file*))
+                (reset-line-count))))
         (qmsg (format nil "File does not exist:~%~%~S" dialogs:*file-name*)))))
 
 ;;; save-file
