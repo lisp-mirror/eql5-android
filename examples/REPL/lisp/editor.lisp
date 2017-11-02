@@ -385,9 +385,11 @@
 
 ;;; etc.
 
-(defun change-font (to)
+(defun change-font (to &optional (steps 1))
   (let ((size (+ (qml-get *qml-edit* "font.pixelSize")
-                 (if (eql :bigger to) 3 -3))))
+                 (* steps
+                    (if (qml-get nil "isPhone") 1 2)
+                    (if (eql :bigger to) 1 -1)))))
     (dolist (item (list *qml-edit* *qml-command* *qml-output* *qml-status*))
       (qml-set item "font.pixelSize" size))))
 
@@ -591,7 +593,7 @@
   (qlater 'eql-user::ini) ; for Swank, Quicklisp
   (qml:ini-quick-view "qml/repl.qml")
   (when (qml-get nil "isPhone")
-    (change-font :smaller))
+    (change-font :smaller 3))
   (connect-buttons)
   (connect-menu-buttons)
   (qconnect qml:*quick-view* "statusChanged(QQuickView::Status)" ; for reloading
@@ -620,7 +622,7 @@
 
 (defun qml-reloaded ()
   (when (qml-get nil "isPhone")
-    (change-font :smaller))
+    (change-font :smaller 3))
   (connect-buttons)
   (connect-menu-buttons)
   (setf eql::*reloading-qml* nil))

@@ -8,11 +8,9 @@ in `../../README-PREPARE.md`
 
 
 
-### Notes
+### Note
 
 This examples assumes you already tried `../tic-tac-toe`.
-
-Please note that this is designed for a tablet device (not the phone).
 
 
 
