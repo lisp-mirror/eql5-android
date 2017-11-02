@@ -23,12 +23,20 @@
     (#\@ . :player)
     (#\& . :player2)))
 
-(defvar *items*      nil)
-(defvar *item-size*  nil)
-(defvar *maze*       nil)
-(defvar *my-mazes*   (mapcar 'sokoban:copy-maze sokoban:*mazes*))
-(defvar *solving*    nil)
-(defvar *undo-stack* nil)
+(defvar *items*         nil)
+(defvar *item-size*     nil)
+(defvar *maze*          nil)
+(defvar *my-mazes*      (mapcar 'sokoban:copy-maze sokoban:*mazes*))
+(defvar *solving*       nil)
+(defvar *undo-stack*    nil)
+(defvar *level-changed* nil)
+
+(defvar *qml-repl-container* "repl_container")
+(defvar *qml-level*          "level")
+(defvar *qml-zoom-board-in*  "zoom_board_in")
+(defvar *qml-zoom-board-out* "zoom_board_out")
+(defvar *qml-rotate-player*  "rotate_player")
+(defvar *qml-wiggle-box*     "wiggle_box")
 
 (setf qml:*quick-view* (qnew "QQuickView"))
 
@@ -46,10 +54,10 @@
   (qml:find-quick-item "board"))
 
 (defun level ()
-  (floor (qml-get "level" "value")))
+  (floor (qml-get *qml-level* "value")))
 
 (defun set-level (index)
-  (qml-set "level" "value" index))
+  (qml-set *qml-level* "value" index))
 
 (defun assoc* (item alist)
   (cdr (assoc item alist)))
@@ -155,15 +163,20 @@
                                (+ (if (eql :next direction/index) 1 -1)
                                   (level)))))))
     (when (/= level (level))
-      (queued (qml-set "zoom_board_out" "running" t)
+      (queued (qml-set *qml-zoom-board-out* "running" t)
               (set-level level) ; will call SET-MAZE from QML
-              (qml-set "zoom_board_in" "running" t))))
+              (qml-set *qml-zoom-board-in* "running" t))))
+  (setf *level-changed* t)
   (level))
 
 (defun solve ()
+  (setf *level-changed* nil)
   (let ((*solving* t))
     (reset-maze)
     (x:do-string (ch (nth (level) sokoban:*solutions*))
+      (when *level-changed*
+        (setf *level-changed nil)
+        (return-from solve))
       (sokoban:move (case (char-downcase ch)
                       (#\u :north)
                       (#\d :south)
@@ -257,21 +270,21 @@
   t)
 
 (defun final-animation ()
-  (queued (qml-set "rotate_player" "running" t)
-          (qml-set-all "wiggle_box" "running" t)))
+  (queued (qml-set *qml-rotate-player* "running" t)
+          (qml-set-all *qml-wiggle-box* "running" t)))
 
 (defun connect ()
-  (macrolet ((pressed (item function)
-               `(qconnect (find-quick-item ,item) "pressed()" (lambda () ,function))))
-    (pressed "up"       (sokoban:move :north *maze*))
-    (pressed "down"     (sokoban:move :south *maze*))
-    (pressed "left"     (sokoban:move :west *maze*))
-    (pressed "right"    (sokoban:move :east *maze*))
-    (pressed "previous" (change-level :previous))
-    (pressed "next"     (change-level :next))
-    (pressed "undo"     (undo))
-    (pressed "restart"  (reset-maze))
-    (pressed "solve"    (solve))))
+  (flet ((pressed (item function)
+           (qconnect (find-quick-item item) "pressed()" function)))
+    (pressed "up"       (lambda () (sokoban:move :north *maze*)))
+    (pressed "down"     (lambda () (sokoban:move :south *maze*)))
+    (pressed "left"     (lambda () (sokoban:move :west *maze*)))
+    (pressed "right"    (lambda () (sokoban:move :east *maze*)))
+    (pressed "previous" (lambda () (change-level :previous)))
+    (pressed "next"     (lambda () (change-level :next)))
+    (pressed "undo"     'undo)
+    (pressed "restart"  'reset-maze)
+    (pressed "solve"    'solve)))
 
 (defun start ()
   ;; ini
@@ -290,24 +303,22 @@
   ;; soko
   (setf sokoban:*move-hook* 'move-item
         sokoban:*undo-hook* 'add-undo-step)
-  (qml-set "level" "to" (1- (length *my-mazes*)))
+  (qml-set *qml-level* "to" (1- (length *my-mazes*)))
   (set-maze)
   ;; show help
   (qlater (lambda () (eval:eval-in-thread "(help)"))))
 
 ;; REPL
 
-(defvar *qml-repl* "repl_container")
-
 (defun show-repl (show) ; called from QML
   (when show
-    (qml-set *qml-repl* "opacity" 0)
-    (qml-set *qml-repl* "visible" t))
+    (qml-set *qml-repl-container* "opacity" 0)
+    (qml-set *qml-repl-container* "visible" t))
   (dotimes (n 10)
-    (qml-set *qml-repl* "opacity" (/ (if show (1+ n) (- 9 n)) 10))
+    (qml-set *qml-repl-container* "opacity" (/ (if show (1+ n) (- 9 n)) 10))
     (qsleep 0.015))
   (unless show
-    (qml-set *qml-repl* "visible" nil)))
+    (qml-set *qml-repl-container* "visible" nil)))
 
 (defun reload-qml (&optional (url "http://localhost:8080/"))
   ;; please see README-1.md in REPL example
@@ -323,4 +334,4 @@
   (connect)
   (let ((*no-delete* t))
     (set-maze))
-  (qml-set "level" "to" (1- (length *my-mazes*))))
+  (qml-set *qml-level* "to" (1- (length *my-mazes*))))
