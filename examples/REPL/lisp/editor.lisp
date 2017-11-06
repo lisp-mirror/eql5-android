@@ -578,16 +578,35 @@
                          (qml-call *qml-command* "forceActiveFocus")))))
 
 (defun connect-buttons ()
-  (flet ((clicked (name function)
-           (qconnect (find-quick-item name) "clicked()" function)))
+  (flet ((clicked (name function &optional (timer t))
+           (let ((item (find-quick-item name)))
+             (qconnect item "clicked()" function)
+             (when timer
+               (qconnect item "clicked()" 'start-menu-timer)))))
+    (clicked "font_bigger"     (lambda () (change-font :bigger)))
+    (clicked "font_smaller"    (lambda () (change-font :smaller)))
+    (clicked "clear"           'clear)
     (clicked "open_file"       'open-file)
     (clicked "save_file"       'save-file)
-    (clicked "clear"           'clear)
-    (clicked "history_back"    (lambda () (history-move :back)))
-    (clicked "history_forward" (lambda () (history-move :forward)))
     (clicked "eval"            'eval-expression)
-    (clicked "font_bigger"     (lambda () (change-font :bigger)))
-    (clicked "font_smaller"    (lambda () (change-font :smaller)))))
+    (clicked "history_back"    (lambda () (history-move :back)) nil)
+    (clicked "history_forward" (lambda () (history-move :forward)) nil)))
+
+;;; auto hide menues
+
+(defvar *menu-timer* nil)
+
+(defvar *qml-hide-buttons-top*   "hide_buttons_top")
+(defvar *qml-hide-buttons-right* "hide_buttons_right")
+
+(defun start-menu-timer ()
+  (unless *menu-timer*
+    (setf *menu-timer* (qnew "QTimer" "singleShot" t))
+    (qconnect *menu-timer* "timeout()"
+              (lambda ()
+                (qml-call *qml-hide-buttons-top* "start")
+                (qml-call *qml-hide-buttons-right* "start"))))
+  (|start| *menu-timer* 3000))
 
 (defun start ()
   (qlater 'eql-user::ini) ; for Swank, Quicklisp

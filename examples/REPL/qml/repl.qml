@@ -100,11 +100,19 @@ Rectangle {
 
             Ext.MenuButton {
                 text: "\uf0e2"
-                onClicked: edit.undo()
+
+                onClicked: {
+                    edit.undo()
+                    Lisp.call("editor:start-menu-timer")
+                }
             }
             Ext.MenuButton {
                 text: "\uf01e"
-                onClicked: edit.redo()
+
+                onClicked: {
+                    edit.redo()
+                    Lisp.call("editor:start-menu-timer")
+                }
             }
             Ext.MenuButton {
                 objectName: "font_smaller"
@@ -210,8 +218,9 @@ Rectangle {
         text: "\uf142"
 
         onClicked: {
-            animateButtonsTop.start()
-            animateButtonsRight.start()
+            showButtonsTop.start()
+            showButtonsRight.start()
+            Lisp.call("editor:start-menu-timer")
         }
     }
 
@@ -272,56 +281,44 @@ Rectangle {
 
     // animations for showing/hiding editor menu buttons
 
-    SequentialAnimation {
-        id: animateButtonsTop
-
-        NumberAnimation {
-            target: buttonsTop
-            property: "y"
-            from: -buttonsTop.height
-            to: 0
-            duration: 500
-            easing.type: Easing.OutExpo
-        }
-
-        PauseAnimation {
-            duration: 3000
-        }
-
-        NumberAnimation {
-            target: buttonsTop
-            property: "y"
-            from: 0
-            to: -buttonsTop.height
-            duration: 500
-            easing.type: Easing.InExpo
-        }
+    NumberAnimation {
+        id: showButtonsTop
+        target: buttonsTop
+        property: "y"
+        from: -buttonsTop.height
+        to: 0
+        duration: 500
+        easing.type: Easing.OutExpo
     }
 
-    SequentialAnimation {
-        id: animateButtonsRight
+    NumberAnimation {
+        id: showButtonsRight
+        target: buttonsRight
+        property: "x"
+        from: buttonsRight.parent.width
+        to: buttonsRight.parent.width - buttonsRight.width
+        duration: 500
+        easing.type: Easing.OutExpo
+    }
 
-        NumberAnimation {
-            target: buttonsRight
-            property: "x"
-            from: buttonsRight.parent.width
-            to: buttonsRight.parent.width - buttonsRight.width
-            duration: 500
-            easing.type: Easing.OutExpo
-        }
+    NumberAnimation {
+        objectName: "hide_buttons_top"
+        target: buttonsTop
+        property: "y"
+        from: 0
+        to: -buttonsTop.height
+        duration: 500
+        easing.type: Easing.InExpo
+    }
 
-        PauseAnimation {
-            duration: 3000
-        }
-
-        NumberAnimation {
-            target: buttonsRight
-            property: "x"
-            from: buttonsRight.parent.width - buttonsRight.width
-            to: buttonsRight.parent.width
-            duration: 500
-            easing.type: Easing.InExpo
-        }
+    NumberAnimation {
+        objectName: "hide_buttons_right"
+        target: buttonsRight
+        property: "x"
+        from: buttonsRight.parent.width - buttonsRight.width
+        to: buttonsRight.parent.width
+        duration: 500
+        easing.type: Easing.InExpo
     }
 
     // icon font
