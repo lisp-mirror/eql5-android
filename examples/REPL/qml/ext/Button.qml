@@ -3,7 +3,7 @@ import QtQuick.Controls 2.0
 
 Button {
     width: main.isPhone ? 40 : 60
-    height: main.isPhone ? width : 55
+    height: main.isPhone ? 37 : 55
     font.family: fontAwesome.name
     font.pixelSize: main.isPhone ? 25 : 36
     focusPolicy: Qt.NoFocus

@@ -315,7 +315,7 @@
                       #-android "Monospace"
                       (case type
                         (:output "saddlebrown")
-                        (:values "#0000c0")
+                        (:values "blue")
                         (:trace  "darkmagenta")
                         (:error  "red")
                         (t       "black"))

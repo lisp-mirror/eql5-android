@@ -59,7 +59,9 @@ Rectangle {
             rightPadding: 8
             topPadding: 8
             bottomPadding: 8
-            text: "<b>:r1</b> etc. restarts / <b>:h</b> help / <b>:q</b> quit"
+            font.family: "Droid Sans Mono"
+            font.pixelSize: debugInput.font.pixelSize - 3
+            text: ":r1 etc. restart / :h help / :q quit"
         }
 
         Rectangle {

@@ -26,7 +26,7 @@ installation (or any trivial web server, see script `web-server.sh`).
 
 * in this directory run `$ ./web-server.sh` or `$ web-server.bat` (requires python 3)
 
-Now start the **my** app on android and tap on the REPL switch.
+Now start **CL myApp** on android and tap on the REPL switch.
 
 * on the android REPL, eval `:s` (to start Swank)
 

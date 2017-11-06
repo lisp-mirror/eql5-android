@@ -51,7 +51,7 @@ Rectangle {
                 }
 
                 MouseArea {
-                    width: rectEdit.width
+                    width: Math.max(rectEdit.width, edit.paintedWidth)
                     height: Math.max(rectEdit.height, edit.paintedHeight)
 
                     onPressed: {
@@ -71,6 +71,7 @@ Rectangle {
                 Rectangle {
                     width: 2
                     color: "blue"
+                    visible: parent.activeFocus
 
                     SequentialAnimation on opacity {
                         running: true
@@ -85,13 +86,15 @@ Rectangle {
     }
 
     Rectangle {
-        width: buttonsTop.width
-        height: buttonsTop.height
+        id: buttonsTop
+        y: -height // hidden
+        width: rowButtonsTop.width
+        height: rowButtonsTop.height
         anchors.horizontalCenter: parent.horizontalCenter
         opacity: 0.7
 
         Row {
-            id: buttonsTop
+            id: rowButtonsTop
             padding: 4
             spacing: 6
 
@@ -199,13 +202,27 @@ Rectangle {
         }
     }
 
+    Ext.MenuButton {
+        id: showMenu
+        objectName: "show_menu"
+        x: parent.width - width - 4
+        y: 4
+        text: "\uf142"
+
+        onClicked: {
+            animateButtonsTop.start()
+            animateButtonsRight.start()
+        }
+    }
+
     Rectangle {
-        width: buttonsRight.width
-        height: buttonsRight.height
-        anchors.right: parent.right
+        id: buttonsRight
+        x: parent.width // hidden
+        width: colButtonsRight.width
+        height: colButtonsRight.height
 
         Column {
-            id: buttonsRight
+            id: colButtonsRight
             padding: 4
             spacing: 6
 
@@ -229,14 +246,16 @@ Rectangle {
     }
 
     Rectangle {
-        width: buttonsBottom.width
-        height: buttonsBottom.height
+        id: buttonsBottom
+        width: rowButtonsBottom.width
+        height: rowButtonsBottom.height
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: rectOutput.top
         opacity: 0.7
+        visible: command.activeFocus
 
         Row {
-            id: buttonsBottom
+            id: rowButtonsBottom
             padding: 4
             spacing: 6
 
@@ -248,6 +267,60 @@ Rectangle {
                 objectName: "history_forward"
                 text: "\uf101"
             }
+        }
+    }
+
+    // animations for showing/hiding editor menu buttons
+
+    SequentialAnimation {
+        id: animateButtonsTop
+
+        NumberAnimation {
+            target: buttonsTop
+            property: "y"
+            from: -buttonsTop.height
+            to: 0
+            duration: 500
+            easing.type: Easing.OutExpo
+        }
+
+        PauseAnimation {
+            duration: 3000
+        }
+
+        NumberAnimation {
+            target: buttonsTop
+            property: "y"
+            from: 0
+            to: -buttonsTop.height
+            duration: 500
+            easing.type: Easing.InExpo
+        }
+    }
+
+    SequentialAnimation {
+        id: animateButtonsRight
+
+        NumberAnimation {
+            target: buttonsRight
+            property: "x"
+            from: buttonsRight.parent.width
+            to: buttonsRight.parent.width - buttonsRight.width
+            duration: 500
+            easing.type: Easing.OutExpo
+        }
+
+        PauseAnimation {
+            duration: 3000
+        }
+
+        NumberAnimation {
+            target: buttonsRight
+            property: "x"
+            from: buttonsRight.parent.width - buttonsRight.width
+            to: buttonsRight.parent.width
+            duration: 500
+            easing.type: Easing.InExpo
         }
     }
 
