@@ -99,20 +99,12 @@ Rectangle {
             spacing: 6
 
             Ext.MenuButton {
+                objectName: "undo"
                 text: "\uf0e2"
-
-                onClicked: {
-                    edit.undo()
-                    Lisp.call("editor:start-menu-timer")
-                }
             }
             Ext.MenuButton {
+                objectName: "redo"
                 text: "\uf01e"
-
-                onClicked: {
-                    edit.redo()
-                    Lisp.call("editor:start-menu-timer")
-                }
             }
             Ext.MenuButton {
                 objectName: "font_smaller"

@@ -583,6 +583,8 @@
              (qconnect item "clicked()" function)
              (when timer
                (qconnect item "clicked()" 'start-menu-timer)))))
+    (clicked "undo"            (lambda () (qml-call *qml-edit* "undo")))
+    (clicked "redo"            (lambda () (qml-call *qml-edit* "redo")))
     (clicked "font_bigger"     (lambda () (change-font :bigger)))
     (clicked "font_smaller"    (lambda () (change-font :smaller)))
     (clicked "clear"           'clear)
