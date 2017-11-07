@@ -195,6 +195,9 @@
     (qmsg (x:join (mapcar '|toString| (|errors| *quick-view*))
                   #.(make-string 2 :initial-element #\Newline))))
   (|setResizeMode| *quick-view* |QQuickView.SizeRootObjectToView|)
+  ;; prevent app from freezing after pressing the back button (triangle)
+  (qoverride *quick-view* "hideEvent(QHideEvent*)"
+             (lambda (ev) (qlater (lambda () (|show| *quick-view*)))))
   (let ((platform (|platformName.QGuiApplication|)))
     (if (find platform '("qnx" "eglfs") :test 'string=)
         (|showFullScreen| *quick-view*)
