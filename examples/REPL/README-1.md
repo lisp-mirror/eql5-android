@@ -222,6 +222,14 @@ string if necessary; here: a list):
   Lisp.call("qmsg", ["var x", x, "var y", y])
 ```
 
+To evaluate JS code (available in QML), use function `qml:js`:
+
+```
+  (qml:js nil "Qt.inputMethod.keyboardRectangle")
+```
+
+The first argument is the `this` context of JS; `nil` means the root item.
+
 --
 
 **Quicklisp** tip: you only should eval `(quicklisp)` to install new libraries.

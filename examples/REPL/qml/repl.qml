@@ -207,6 +207,7 @@ Rectangle {
         objectName: "show_menu"
         x: parent.width - width - 4
         y: 4
+        opacity: 0.7
         text: "\uf142"
 
         onClicked: {
