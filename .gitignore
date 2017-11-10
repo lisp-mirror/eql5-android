@@ -20,6 +20,7 @@
 .*.ui
 .*.txt
 *.user
+.test
 t.lisp
 tr.h
 moc_*.cpp
@@ -32,6 +33,7 @@ android-build
 *.tgz
 a
 b
+c
 r
 r.lisp
 files.txt

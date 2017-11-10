@@ -36,8 +36,6 @@ Since the included EQL5 android libraries have been built with the above
 versions, you're required to have the exact same versions installed.
 
 Please note: EQL5 for android is basically the same as EQL5 for the desktop.
-Some modules are not supported on android, namely the web and multimedia ones.
-But you can use a `WebView` directly from QML.
 
 --
 
