@@ -30,7 +30,7 @@ Rectangle {
     Accelerometer {
         id: accel
         objectName: "accel"
-        dataRate: 75 // in Hertz
+        dataRate: 50 // in Hertz
         active: true
 
         onReadingChanged: Lisp.call("sensors:move-bubble", accel.reading.x, accel.reading.y, accel.reading.z)
