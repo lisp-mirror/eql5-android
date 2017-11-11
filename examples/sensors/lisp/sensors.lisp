@@ -1,0 +1,20 @@
+(in-package :sensors)
+
+(defconstant +const+ 57.2957795)
+
+(defvar *qml-main*   "main")
+(defvar *qml-bubble* "bubble")
+
+(defun move-bubble (x y z)
+  (flet ((pitch ()
+           (- (* +const+ (atan (/ y (sqrt (+ (* x x) (* z z))))))))
+         (roll ()
+           (- (* +const+ (atan (/ x (sqrt (+ (* y y) (* z z)))))))))
+    (let ((new-x (+ (qml-get *qml-bubble* "x") (/ (roll) 10)))
+          (new-y (- (qml-get *qml-bubble* "y") (/ (pitch) 10)))
+          (max-x (- (qml-get *qml-main* "width")
+                    (qml-get *qml-bubble* "width")))
+          (max-y (- (qml-get *qml-main* "height")
+                    (qml-get *qml-bubble* "height"))))
+      (qml-set *qml-bubble* "x" (max 0 (min new-x max-x)))
+      (qml-set *qml-bubble* "y" (max 0 (min new-y max-y))))))
