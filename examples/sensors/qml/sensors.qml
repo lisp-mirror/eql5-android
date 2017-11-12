@@ -19,21 +19,31 @@ Rectangle {
 
     Ext.Repl {}
 
-    Text {
-        padding: 10
+    Column {
         anchors.fill: parent
-        font.pixelSize: 20
-        color: "navy"
-        text: "<br>available sensors:<br><ul><li>" + QmlSensors.sensorTypes().join("<li>") + "</ul>"
-    }
 
-    Accelerometer {
-        id: accel
-        objectName: "accel"
-        dataRate: 50 // in Hertz
-        active: true
+        Text {
+            padding: 10
+            font.pixelSize: 20
+            color: "navy"
+            text: "<br>available sensors:<br><ul><li>" + QmlSensors.sensorTypes().join("<li>") + "</ul>"
+        }
 
-        onReadingChanged: Lisp.call("sensors:move-bubble", accel.reading.x, accel.reading.y, accel.reading.z)
+        Text {
+            padding: 10
+            id: azimuth
+            objectName: "azimuth"
+            width: parent.width
+            font.pixelSize: 74
+            horizontalAlignment: Text.AlignHCenter
+            text: "?"
+        }
+
+        Text {
+            width: parent.width
+            horizontalAlignment: Text.AlignHCenter
+            text: "azimuth"
+        }
     }
 
     Image {
@@ -44,5 +54,19 @@ Rectangle {
         x: (main.width - bubble.width) / 2
         y: (main.height - bubble.width) / 2
         z: 1
+    }
+
+    // sensors (are read from Lisp, using a timer)
+
+    Accelerometer {
+        id: accel
+        objectName: "accel"
+        active: true
+    }
+
+    Compass {
+        id: compass
+        objectName: "compass"
+        active: true
     }
 }

@@ -34,7 +34,10 @@
     (qsleep 0.015))
   (unless show
     (qml-set *qml-repl* "visible" nil))
-  (qml-set *qml-accel* "active" (not show))) ; would interfere with REPL
+  ;; sensor processing would interfere with REPL (on some devices)
+  (if show
+      (stop-sensor-timers)
+      (start-sensor-timers)))
 
 (defun reload-qml (&optional (url "http://localhost:8080/"))
   ;; please see README-1.md in REPL example
