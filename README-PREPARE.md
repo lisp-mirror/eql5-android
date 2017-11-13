@@ -9,8 +9,8 @@ here:
 
 
 
-Aknowledgements
----------------
+Acknowledgements
+----------------
 
 Important: prepare for several GB of downloads (1 GB Qt5, 1 GB Android NDK,
 and a few other downloads...).
