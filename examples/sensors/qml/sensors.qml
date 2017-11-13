@@ -62,6 +62,8 @@ Rectangle {
         id: accel
         objectName: "accel"
         active: true
+
+        Component.onCompleted: Lisp.call(reading, "sensors:set-accel-reading") // for speed optimization
     }
 
     Compass {

@@ -27,12 +27,16 @@
 
 ;;; accelerometer
 
-(defvar *accel-timer* nil)
+(defvar *accel-timer*   nil)
+(defvar *accel-reading* nil)
+
+(defun set-accel-reading () ; called from QML
+  (setf *accel-reading* qml:*caller*))
 
 (defun move-bubble ()
   (unless *accel-timer*
     (setf *accel-timer* (qnew "QTimer"
-                              "interval" 10
+                              "interval" 1     ; for max. speed
                               "singleShot" t))
     (qconnect *accel-timer* "timeout()" 'move-bubble))
   (do-move-bubble)
@@ -41,18 +45,22 @@
 (defconstant +const+ 57.2957795)
 
 (defun do-move-bubble ()
-  (x:when-it (find-quick-item *qml-accel*) ; needed for QML reloading
-    (let ((x (qml-get x:it "reading.x"))
-          (y (qml-get x:it "reading.y"))
-          (z (qml-get x:it "reading.z")))
+  ;; this function is speed optimized, using neither QML-GET nor QML-SET;
+  ;; for this reason you can't have e.g. animations attached to the 'bubble' item;
+  ;; if you need animations etc. on the 'bubble' item, use the (slower) QML-SET
+  (when (find-quick-item *qml-accel*) ; needed for QML reloading
+    (let ((x (qget *accel-reading* "x")) ; fastest way to read sensor data
+          (y (qget *accel-reading* "y"))
+          (z (qget *accel-reading* "z")))
       (flet ((pitch ()
                (- (* +const+ (atan (/ y (sqrt (+ (* x x) (* z z))))))))
              (roll ()
                (- (* +const+ (atan (/ x (sqrt (+ (* y y) (* z z)))))))))
-        (let ((new-x (+ (qml-get *qml-bubble* "x") (/ (roll) 10)))
-              (new-y (- (qml-get *qml-bubble* "y") (/ (pitch) 10))))
-          (qml-set *qml-bubble* "x" (max 0 (min new-x *max-x*)))
-          (qml-set *qml-bubble* "y" (max 0 (min new-y *max-y*))))))))
+        (let* ((bubble (find-quick-item *qml-bubble*))
+               (new-x (+ (|x| bubble) (/ (roll) 10)))
+               (new-y (- (|y| bubble) (/ (pitch) 10))))
+          (|setX| bubble (max 0 (min new-x *max-x*)))
+          (|setY| bubble (max 0 (min new-y *max-y*))))))))
 
 ;;; compass
 
@@ -67,6 +75,7 @@
                                 "interval" 500
                                 "singleShot" t))
     (qconnect *compass-timer* "timeout()" 'display-azimuth))
+  ;; not speed optimized (long interval)
   (qml-set *qml-azimuth* "text"
            (princ-to-string (round* (qml-get *qml-compass* "reading.azimuth"))))
   (|start| *compass-timer*))
@@ -84,4 +93,3 @@
 
 (defun stop-sensor-timers ()
   (%timers '|stop|))
-
