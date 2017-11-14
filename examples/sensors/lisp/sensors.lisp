@@ -42,14 +42,14 @@
   (do-move-bubble)
   (|start| *accel-timer*))
 
-(defconstant +const+ 57.2957795)
+(defconstant +const+ (/ 180 pi))
 
 (defun do-move-bubble ()
   ;; this function is speed optimized, using neither QML-GET nor QML-SET;
   ;; for this reason you can't have e.g. animations attached to the 'bubble' item;
   ;; if you need animations etc. on the 'bubble' item, use the (slower) QML-SET
-  (when (find-quick-item *qml-accel*) ; needed for QML reloading
-    (let ((x (qget *accel-reading* "x")) ; fastest way to read sensor data
+  (when (find-quick-item *qml-accel*) i   ; needed for QML reloading
+    (let ((x (qget *accel-reading* "x"))  ; fastest way to read sensor data
           (y (qget *accel-reading* "y"))
           (z (qget *accel-reading* "z")))
       (flet ((pitch ()
