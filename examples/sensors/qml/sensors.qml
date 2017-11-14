@@ -24,9 +24,8 @@ Rectangle {
 
         Text {
             padding: 10
-            font.pixelSize: 20
             color: "navy"
-            text: "<br>available sensors:<br><ul><li>" + QmlSensors.sensorTypes().join("<li>") + "</ul>"
+            text: "<br><b>Available sensors:</b><br><ul><li>" + QmlSensors.sensorTypes().join("<li>") + "</ul>"
         }
 
         Text {
@@ -42,7 +41,7 @@ Rectangle {
         Text {
             width: parent.width
             horizontalAlignment: Text.AlignHCenter
-            text: "azimuth"
+            text: "<b>azimuth</b><br><br>for best accuracy,<br>the bubble should not move"
         }
     }
 
