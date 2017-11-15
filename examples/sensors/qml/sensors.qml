@@ -25,7 +25,7 @@ Rectangle {
         Text {
             padding: 10
             color: "navy"
-            text: "<br><b>Available sensors:</b><br><ul><li>" + QmlSensors.sensorTypes().join("<li>") + "</ul>"
+            text: "<br><b>Available sensors:</b><br><ul><li>" + QmlSensors.sensorTypes().sort().join("<li>") + "</ul>"
         }
 
         Text {

@@ -1,4 +1,4 @@
-;;; This is a port of QML example "accelbubble"
+;;; This is an extended port of QML example "accelbubble"
 
 (in-package :sensors)
 
