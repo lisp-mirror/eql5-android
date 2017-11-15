@@ -610,6 +610,44 @@
                 (qml-call *qml-hide-buttons-right* "start"))))
   (|start| *menu-timer* 3000))
 
+;;; cursor movement (see arrow buttons in QML)
+
+(defvar *focus-editor* *qml-command*)
+
+(defun connect-arrows ()
+  (flet ((pressed (name function)
+           (qconnect (find-quick-item name) "pressed()" function)))
+    (pressed "up"       (lambda () (arrow-pressed "up")))
+    (pressed "down"     (lambda () (arrow-pressed "down")))
+    (pressed "left"     (lambda () (arrow-pressed "left")))
+    (pressed "right"    (lambda () (arrow-pressed "right")))
+    (pressed "keyboard" (lambda () (ensure-focus :show)))))
+
+(defun set-focus-editor (qml-name) ; called from QML
+  (setf *focus-editor* qml-name))
+
+(defun ensure-focus (&optional show) ; called from QML (and Lisp)
+  (qml-call *focus-editor* "forceActiveFocus")
+  (funcall (if show '|show| '|hide|) (|inputMethod.QGuiApplication|)))
+
+(defun arrow-pressed (name)
+  (let* ((dir (intern (string-upcase name) :keyword))
+         (pos (qml-get *focus-editor* "cursorPosition"))
+         (new-pos (cond ((find dir '(:left :right))
+                         (+ pos (if (eql :right dir) 1 -1)))
+                        (t
+                         (let ((rect (qml-get *focus-editor* "cursorRectangle")))
+                           (qml-call *focus-editor* "positionAt"
+                                     (truncate (first rect))
+                                     (truncate (+ (second rect)
+                                                  (if (eql :down dir)
+                                                      (1+ (fourth rect))
+                                                      -1)))))))))
+    (qml-set *focus-editor* "cursorPosition"
+             (max 0 (min new-pos (qml-get *focus-editor* "length"))))))
+
+;;; start
+
 (defun start ()
   (qlater 'eql-user::ini) ; for Swank, Quicklisp
   (qml:ini-quick-view "qml/repl.qml")
@@ -617,6 +655,7 @@
     (change-font :smaller 3))
   (connect-buttons)
   (connect-menu-buttons)
+  (connect-arrows)
   (qconnect qml:*quick-view* "statusChanged(QQuickView::Status)" ; for reloading
             (lambda (status)
               (case status
@@ -644,6 +683,8 @@
 (defun qml-reloaded ()
   (when (qml-get nil "isPhone")
     (change-font :smaller 3))
+  (setf *focus-editor* *qml-command*)
   (connect-buttons)
   (connect-menu-buttons)
+  (connect-arrows)
   (setf eql::*reloading-qml* nil))

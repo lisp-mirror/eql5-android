@@ -160,6 +160,18 @@ The icons for this menu are taken from `fontawesome-webfont.ttf` (included).
 
 
 
+### Moving the cursor
+
+There is a hidden option for moving the cursor using convenient arrow buttons:
+when the virtual keyboard is shown, hide it by tapping on the **back** button
+(triangle) of the device.
+
+Now you can move the cursor in both the editor and the command line (where up
+and down will move the cursor to beginning and end). Switch back to the
+keyboard using the **keyboard** button.
+
+
+
 ### Desktop notes
 
 To run this example on the desktop, do:

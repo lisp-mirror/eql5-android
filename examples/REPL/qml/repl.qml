@@ -59,6 +59,7 @@ Rectangle {
                         edit.forceActiveFocus()
                         edit.cursorPosition = edit.positionAt(mouse.x, mouse.y)
                         Qt.inputMethod.show() // needed for edge case (since we have 2 input fields)
+                        Lisp.call("editor:set-focus-editor", edit.objectName)
                     }
 
                     onPressAndHold: Lisp.call("editor:copy-paste", edit.cursorPosition)
@@ -149,6 +150,7 @@ Rectangle {
                     command.forceActiveFocus()
                     command.cursorPosition = command.positionAt(mouse.x, mouse.y)
                     Qt.inputMethod.show() // needed for edge case (since we have 2 input fields)
+                    Lisp.call("editor:set-focus-editor", command.objectName)
                 }
 
                 onPressAndHold: Lisp.call("editor:copy-paste", command.cursorPosition)
@@ -312,6 +314,67 @@ Rectangle {
         to: buttonsRight.parent.width
         duration: 500
         easing.type: Easing.InExpo
+    }
+
+    // arrow buttons (cursor movement)
+
+    Rectangle {
+        width: arrows.width + 50
+        height: width + 20
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        color: "transparent"
+
+        MouseArea {
+            anchors.fill: parent
+            onPressed: Lisp.call("editor:ensure-focus")
+        }
+
+        Item {
+            id: arrows
+            width: up.width * 3
+            height: width
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+
+            Ext.ArrowButton {
+                id: up
+                objectName: "up"
+                text: "\uf01b"
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+            
+            Ext.ArrowButton {
+                objectName: "left"
+                text: "\uf190"
+                anchors.verticalCenter: parent.verticalCenter
+            }
+
+            Ext.ArrowButton {
+                objectName: "right"
+                text: "\uf18e"
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: parent.right
+            }
+
+            Ext.ArrowButton {
+                objectName: "down"
+                text: "\uf01a"
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
+            }
+        }
+    }
+
+    Button {
+        objectName: "keyboard"
+        y: Screen.desktopAvailableHeight - height - 10
+        width: 70
+        height: 48
+        anchors.horizontalCenter: parent.horizontalCenter
+        font.pixelSize: 48
+        text: "\uf11c"
+        opacity: 0.35
     }
 
     // icon font

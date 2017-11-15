@@ -11,6 +11,8 @@
     <file>qml/ext/Button.qml</file>
     <file>qml/ext/MenuButton.qml</file>
     <file>qml/ext/ClipboardMenu.qml</file>
+    <file>qml/ext/ArrowButton.qml</file>
+
     <file>qml/fonts/fontawesome-webfont.ttf</file>
 
     <file>../../img/logo.png</file>
