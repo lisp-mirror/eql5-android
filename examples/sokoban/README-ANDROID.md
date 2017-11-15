@@ -1,8 +1,8 @@
 
 ### Prepare
 
-You need to prepare your Android development environment first, as described
-in `../../README-PREPARE.md`
+You need to prepare your android development environment first, as described
+in [README-PREPARE](../../README-PREPARE.md).
 
 (see also [known issues](http://wiki.qt.io/Qt_for_Android_known_issues))
 

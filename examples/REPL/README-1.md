@@ -1,8 +1,8 @@
 
 ### Prepare
 
-You need to prepare your Android development environment first, as described
-in `../../README-PREPARE.md`
+You need to prepare your android development environment first, as described
+in [README-PREPARE](../../README-PREPARE.md).
 
 (see also [known issues](http://wiki.qt.io/Qt_for_Android_known_issues))
 
@@ -16,6 +16,10 @@ description).
 
 
 ### Generate ASDF file dependencies
+
+*Please note that the included ASDF libs are not needed/used by the REPL;
+instead, this is only here to show how to integrate eventually needed ASDF
+libraries.*
 
 N.B: This needs to be done only once.
 
@@ -167,8 +171,8 @@ when the virtual keyboard is shown, hide it by tapping on the **back** button
 (triangle) of the device.
 
 Now you can move the cursor in both the editor and the command line (where up
-and down will move the cursor to beginning and end). Switch back to the
-keyboard using the **keyboard** button.
+and down will move the cursor to beginning and end, respectively). Switch back
+to the keyboard using the **keyboard** button.
 
 
 
