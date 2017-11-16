@@ -10,7 +10,7 @@ in [README-PREPARE](../../README-PREPARE.md).
 
 ### Note
 
-This examples assumes you already tried `../tic-tac-toe` (more detailed
+This example assumes you already tried `../tic-tac-toe` (more detailed
 description).
 
 

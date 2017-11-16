@@ -3,7 +3,7 @@ Try it first!
 -------------
 
 If you own an android device, just try the examples, which can be downloaded
-here:
+from here:
 
 [Common Lisp and QML for Mobile](https://www.lights-of-holiness.eu/android/)
 
