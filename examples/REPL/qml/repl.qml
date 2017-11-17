@@ -319,11 +319,13 @@ Rectangle {
     // arrow buttons (cursor movement)
 
     Rectangle {
+        id: arrowRect
         width: arrows.width + 50
         height: width + 20
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         color: "transparent"
+        visible: (edit.focus || command.focus)
 
         MouseArea {
             anchors.fill: parent
@@ -375,6 +377,7 @@ Rectangle {
         font.pixelSize: 48
         text: "\uf11c"
         opacity: 0.35
+        visible: arrowRect.visible
     }
 
     // icon font
