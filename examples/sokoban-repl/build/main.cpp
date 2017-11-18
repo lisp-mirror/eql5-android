@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
     QTextCodec* utf8 = QTextCodec::codecForName("UTF-8");
     QTextCodec::setCodecForLocale(utf8);
 
-    // splash pixmap (see "../../img/logo.png")
+    // splash pixmap (see "../../../img/logo.png")
     QLabel* splash = new QLabel;
     splash->setPixmap(QPixmap(":/img/logo.png"));
     splash->setAlignment(Qt::AlignCenter);

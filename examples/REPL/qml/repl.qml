@@ -371,10 +371,10 @@ Rectangle {
     Button {
         objectName: "keyboard"
         y: Screen.desktopAvailableHeight - height - 10
-        width: 70
-        height: 48
+        width: main.isPhone ? 70 : 100
+        height: main.isPhone ? 50 : 70
         anchors.horizontalCenter: parent.horizontalCenter
-        font.pixelSize: 48
+        font.pixelSize: height
         text: "\uf11c"
         opacity: 0.35
         visible: arrowRect.visible
