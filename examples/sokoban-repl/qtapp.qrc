@@ -26,7 +26,5 @@
     <file>qml/img/player.png</file>
     <file>qml/img/wall.png</file>
 
-    <file>../../img/logo.png</file>
-
 </qresource>
 </RCC>

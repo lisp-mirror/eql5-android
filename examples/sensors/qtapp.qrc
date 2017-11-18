@@ -10,7 +10,6 @@
     <file>qml/fonts/fontawesome-webfont.ttf</file>
 
     <file>qml/img/bubble.svg</file>
-    <file>../../img/logo.png</file>
 
 </qresource>
 </RCC>
