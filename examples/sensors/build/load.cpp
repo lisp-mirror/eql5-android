@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
     qApp->processEvents();
     splash->deleteLater();
 
-    /*** workaround for android 4.2 bug ***/
+    /*** workaround for android 4.2 etc. ***/
 
     // pre-load all libs manually, providing the absolute pathname
     QString path(QCoreApplication::applicationDirPath() + "/lib%1.so");

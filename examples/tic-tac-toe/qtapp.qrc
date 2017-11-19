@@ -8,7 +8,5 @@
     <file>pics/o.png</file>
     <file>pics/x.png</file>
 
-    <file>../../img/logo.png</file>
-
 </qresource>
 </RCC>

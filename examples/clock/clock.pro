@@ -1,14 +1,6 @@
-QT             += widgets printsupport uitools quick quickwidgets qml androidextras
-TEMPLATE       = app
-CONFIG         += no_keywords release
-ECL_ANDROID    = $$(ECL_ANDROID)
-INCLUDEPATH    += $$ECL_ANDROID/include ../../include
-LIBS           += -L$$ECL_ANDROID/lib -lecl -L./build -lapp -L../../lib -leql5
-TARGET         = clock
-DESTDIR        = ./
-OBJECTS_DIR    = ./tmp/
-MOC_DIR        = ./tmp/
+TEMPLATE    = subdirs
+SUBDIRS     = load app
 
-SOURCES        += build/main.cpp
-
-RESOURCES      = clock.qrc
+app.file    = qtapp.pro
+load.file   = load.pro
+app.depends = load

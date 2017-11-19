@@ -9,7 +9,5 @@
     <file>qml/ext/Repl.qml</file>
     <file>qml/fonts/fontawesome-webfont.ttf</file>
 
-    <file>../../img/logo.png</file>
-
 </qresource>
 </RCC>

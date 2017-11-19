@@ -96,7 +96,6 @@ This will run the following command:
 ```
   androiddeployqt --input android-libtic_tac_toe.so-deployment-settings.json \
                   --output android-build \
-                  --deployment ministro \
                   --gradle \
                   --verbose
 ```
@@ -106,20 +105,17 @@ The mentioned `json` file is generated automatically during `make`, see above.
 **gradle** is the new **ant**. It will be downloaded the first time you start a
 build.
 
-The `--deployment ministro` option means that you don't need to provide the Qt
-libraries; they will instead be downloaded automatically the first time the app
-is started on the Android device.  
-(This is of course optional, you may also include the Qt libs, which will push
-up the size of the APK file to about 13.5 MB.)
+The (optional) `--deployment ministro` option means that you don't need to
+provide the Qt libraries; they will instead be downloaded automatically the
+first time the app is started on the android device.  
+(Since this option seems not to work on all devices, giving basically useless
+error messages, I would not recommend it.)
 
 A list of the currently supported Qt versions of **ministro** can be found here:
 
   [https://download.qt.io/ministro/android/qt5/](https://download.qt.io/ministro/android/qt5/)
 
 At the time of writing, only versions up to Qt 5.7.1 are supported.
-
-Using *ministro*, the APK file is about 3.5 MB (including the EQL5 and ECL
-libs), which seems acceptable.
 
 Now the build should succeed (verbosely, as requested). The APK package is in
 `android-build/build/outputs/apk/`.

@@ -5,40 +5,22 @@
 #include <QApplication>
 #include <QTextCodec>
 #include <QFileInfo>
-#include <QLabel>
 
-extern "C" void ini_app(cl_object);
+extern "C" {
 
-int catch_all_qexec() {
-    int ret = 0;
-    CL_CATCH_ALL_BEGIN(ecl_process_env()) {
-        ret = QApplication::exec(); }
-    CL_CATCH_ALL_END;
-    return ret; }
+void ini_app(cl_object);
 
-int main(int argc, char** argv) {
-
-    EQL::ini(argv); // best initialized here
-
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QApplication qapp(argc, argv);
-
-    //qapp.setOrganizationName("MyTeam");
-    //qapp.setOrganizationDomain("my-team.org");
-    qapp.setApplicationName(QFileInfo(qapp.applicationFilePath()).baseName());
+void ini() {
+    //qApp->setOrganizationName("MyTeam");
+    //qApp->setOrganizationDomain("my-team.org");
+    qApp->setApplicationName(QFileInfo(qApp->applicationFilePath()).baseName());
 
     QTextCodec* utf8 = QTextCodec::codecForName("UTF-8");
     QTextCodec::setCodecForLocale(utf8);
 
-    // splash pixmap (see "../../../img/logo.png")
-    QLabel* splash = new QLabel;
-    splash->setPixmap(QPixmap(":/img/logo.png"));
-    splash->setAlignment(Qt::AlignCenter);
-    splash->show();
-    qApp->processEvents();
-    splash->deleteLater();
-
     EQL eql;
-    eql.exec(ini_app);
+    CL_CATCH_ALL_BEGIN(ecl_process_env()) {
+        QApplication::exec(); }
+    CL_CATCH_ALL_END; }
 
-    return catch_all_qexec(); }
+}
