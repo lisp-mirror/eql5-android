@@ -19,6 +19,8 @@ void ini() {
     QTextCodec::setCodecForLocale(utf8);
 
     EQL eql;
+    eql.exec(ini_app);
+
     CL_CATCH_ALL_BEGIN(ecl_process_env()) {
         QApplication::exec(); }
     CL_CATCH_ALL_END; }
