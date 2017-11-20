@@ -116,7 +116,7 @@ Item {
     }
 
     Row {
-        y: replContainer.height + 10
+        y: replContainer.height + 5
         anchors.horizontalCenter: parent.horizontalCenter
         spacing: 15
         visible: replInput.focus

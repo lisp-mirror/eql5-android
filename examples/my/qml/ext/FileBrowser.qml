@@ -99,7 +99,7 @@ Rectangle {
         }
 
         Row {
-            y: header.height + 10
+            y: header.height + 5
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: 15
             visible: path.focus
