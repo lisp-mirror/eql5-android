@@ -342,26 +342,26 @@ Rectangle {
             Ext.ArrowButton {
                 id: up
                 objectName: "up"
-                text: "\uf01b"
+                text: "\uf139"
                 anchors.horizontalCenter: parent.horizontalCenter
             }
             
             Ext.ArrowButton {
                 objectName: "left"
-                text: "\uf190"
+                text: "\uf137"
                 anchors.verticalCenter: parent.verticalCenter
             }
 
             Ext.ArrowButton {
                 objectName: "right"
-                text: "\uf18e"
+                text: "\uf138"
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
             }
 
             Ext.ArrowButton {
                 objectName: "down"
-                text: "\uf01a"
+                text: "\uf13a"
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
             }

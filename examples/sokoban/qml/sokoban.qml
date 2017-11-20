@@ -56,11 +56,11 @@ Rectangle {
 
         Ext.Button {
             objectName: "previous"
-            text: "\uf048"
+            text: "\uf100"
         }
         Ext.Button {
             objectName: "next"
-            text: "\uf051"
+            text: "\uf101"
         }
     }
 
@@ -82,7 +82,7 @@ Rectangle {
         }
         Ext.Button {
             objectName: "solve"
-            text: "\uf04b"
+            text: "\uf17b"
         }
     }
 
@@ -98,26 +98,26 @@ Rectangle {
         Ext.ArrowButton {
             id: up
             objectName: "up"
-            text: "\uf01b"
+            text: "\uf139"
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
         Ext.ArrowButton {
             objectName: "left"
-            text: "\uf190"
+            text: "\uf137"
             anchors.verticalCenter: parent.verticalCenter
         }
 
         Ext.ArrowButton {
             objectName: "right"
-            text: "\uf18e"
+            text: "\uf138"
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
         }
 
         Ext.ArrowButton {
             objectName: "down"
-            text: "\uf01a"
+            text: "\uf13a"
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
         }

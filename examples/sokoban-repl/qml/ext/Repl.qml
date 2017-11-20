@@ -82,7 +82,8 @@ Item {
                 width: main.isPhone ? 40 : 55
                 height: replInput.height
                 focusPolicy: Qt.NoFocus
-                text: "<<"
+                font.pixelSize: 26
+                text: "\uf100"
 
                 onClicked: Lisp.call("eval:history-move", "back")
             }
@@ -98,7 +99,8 @@ Item {
                 width: historyBack.width
                 height: replInput.height
                 focusPolicy: Qt.NoFocus
-                text: ">>"
+                font.pixelSize: 26
+                text: "\uf101"
 
                 onClicked: Lisp.call("eval:history-move", "forward")
             }
