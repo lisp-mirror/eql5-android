@@ -174,6 +174,8 @@ Now you can move the cursor in both the editor and the command line (where up
 and down will move the cursor to beginning and end, respectively). Switch back
 to the keyboard using the **keyboard** button.
 
+Tap-and-hold for moving to begin/end of line (left/right) or file (up/down).
+
 
 
 ### Desktop notes

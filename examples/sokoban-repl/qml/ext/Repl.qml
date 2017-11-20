@@ -24,6 +24,7 @@ Item {
     }
 
     Column {
+        id: replContainer
         objectName: "repl_container"
         visible: false
 
@@ -111,6 +112,29 @@ Item {
             height: 1
             color: "#101010"
             opacity: 0.8
+        }
+    }
+
+    Row {
+        y: replContainer.height + 10
+        anchors.horizontalCenter: parent.horizontalCenter
+        spacing: 15
+        visible: replInput.focus
+
+        // cursor back
+        Ext.ArrowButton {
+            text: "\uf137"
+
+            onPressed:      replInput.cursorPosition--
+            onPressAndHold: replInput.cursorPosition = 0
+        }
+
+        // cursor forward
+        Ext.ArrowButton {
+            text: "\uf138"
+
+            onPressed:      replInput.cursorPosition++
+            onPressAndHold: replInput.cursorPosition = replInput.length
         }
     }
 }

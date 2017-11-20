@@ -6,12 +6,16 @@ import EQL5 1.0
 
 Rectangle {
     id: fileBrowser
+    objectName: "file_browser"
     anchors.fill: parent
     visible: false
     z: 2
 
-    function urlToString(url) {
-        return url.toString().substring("file://".length) }
+    // header, footer need this
+    property Rectangle header
+    property TextField path
+
+    function urlToString(url) { return url.toString().substring("file://".length) }
 
     ListView {
         id: folderView
@@ -37,6 +41,8 @@ Rectangle {
             height: headerColumn.height
             z: 2
             color: "#505050"
+
+            Component.onCompleted: fileBrowser.header = header // header, footer need this
 
             Column {
                 id: headerColumn
@@ -66,9 +72,12 @@ Rectangle {
 
                 TextField {
                     id: path
+                    objectName: "path"
                     width: fileBrowser.width
                     inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
                     text: urlToString(folderModel.folder)
+
+                    Component.onCompleted: fileBrowser.path = path // header, footer need this
 
                     onAccepted: {
                         fileBrowser.visible = false
@@ -86,6 +95,29 @@ Rectangle {
                     fileBrowser.visible = false
                     Lisp.call("dialogs:set-file-name", "")
                 }
+            }
+        }
+
+        Row {
+            y: header.height + 15
+            anchors.horizontalCenter: parent.horizontalCenter
+            spacing: 20
+            visible: path.focus
+
+            // cursor back
+            Ext.ArrowButton {
+                text: "\uf137"
+
+                onPressed:      path.cursorPosition--
+                onPressAndHold: path.cursorPosition = 0
+            }
+
+            // cursor forward
+            Ext.ArrowButton {
+                text: "\uf138"
+
+                onPressed:      path.cursorPosition++
+                onPressAndHold: path.cursorPosition = path.length
             }
         }
 

@@ -10,9 +10,11 @@ Text {
     scale: 1.2
 
     signal pressed()
+    signal pressAndHold()
 
     MouseArea {
         anchors.fill: parent
         onPressed: parent.pressed()
+        onPressAndHold: parent.pressAndHold()
     }
 }

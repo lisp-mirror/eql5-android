@@ -615,13 +615,21 @@
 (defvar *focus-editor* *qml-command*)
 
 (defun connect-arrows ()
-  (flet ((pressed (name function)
-           (qconnect (find-quick-item name) "pressed()" function)))
+  (labels ((connect (name qsignal function)
+             (qconnect (find-quick-item name) qsignal function))
+           (pressed (name function)
+             (connect name "pressed()" function))
+           (press-and-hold (name function)
+             (connect name "pressAndHold()" function)))
     (pressed "up"       (lambda () (arrow-pressed :up)))
     (pressed "down"     (lambda () (arrow-pressed :down)))
     (pressed "left"     (lambda () (arrow-pressed :left)))
     (pressed "right"    (lambda () (arrow-pressed :right)))
-    (pressed "keyboard" (lambda () (ensure-focus :show)))))
+    (pressed "keyboard" (lambda () (ensure-focus :show)))
+    (press-and-hold "up"    (lambda () (arrow-helt :up)))
+    (press-and-hold "down"  (lambda () (arrow-helt :down)))
+    (press-and-hold "left"  (lambda () (arrow-helt :left)))
+    (press-and-hold "right" (lambda () (arrow-helt :right)))))
 
 (defun set-focus-editor (qml-name) ; called from QML
   (setf *focus-editor* qml-name))
@@ -631,18 +639,35 @@
   (funcall (if show '|show| '|hide|) (|inputMethod.QGuiApplication|)))
 
 (defun arrow-pressed (direction)
-  (let* ((pos (qml-get *focus-editor* "cursorPosition"))
-         (new-pos (if (find direction '(:left :right))
-                      (+ pos (if (eql :right direction) 1 -1))
-                      (let ((rect (qml-get *focus-editor* "cursorRectangle")))
-                        (qml-call *focus-editor* "positionAt"
-                                  (truncate (first rect))
-                                  (truncate (+ (second rect)
-                                               (if (eql :down direction)
-                                                   (1+ (fourth rect))
-                                                   -1))))))))
+  (let ((new-pos (if (find direction '(:left :right))
+                     (+ (qml-get *focus-editor* "cursorPosition")
+                        (if (eql :right direction) 1 -1))
+                     (let ((rect (qml-get *focus-editor* "cursorRectangle")))
+                       (qml-call *focus-editor* "positionAt"
+                                 (truncate (first rect))
+                                 (truncate (+ (second rect)
+                                              (if (eql :down direction)
+                                                  (1+ (fourth rect))
+                                                  -1))))))))
     (qml-set *focus-editor* "cursorPosition"
              (max 0 (min new-pos (qml-get *focus-editor* "length"))))))
+
+(defun arrow-helt (direction)
+  (let ((rect (qml-get *focus-editor* "cursorRectangle")))
+    (qml-set *focus-editor* "cursorPosition"
+             (qml-call *focus-editor* "positionAt"
+                       (case direction
+                         ((:left :up)
+                          0)
+                         (t
+                          (qml-get *focus-editor* "paintedWidth")))
+                       (case direction
+                         ((:left :right)
+                          (1+ (second rect)))
+                         (:up
+                          0)
+                         (:down
+                          (qml-get *focus-editor* "paintedHeight")))))))
 
 ;;; start
 
