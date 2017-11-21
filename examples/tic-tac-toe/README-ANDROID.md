@@ -9,7 +9,7 @@ in `../../README-PREPARE.md`.
 
 In order to have all external resources, like qml files and images, included
 in the executable, you need to add them to the resource file (already done
-here, see `tic_tac_toe.qrc`).
+here, see `qtapp.qrc`).
 
 
 

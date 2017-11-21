@@ -124,6 +124,7 @@ Item {
         // cursor back
         Ext.ArrowButton {
             text: "\uf137"
+            scale: 1 // override
 
             onPressed:      replInput.cursorPosition--
             onPressAndHold: replInput.cursorPosition = 0
@@ -132,6 +133,7 @@ Item {
         // cursor forward
         Ext.ArrowButton {
             text: "\uf138"
+            scale: 1 // override
 
             onPressed:      replInput.cursorPosition++
             onPressAndHold: replInput.cursorPosition = replInput.length
