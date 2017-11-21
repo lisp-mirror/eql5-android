@@ -22,7 +22,7 @@ installation (or any trivial web server, see script `web-server.sh`).
 
 * run `$ adb forward tcp:4005 tcp:4005` (port of Swank)
 
-* run `$ adb reverse tcp:8080 tcp:8080` (port of web server)
+* run `$ adb reverse tcp:8080 tcp:8080` (port of web server; requires **android 5**)
 
 * in this directory run `$ ./web-server.sh` or `$ web-server.bat` (requires python 3)
 
@@ -50,6 +50,13 @@ In order to evaluate the whole `my.lisp` after restarting the android app, use:
 **Note**: Sometimes the Slime connection doesn't work the *first time* you try
 to connect; just try to connect a second time; if this doesn't work, you
 generally need to restart the android app, or sometimes even Emacs.
+
+
+### Note
+
+Since the command `adb reverse` doesn't work on android versions prior to **5**,
+you are left with the WiFi variant (would work for Slime too, see docu in
+example `REPL`); but this has not been tested yet.
 
 
 ### Build APK
