@@ -3,12 +3,8 @@
 (in-package :sensors)
 
 (defun start ()
-  ;; ini
-  (qlater 'eql-user::ini) ; for Swank, Quicklisp
   (eval:ini)
-  ;; QML ini
   (qml:ini-quick-view "qml/sensors.qml")
-  (ini)
   (qconnect qml:*quick-view* "statusChanged(QQuickView::Status)" ; for reloading
             (lambda (status)
               (case status
@@ -17,8 +13,8 @@
                 (#.|QQuickView.Error|
                  (qmsg (x:join (mapcar '|toString| (|errors| *quick-view*))
                                #.(make-string 2 :initial-element #\Newline)))))))
-  ;; show help
-  (qlater (lambda () (eval:eval-in-thread "(help)"))))
+  (ini)
+  (qlater (lambda () (eval:eval-in-thread "(help)")))) ; show help
 
 ;;; REPL
 

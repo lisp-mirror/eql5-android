@@ -9,16 +9,11 @@ Rectangle {
 
     property bool isPhone: (Math.max(width, height) < 1000) // trivial but seems reliable
 
-    FontLoader {
-        id: fontAwesome
-        source: "fonts/fontawesome-webfont.ttf"
-    }
+    function isLandscape() { return (Screen.primaryOrientation == Qt.LandscapeOrientation) }
 
-    Ext.FileBrowser {}
+    FontLoader { id: fontAwesome; source: "fonts/fontawesome-webfont.ttf" }
 
     Ext.Repl {}
-
-    function isLandscape() { return (Screen.primaryOrientation == Qt.LandscapeOrientation) }
 
     Row {
         anchors.centerIn: parent

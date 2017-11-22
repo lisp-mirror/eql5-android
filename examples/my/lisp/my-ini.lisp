@@ -3,10 +3,7 @@
 (in-package :my)
 
 (defun start ()
-  ;; ini
-  (qlater 'eql-user::ini) ; for Swank, Quicklisp
   (eval:ini)
-  ;; QML ini
   (qml:ini-quick-view "qml/my.qml")
   (qconnect qml:*quick-view* "statusChanged(QQuickView::Status)" ; for reloading
             (lambda (status)
@@ -16,8 +13,7 @@
                 (#.|QQuickView.Error|
                  (qmsg (x:join (mapcar '|toString| (|errors| *quick-view*))
                                #.(make-string 2 :initial-element #\Newline)))))))
-  ;; show help
-  (qlater (lambda () (eval:eval-in-thread "(help)"))))
+  (qlater (lambda () (eval:eval-in-thread "(help)")))) ; show help
 
 ;;; REPL
 

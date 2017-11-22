@@ -672,7 +672,6 @@
 ;;; start
 
 (defun start ()
-  (qlater 'eql-user::ini) ; for Swank, Quicklisp
   (qml:ini-quick-view "qml/repl.qml")
   (when (qml-get nil "isPhone")
     (change-font :smaller 3))

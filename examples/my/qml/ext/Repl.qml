@@ -8,6 +8,10 @@ Item {
     z: 1
     anchors.fill: parent
 
+    FontLoader { id: fontAwesome; source: "../fonts/fontawesome-webfont.ttf" }
+
+    Ext.FileBrowser {}
+
     Row {
         z: 1
         anchors.right: parent.right
@@ -72,7 +76,7 @@ Item {
                 background: Rectangle {
                     color: "#101010"
                     border.width: 1
-                    border.color: "orange"
+                    border.color: parent.focus ? "orange" : "gray"
                 }
 
                 onAccepted: Lisp.call("eval:eval-in-thread", text)

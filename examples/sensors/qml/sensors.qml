@@ -10,12 +10,7 @@ Rectangle {
 
     property bool isPhone: (Math.max(width, height) < 1000) // trivial but seems reliable
 
-    FontLoader {
-        id: fontAwesome
-        source: "fonts/fontawesome-webfont.ttf"
-    }
-
-    Ext.FileBrowser {}
+    FontLoader { id: fontAwesome; source: "fonts/fontawesome-webfont.ttf" }
 
     Ext.Repl {}
 

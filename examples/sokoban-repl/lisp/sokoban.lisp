@@ -288,7 +288,6 @@
 
 (defun start ()
   ;; ini
-  (qlater 'eql-user::ini) ; for Swank, Quicklisp
   (eval:ini)
   (qml:ini-quick-view "qml/sokoban.qml")
   (connect)

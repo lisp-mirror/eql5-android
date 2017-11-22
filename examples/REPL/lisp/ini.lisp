@@ -2,10 +2,6 @@
 ;;; Includes everything for Quicklisp and Swank.
 ;;; Requires 'assets/lib/*' to contain all precompiled ECL contribs.
 ;;;
-;;; N.B: Function INI must be called in your startup function, like so:
-;;;
-;;;   (qlater 'eql-user::ini)
-;;;
 
 (in-package :eql-user)
 
@@ -111,3 +107,7 @@
            ~%~
            ~%  tap and hold to select/copy/paste/eval expression (e.g. on 'defun')")
   (values))
+
+;; ini
+
+(qlater 'ini)
