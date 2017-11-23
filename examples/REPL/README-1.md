@@ -199,7 +199,7 @@ Switch to the REPL example directory, and run (after connecting the device
 through USB):
 
 ```
-  $ adb reverse tcp:8080 tcp:8080 # for below
+  $ adb reverse tcp:8080 tcp:8080 # for below; needs android 5
   $ ./web-server.sh               # needs python3
 ```
 

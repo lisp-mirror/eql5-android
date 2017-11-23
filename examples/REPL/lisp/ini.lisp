@@ -105,7 +105,9 @@
            ~%  :f  (dialogs:get-file-name) ; see dialogs:*file-name*~
            ~%  :r  (editor:reload-qml)     ; see docu~
            ~%~
-           ~%  tap and hold to select/copy/paste/eval expression (e.g. on 'defun')")
+           ~%  tap and hold to select/copy/paste/eval expression (e.g. on 'defun')~
+           ~%~
+           ~%  tap on 'back' (triangle) to hide keyboard / show cursor move buttons (tap and hold to move to beginning/end of line/file)")
   (values))
 
 ;; ini

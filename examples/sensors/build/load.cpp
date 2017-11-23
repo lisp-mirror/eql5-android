@@ -25,9 +25,10 @@ int main(int argc, char** argv) {
     load(path.arg("ecl"));
     load(path.arg("eql5"));
     load(path.arg("eql5_quick"));
-    load(path.arg("eql5_network"));
-    load(path.arg("eql5_sql"));
-    load(path.arg("eql5_svg"));
+    //load(path.arg("eql5_network"));
+    //load(path.arg("eql5_multimedia"));
+    //load(path.arg("eql5_sql"));
+    //load(path.arg("eql5_svg"));
     
     QLibrary qtapp(path.arg("qtapp"));
     typedef void (*Ini)();

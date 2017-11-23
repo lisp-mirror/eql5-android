@@ -1,5 +1,6 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
+import QtQuick.Window 2.2
 import EQL5 1.0
 import "." as Ext
 
@@ -137,6 +138,23 @@ Item {
 
             onPressed:      replInput.cursorPosition++
             onPressAndHold: replInput.cursorPosition = replInput.length
+        }
+    }
+
+    Button {
+        y: Screen.desktopAvailableHeight - height - 10
+        width: main.isPhone ? 70 : 100
+        height: main.isPhone ? 50 : 70
+        anchors.horizontalCenter: parent.horizontalCenter
+        font.pixelSize: height
+        text: "\uf11c" // keyboard
+        opacity: 0.35
+        focusPolicy: Qt.NoFocus
+        visible: showRepl.checked
+
+        onClicked: {
+            Qt.inputMethod.show()
+            replInput.forceActiveFocus()
         }
     }
 }

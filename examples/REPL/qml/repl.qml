@@ -377,6 +377,7 @@ Rectangle {
         font.pixelSize: height
         text: "\uf11c"
         opacity: 0.35
+        focusPolicy: Qt.NoFocus
         visible: arrowRect.visible
     }
 
