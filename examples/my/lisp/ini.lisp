@@ -43,6 +43,12 @@
   (unless (probe-file ".eql5-ini")
     (qlater 'post-install)))
 
+(defun install-update (from)
+  "Copies new version of 'libqtapp.so' in 'update/' directory. Returns T on success. After restart of the app, the new version will be used."
+  (let ((to "update/libqtapp.so"))
+    (ensure-directories-exist to)
+    (|copy.QFile| from to)))
+
 ;; Quicklisp setup (stolen from 'ecl-android')
 
 (defun sym (symbol package)
