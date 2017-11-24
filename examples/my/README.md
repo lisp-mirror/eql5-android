@@ -69,8 +69,7 @@ example `REPL`); but this has not been tested yet.
   $ make
 
   $ ./1-copy-libs.sh
-  $ ./2-install-lib.sh
-  $ ./3-build-apk.sh
+  $ ./2-build-apk.sh
 ```
 
 (a more detailed description can be found in example `../tic-tac-toe`)

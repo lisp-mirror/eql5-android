@@ -5,7 +5,7 @@ ECL_ANDROID = $$(ECL_ANDROID)
 INCLUDEPATH += $$ECL_ANDROID/include ../../include
 LIBS        += -L$$ECL_ANDROID/lib -lecl -L./build -lapp -L../../lib -leql5
 TARGET      = qtapp
-DESTDIR     = ./
+DESTDIR     = ./android-build/libs/armeabi-v7a
 OBJECTS_DIR = ./tmp/
 MOC_DIR     = ./tmp/
 
