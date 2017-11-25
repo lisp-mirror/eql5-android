@@ -1,6 +1,8 @@
 #include <QApplication>
-#include <QLibrary>
+#include <QDir>
+#include <QFile>
 #include <QLabel>
+#include <QLibrary>
 
 static bool load(const QString& name) {
     QLibrary lib(name);
@@ -25,12 +27,17 @@ int main(int argc, char** argv) {
     load(path.arg("ecl"));
     load(path.arg("eql5"));
     load(path.arg("eql5_quick"));
-    //load(path.arg("eql5_network"));
     //load(path.arg("eql5_multimedia"));
+    //load(path.arg("eql5_network"));
     //load(path.arg("eql5_sql"));
     //load(path.arg("eql5_svg"));
-    
-    QLibrary qtapp(path.arg("qtapp"));
+
+    // we are prepared for eventual updates; the app itself is fully contained
+    // in 'libqtapp.so' (all of compiled Lisp files plus Qt resource files)
+    QString file(QDir::homePath() + "/update/libqtapp.so"); // ev. updated version
+    if(!QFile::exists(file)) {
+        file = path.arg("qtapp"); }                         // default version
+    QLibrary qtapp(file);
     typedef void (*Ini)();
     Ini ini = (Ini)qtapp.resolve("ini");
     ini();

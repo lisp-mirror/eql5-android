@@ -5,6 +5,8 @@
 
 (in-package :eql-user)
 
+(use-package :qml)
+
 (defvar *assets-lib* "assets:/lib/")
 
 (defun copy-asset-files (dir-name)
@@ -44,6 +46,22 @@
   (qlater (lambda () (editor::eval* (if (probe-file ".eql5-ini")
                                         "(help)"
                                         "(post-install)")))))
+
+;; update app
+
+(defun install-update (&optional from)
+  "Copies new version of 'libqtapp.so' in 'update/' directory. After restart of the app, the new version will be used."
+  (if from
+      (do-install-update from)
+      (let ((model "folder_model"))
+        (qml-set model "nameFilters"
+                 (cons "*.so" (qml-get model "nameFilters")))
+        (dialogs:get-file-name (lambda () (do-install-update dialogs:*file-name*))))))
+
+(defun do-install-update (from)
+  (let ((to "update/libqtapp.so"))
+    (ensure-directories-exist to)
+    (|copy.QFile| from to)))
 
 ;; Quicklisp setup (stolen from 'ecl-android')
 
@@ -98,6 +116,7 @@
 (define-symbol-macro :q (quicklisp))
 (define-symbol-macro :f (dialogs:get-file-name))
 (define-symbol-macro :r (editor:reload-qml))
+(define-symbol-macro :u (install-update)) ; unofficial
 
 (defun help ()
   (format t "  :s  (start-swank)           ; adb forward tcp:4005 tcp:4005~

@@ -2,5 +2,4 @@
   --input android-libsokoban.so-deployment-settings.json \
   --output android-build \
   --gradle \
-  --install \
-  --verbose
+  --install

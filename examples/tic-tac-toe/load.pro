@@ -1,7 +1,7 @@
 QT          = widgets printsupport uitools quick quickwidgets qml androidextras
 TEMPLATE    = app
 TARGET      = tic_tac_toe
-DESTDIR     = ./
+DESTDIR     = ./android-build/libs/armeabi-v7a
 OBJECTS_DIR = ./tmp/
 
 SOURCES     += build/load.cpp

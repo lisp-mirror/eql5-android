@@ -3,5 +3,4 @@
   --output android-build \
   --deployment ministro \
   --gradle \
-  --install \
-  --verbose
+  --install

@@ -8,12 +8,6 @@ static bool load(const QString& name) {
     QLibrary lib(name);
     return lib.load(); }
 
-QString exists(const QString& name) {
-    QString s("false");
-    if(QFile::exists(name))
-        s = "true";
-    return s; }
-
 int main(int argc, char** argv) {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication qapp(argc, argv);

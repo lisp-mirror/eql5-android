@@ -84,17 +84,10 @@ now a trivial task.
   ecl-android -shell make.lisp # note 'ecl-android'
   qmake-android repl.pro       # note 'qmake-android'
   make
-
-  ./2-install-lib.sh           # make install...
 ```
 
 To force recompilation of all files (e.g. after upgrading ECL), pass `-f`
 as last argument to the `ecl-android` command.
-
-If you need to recompile the Lisp code, remember to do `touch tmp/main.o`,
-in order to force `make` to link your newly compiled Lisp library.
-
-Remember to run `2-install-lib.sh` after recompiling.
 
 
 
@@ -105,7 +98,7 @@ widgets and QML), because the **ministro** service for the Qt libs seems not
 to work on some devices:
 
 ```
-  ./3-build-apk.sh
+  ./2-build-apk.sh
 ```
 
 This will build the APK, which needs to be copied and installed manually

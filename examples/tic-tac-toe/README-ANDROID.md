@@ -48,8 +48,6 @@ Build (cross-compile)
   ecl-android -shell make.lisp  # note 'ecl-android'
   qmake-android tic_tac_toe.pro # note 'qmake-android'
   make
-
-  ./2-install-lib.sh            # make install...
 ```
 
 We use a trick for cross-compiling: since we don't want an EQL5 version only
@@ -63,11 +61,6 @@ This is done by loading the file `../../utils/EQL5-symbols.lisp` into ECL.
 There is only one drawback here: we can't use reader macros containing EQL5
 code (except for Qt enums); see e.g. file `lisp/qml-lisp.lisp`, which has them
 removed, compared to the desktop version (see EQL5 QML examples).
-
-If you need to recompile the Lisp code, remember to do `touch tmp/main.o`,
-in order to force `make` to link your newly compiled Lisp library.
-
-Remember to run `2-install-lib.sh` after recompiling.
 
 
 
@@ -88,7 +81,7 @@ process. It's located under your Qt installation directory, e.g.
 Run the tool using the third script:
 
 ```
-  ./3-build-apk.sh
+  ./2-build-apk.sh
 ```
 
 This will run the following command:
