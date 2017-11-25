@@ -31,9 +31,16 @@ This will copy `libqtapp.so` into the `update/` directory and strip it.
 
 ### Deploy
 
-Now copy the above `update/libqtapp.so` to your device. On the REPL of the
+Now copy the above `update/libqtapp.so` to your device. In the app REPL of the
 device, enter `:u`: this will call `(eql-user::install-update)`.
 
 After selecting the file in the file dialog, it will be copied into the
 home directory of your app (*not* overwriting the original one); after
 restarting the app, the new version will be used.
+
+
+### Note
+
+The above works only manually, and only with apps that include a REPL. Of
+course this could be automated, downloading the updates from any location,
+using e.g. the convenient `:network` module from EQL5.
