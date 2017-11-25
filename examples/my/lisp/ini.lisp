@@ -47,19 +47,25 @@
 
 ;; update app
 
-(defun install-update (&optional from)
-  "Copies new version of 'libqtapp.so' in 'update/' directory. After restart of the app, the new version will be used."
-  (if from
-      (do-install-update from)
-      (let ((model "folder_model"))
-        (qml-set model "nameFilters"
-                 (cons "*.so" (qml-get model "nameFilters")))
-        (dialogs:get-file-name (lambda () (do-install-update dialogs:*file-name*))))))
+(defvar *qml-folder-model* "folder_model")
 
-(defun do-install-update (from)
-  (let ((to "update/libqtapp.so"))
-    (ensure-directories-exist to)
-    (|copy.QFile| from to)))
+(let (name-filters)
+  (defun install-update (&optional from)
+    "Copies new version of 'libqtapp.so' in 'update/' directory. After restart of the app, the new version will be used."
+    (if from
+        (do-install-update from)
+        (progn
+          (unless name-filters
+            (setf name-filters (qml-get *qml-folder-model* "nameFilters")))
+          (qml-set *qml-folder-model* "nameFilters" (list "*.so"))
+          (dialogs:get-file-name (lambda () (do-install-update dialogs:*file-name*))))))
+  (defun do-install-update (from)
+    (qml-set *qml-folder-model* "nameFilters" name-filters) ; reset
+    (let ((to "update/libqtapp.so"))
+      (ensure-directories-exist to)
+      (when (probe-file to)
+        (delete-file to))
+      (|copy.QFile| from to))))
 
 ;; Quicklisp setup (stolen from 'ecl-android')
 
