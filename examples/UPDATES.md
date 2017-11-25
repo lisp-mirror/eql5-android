@@ -2,7 +2,7 @@
 ### Info
 
 The size of a full APK (not using the 'ministro' service) is about **15 MB**.
-Therfore it would be nice to provide updates which are very small.
+Therefore it would be nice to provide updates which are very small.
 
 In the included examples, the *real* app (not counting the ECL/Qt5/EQL5
 dependencies) is very small: it's all contained in `libqtapp.so`, which is
@@ -31,7 +31,7 @@ This will copy `libqtapp.so` into the `update/` directory and strip it.
 
 ### Deploy
 
-Now copy the above `update/libqtapp.so` to your device. In the app REPL of the
+Now copy the above `update/libqtapp.so` to your device. In the app REPL on the
 device, enter `:u`: this will call `(eql-user::install-update)`.
 
 After selecting the file in the file dialog, it will be copied into the
