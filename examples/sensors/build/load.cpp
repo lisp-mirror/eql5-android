@@ -1,8 +1,10 @@
-#include <QApplication>
+#include "load.h"
 #include <QDir>
 #include <QFile>
 #include <QLabel>
 #include <QLibrary>
+
+QT_BEGIN_NAMESPACE
 
 static bool load(const QString& name) {
     QLibrary lib(name);
@@ -10,7 +12,7 @@ static bool load(const QString& name) {
 
 int main(int argc, char** argv) {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QApplication qapp(argc, argv);
+    Qt_EQL_Application qapp(argc, argv);
 
     // splash pixmap (see "../../../img/logo.png")
     QLabel* splash = new QLabel;
@@ -41,5 +43,7 @@ int main(int argc, char** argv) {
     typedef void (*Ini)();
     Ini ini = (Ini)qtapp.resolve("ini");
     ini();
-    
+
     return 0; }
+
+QT_END_NAMESPACE

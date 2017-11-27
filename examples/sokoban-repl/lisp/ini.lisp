@@ -60,12 +60,19 @@
           (qml-set *qml-folder-model* "nameFilters" (list "*.so"))
           (dialogs:get-file-name (lambda () (do-install-update dialogs:*file-name*))))))
   (defun do-install-update (from)
-    (qml-set *qml-folder-model* "nameFilters" name-filters) ; reset
-    (let ((to "update/libqtapp.so"))
-      (ensure-directories-exist to)
-      (when (probe-file to)
-        (delete-file to))
-      (|copy.QFile| from to))))
+    (unless (x:empty-string from)
+      (let ((to "update/libqtapp.so"))
+        (ensure-directories-exist to)
+        (when (probe-file to)
+          (delete-file to))
+        (if (|copy.QFile| from to)
+            (when (= |QMessageBox.Apply|
+                     (|question.QMessageBox| nil "Update" "Update installed successfully.<br><br>Apply update, <b>restarting</b> the app now?"
+                                             (logior |QMessageBox.Apply| |QMessageBox.Cancel|)))
+              (! "restartApp" (:qt (qapp)))
+              (qquit))
+            (qmsg "<b>Error</b> copying the update."))))
+    (qml-set *qml-folder-model* "nameFilters" name-filters))) ; reset (must stay here)
 
 ;; Quicklisp setup (stolen from 'ecl-android')
 

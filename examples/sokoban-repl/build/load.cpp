@@ -1,6 +1,10 @@
-#include <QApplication>
-#include <QLibrary>
+#include "load.h"
+#include <QDir>
+#include <QFile>
 #include <QLabel>
+#include <QLibrary>
+
+QT_BEGIN_NAMESPACE
 
 static bool load(const QString& name) {
     QLibrary lib(name);
@@ -8,7 +12,7 @@ static bool load(const QString& name) {
 
 int main(int argc, char** argv) {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QApplication qapp(argc, argv);
+    Qt_EQL_Application qapp(argc, argv);
 
     // splash pixmap (see "../../../img/logo.png")
     QLabel* splash = new QLabel;
@@ -25,14 +29,21 @@ int main(int argc, char** argv) {
     load(path.arg("ecl"));
     load(path.arg("eql5"));
     load(path.arg("eql5_quick"));
-    //load(path.arg("eql5_network"));
     //load(path.arg("eql5_multimedia"));
+    //load(path.arg("eql5_network"));
     //load(path.arg("eql5_sql"));
     //load(path.arg("eql5_svg"));
-    
-    QLibrary qtapp(path.arg("qtapp"));
+
+    // we are prepared for eventual updates; the app itself is fully contained
+    // in 'libqtapp.so' (all of compiled Lisp files plus Qt resource files)
+    QString file(QDir::homePath() + "/update/libqtapp.so"); // ev. updated version
+    if(!QFile::exists(file)) {
+        file = path.arg("qtapp"); }                         // default version
+    QLibrary qtapp(file);
     typedef void (*Ini)();
     Ini ini = (Ini)qtapp.resolve("ini");
     ini();
-    
+
     return 0; }
+
+QT_END_NAMESPACE
