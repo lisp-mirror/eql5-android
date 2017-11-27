@@ -38,6 +38,10 @@ After selecting the file in the file dialog, it will be copied into the
 home directory of your app (*not* overwriting the original one); after
 restarting the app, the new version will be used.
 
+The app can be restarted automatically, if you choose so in the message box
+shown after a successful update: this is an example of how you can call
+**Java** code from Qt (see `build/load.h` in the example sources).
+
 
 ### Note
 
