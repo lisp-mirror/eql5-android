@@ -21,6 +21,11 @@
       (setf 1st nil)
       (set-file-browser-path ":documents"))
     (setf *callback* callback)
+    ;; force update
+    (qlet ((none "QUrl")
+           (curr (qml-get *qml-folder-model* "folder")))
+      (dolist (folder (list none curr))
+        (qml-set *qml-folder-model* "folder" folder)))
     (qml-set *qml-file-browser* "visible" t)))
 
 (defun set-file-name (name) ; called from QML
