@@ -34,7 +34,7 @@
 (defun post-install ()
   (when (copy-asset-files *assets-lib*)
     (touch-file ".eql5-ini")
-    (qsingle-shot 1000 (lambda () (editor::eval* "(help)")))
+    (qsingle-shot 1000 (lambda () (editor::eval* "(help t)")))
     :done))
 
 (defun ini ()
@@ -44,7 +44,7 @@
         (load .eclrc)
         (touch-file .eclrc)))
   (qlater (lambda () (editor::eval* (if (probe-file ".eql5-ini")
-                                        "(help)"
+                                        "(help t)"
                                         "(post-install)")))))
 
 ;; Quicklisp setup (stolen from 'ecl-android')
@@ -143,24 +143,27 @@
 
 ;; convenience
 
+(define-symbol-macro :h (help))
 (define-symbol-macro :s (start-swank))
 (define-symbol-macro :q (quicklisp))
 (define-symbol-macro :f (dialogs:get-file-name))
 (define-symbol-macro :r (editor:reload-qml))
 (define-symbol-macro :u (install-update)) ; unofficial
 
-(defun help ()
-  (format t "  :s  (start-swank)           ; adb forward tcp:4005 tcp:4005~
-           ~%  :q  (quicklisp)             ; will install/load it~
-           ~%  :f  (dialogs:get-file-name) ; see dialogs:*file-name*~
-           ~%  :r  (editor:reload-qml)     ; see docu~
-           ~%~
-           ~%  (shell \"ls -la\")            ; any shell command~
-           ~%~
-           ~%  tap and hold to select/copy/paste/eval expression (e.g. on 'defun')~
-           ~%~
-           ~%  tap on 'back' (triangle) to hide keyboard / show cursor move buttons~
-           ~%  (tap and hold to move to beginning/end of line/file)")
+(defun help (&optional startup)
+  (if (and startup (qml-get nil "isPhone"))
+      (format t "  :h  (help)")
+      (format t "  :s  (start-swank)           ; adb forward tcp:4005 tcp:4005~
+               ~%  :q  (quicklisp)             ; will install/load it~
+               ~%  :f  (dialogs:get-file-name) ; see dialogs:*file-name*~
+               ~%  :r  (editor:reload-qml)     ; see docu~
+               ~%~
+               ~%  (shell \"ls -la\")            ; any shell command~
+               ~%~
+               ~%  tap and hold to select/copy/paste/eval expression (e.g. on 'defun')~
+               ~%~
+               ~%  tap on 'back' (triangle) to hide keyboard / show cursor move buttons~
+               ~%  (tap and hold to move to beginning/end of line/file)"))
   (values))
 
 ;; ini
