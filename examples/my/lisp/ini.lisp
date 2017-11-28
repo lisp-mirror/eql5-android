@@ -123,6 +123,8 @@
 
 ;; shell
 
+(defvar *output* nil)
+
 (defun shell (command)
   "Run shell commands; examples:
   (shell \"ls -la\")
@@ -135,7 +137,8 @@
       (let ((str (make-string (file-length s))))
         (read-sequence str s)
         (fresh-line)
-        (princ str)))
+        (princ str)
+        (setf *output* (x:split (string-trim '(#\Newline) str) #\Newline))))
     (delete-file tmp))
   (values))
 
