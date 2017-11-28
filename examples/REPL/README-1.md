@@ -169,6 +169,9 @@ to the keyboard using the **keyboard** button.
 
 Tap-and-hold for moving to begin/end of line (left/right) or file (up/down).
 
+(If you need to train your muscle memory for the cursor buttons, just play
+Sokoban from the neighbor directory ;-)
+
 
 
 ### Desktop notes
