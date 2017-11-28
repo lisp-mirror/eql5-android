@@ -172,6 +172,8 @@ Rectangle {
             contentWidth: output.paintedWidth
             contentHeight: output.paintedHeight
 
+            onFlickStarted: output.forceActiveFocus()
+
             TextEdit {
                 id: output
                 objectName: "output"
