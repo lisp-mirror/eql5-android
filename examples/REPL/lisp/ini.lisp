@@ -129,15 +129,17 @@
   "Run shell commands; examples:
   (shell \"ls -la\")
   (shell \"ifconfig\")"
-  (let ((args (x:split command)))
-    (with-open-file (s "tmp.txt" :direction :output :if-exists :supersede)
-      (ext:run-program (first args) (rest args) :output s))) ; we need a file stream here
-  (with-open-file (s "tmp.txt")
-    (let ((str (make-string (file-length s))))
-      (read-sequence str s)
-      (fresh-line)
-      (princ str)
-      (values))))
+  (let ((args (x:split command))
+        (tmp "tmp.txt"))
+    (with-open-file (s tmp :direction :output :if-exists :supersede)
+      (ext:run-program (first args) (rest args) :output s)) ; we need a file stream here
+    (with-open-file (s tmp)
+      (let ((str (make-string (file-length s))))
+        (read-sequence str s)
+        (fresh-line)
+        (princ str)))
+    (delete-file tmp))
+  (values))
 
 ;; convenience
 

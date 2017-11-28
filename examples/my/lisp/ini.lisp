@@ -45,35 +45,6 @@
   (unless (probe-file ".eql5-ini")
     (qlater 'post-install)))
 
-;; update app
-
-(defvar *qml-folder-model* "folder_model")
-
-(let (name-filters)
-  (defun install-update (&optional from)
-    "Copies new version of 'libqtapp.so' in 'update/' directory. After restart of the app, the new version will be used."
-    (if from
-        (do-install-update from)
-        (progn
-          (unless name-filters
-            (setf name-filters (qml-get *qml-folder-model* "nameFilters")))
-          (qml-set *qml-folder-model* "nameFilters" (list "*.so"))
-          (dialogs:get-file-name (lambda () (do-install-update dialogs:*file-name*))))))
-  (defun do-install-update (from)
-    (unless (x:empty-string from)
-      (let ((to "update/libqtapp.so"))
-        (ensure-directories-exist to)
-        (when (probe-file to)
-          (delete-file to))
-        (if (|copy.QFile| from to)
-            (when (= |QMessageBox.Apply|
-                     (|question.QMessageBox| nil "Update" "Update installed successfully.<br><br>Apply update, <b>restarting</b> the app now?"
-                                             (logior |QMessageBox.Apply| |QMessageBox.Cancel|)))
-              (! "restartApp" (:qt (qapp)))
-              (qquit))
-            (qmsg "<b>Error</b> copying the update."))))
-    (qml-set *qml-folder-model* "nameFilters" name-filters))) ; reset (must stay here)
-
 ;; Quicklisp setup (stolen from 'ecl-android')
 
 (defun sym (symbol package)
@@ -121,6 +92,53 @@
     (funcall (sym 'stop-server :swank) 4005)
     :stopped))
 
+;; update app
+
+(defvar *qml-folder-model* "folder_model")
+
+(let (name-filters)
+  (defun install-update (&optional from)
+    "Copies new version of 'libqtapp.so' in 'update/' directory. After restart of the app, the new version will be used."
+    (if from
+        (do-install-update from)
+        (progn
+          (unless name-filters
+            (setf name-filters (qml-get *qml-folder-model* "nameFilters")))
+          (qml-set *qml-folder-model* "nameFilters" (list "*.so"))
+          (dialogs:get-file-name (lambda () (do-install-update dialogs:*file-name*))))))
+  (defun do-install-update (from)
+    (unless (x:empty-string from)
+      (let ((to "update/libqtapp.so"))
+        (ensure-directories-exist to)
+        (when (probe-file to)
+          (delete-file to))
+        (if (|copy.QFile| from to)
+            (when (= |QMessageBox.Apply|
+                     (|question.QMessageBox| nil "Update" "Update installed successfully.<br><br>Apply update, <b>restarting</b> the app now?"
+                                             (logior |QMessageBox.Apply| |QMessageBox.Cancel|)))
+              (! "restartApp" (:qt (qapp)))
+              (qquit))
+            (qmsg "<b>Error</b> copying the update."))))
+    (qml-set *qml-folder-model* "nameFilters" name-filters))) ; reset (must stay here)
+
+;; shell
+
+(defun shell (command)
+  "Run shell commands; examples:
+  (shell \"ls -la\")
+  (shell \"ifconfig\")"
+  (let ((args (x:split command))
+        (tmp "tmp.txt"))
+    (with-open-file (s tmp :direction :output :if-exists :supersede)
+      (ext:run-program (first args) (rest args) :output s)) ; we need a file stream here
+    (with-open-file (s tmp)
+      (let ((str (make-string (file-length s))))
+        (read-sequence str s)
+        (fresh-line)
+        (princ str)))
+    (delete-file tmp))
+  (values))
+
 ;; convenience
 
 (define-symbol-macro :s (start-swank))
@@ -136,7 +154,9 @@
              ~%  :q  (quicklisp)             ; will install/load it~
              ~%  :l  (dialogs:load-file)     ; load~
              ~%  :f  (dialogs:get-file-name) ; see dialogs:*file-name*~
-             ~%  :r  (my:reload-qml)         ; see docu")
+             ~%  :r  (my:reload-qml)         ; see docu~
+             ~%~
+             ~%  (shell \"ls -la\")            ; any shell command")
   (values))
 
 ;; ini
