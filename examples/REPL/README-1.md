@@ -214,16 +214,15 @@ which is perfect for editing QML files (e.g. `qtcreator my.qml`)
 
 ### Tips
 
-On first startup, if some resizing went wrong (caused by the virtual keyboard),
-try to tap on the trash button first; then tap in the editor field above; this
-should display the virtual keyboard, and resize all the fields accordingly.
+When you enter a new file name for saving a file, you may add a path with new
+directories: they will be created before saving the file.
 
 If the output window has too much contents (thousands of lines, may happen
 accidentally), and is becoming slow, remember that you're using the same Lisp
 image where your REPL lives in, so you can clear it directly like this:
 
 ```
-  (qml:qml-call "output" "clear")
+  (qml-call "output" "clear")
 ```
 
 For trivial debugging, you can use a simple (blocking) message box from QML

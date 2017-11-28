@@ -419,6 +419,7 @@
 ;;; save-file
 
 (defun save-to-file (file &optional (qml-item *qml-edit*) append)
+  (ensure-directories-exist file)
   (with-open-file (s file :direction :output
                      :if-exists (if append :append :supersede)
                      :if-does-not-exist :create)
