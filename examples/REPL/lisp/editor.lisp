@@ -133,10 +133,14 @@
 
 ;;; the following are workarounds because QML 'Keys' doesn't work on all devices
 
+(defun current-line ()
+  (let ((rect (qml-get *qml-edit* "cursorRectangle")))
+    (1- (truncate (/ (second rect) (fourth rect))))))
+
 (let ((old 1))
   (defun edit-line-count-changed (new)
     (when (> new old)
-      (return-pressed (1- old)))
+      (return-pressed (current-line)))
     (setf old new))
   (defun reset-line-count ()
     (setf old 1)))
