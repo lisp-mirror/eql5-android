@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QLabel>
 #include <QLibrary>
+#include <QMessageBox>
 
 QT_BEGIN_NAMESPACE
 
@@ -34,14 +35,23 @@ int main(int argc, char** argv) {
     load(path.arg("eql5_sql"));
     load(path.arg("eql5_svg"));
 
-    // we are prepared for eventual updates; the app itself is fully contained
-    // in 'libqtapp.so' (all of compiled Lisp files plus Qt resource files)
-    QString file(QDir::homePath() + "/update/libqtapp.so"); // ev. updated version
-    if(!QFile::exists(file)) {
-        file = path.arg("qtapp"); }                         // default version
-    QLibrary qtapp(file);
+    // we are prepared for eventual updates
+    // (the app itself is fully contained in 'libqtapp.so')
+    QString update(QDir::homePath() + "/update/libqtapp.so");
     typedef void (*Ini)();
-    Ini ini = (Ini)qtapp.resolve("ini");
+    if(QFile::exists(update)) {
+        // update
+        QLibrary lib(update);
+        Ini ini = (Ini)lib.resolve("ini_CL_myApp"); // N.B. unique ini function name
+        if(ini) {
+            ini();
+            return 0; }
+        else {
+            QMessageBox::information(0, "Error", "Update could not be loaded."); }}
+
+    // default
+    QLibrary lib(path.arg("qtapp"));
+    Ini ini = (Ini)lib.resolve("ini_CL_myApp");     // (see above)
     ini();
 
     return 0; }

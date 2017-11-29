@@ -10,7 +10,9 @@ extern "C" {
 
 void ini_app(cl_object);
 
-void ini() {
+// N.B. unique ini function name (see 'load.cpp')
+
+void ini_CL_Sokoban() {
     //qApp->setOrganizationName("MyTeam");
     //qApp->setOrganizationDomain("my-team.org");
     qApp->setApplicationName(QFileInfo(qApp->applicationFilePath()).baseName());
