@@ -300,11 +300,9 @@
           (setf ex-from from)
           (qsingle-shot 500 (lambda () (setf ex-from -1)))
           (let ((content-y (when set-y (qml-get *qml-flick-edit* "contentY"))))
-            (qml-set edit "readOnly" t)
             (qml-set edit "selectionColor" "gray")
             (qml-call edit "select" from (1+ from))
             (qsleep 0.1)
-            (qml-set edit "readOnly" nil)
             (qml-set edit "cursorPosition" pos)
             (qml-set edit "selectionColor" color)
             (when set-y
