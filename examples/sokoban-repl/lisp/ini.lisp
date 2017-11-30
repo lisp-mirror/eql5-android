@@ -129,10 +129,10 @@
   "Run shell commands; examples:
   (shell \"ls -la\")
   (shell \"ifconfig\")"
-  (let ((args (x:split command))
-        (tmp "tmp.txt"))
+  (let ((tmp "tmp.txt"))
     (with-open-file (s tmp :direction :output :if-exists :supersede)
-      (ext:run-program (first args) (rest args) :output s)) ; we need a file stream here
+      (ext:run-program "sh" (list "-c" command)
+                       :output s)) ; we need a file stream here
     (with-open-file (s tmp)
       (let ((str (make-string (file-length s))))
         (read-sequence str s)
