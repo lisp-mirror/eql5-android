@@ -167,4 +167,7 @@
       (setf *history-index* (if (string= "back" dir)
                                 (max (1- *history-index*) 0)
                                 (min (1+ *history-index*) (1- (length *history*)))))
-      (qml-set *qml-repl-input* "text" (aref *history* *history-index*)))))
+      (let ((text (aref *history* *history-index*)))
+        (qml-set *qml-repl-input* "text" text)
+        (qml-set *qml-repl-input* "cursorPosition"
+                 (- (length text) (if (x:ends-with ")" text) 1 0)))))))

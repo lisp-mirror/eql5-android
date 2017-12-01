@@ -387,7 +387,10 @@
       (setf *history-index* (if (eql :back dir)
                                 (max (1- *history-index*) 0)
                                 (min (1+ *history-index*) (1- (length *history*)))))
-      (qml-set *qml-command* "text" (aref *history* *history-index*)))))
+      (let ((text (aref *history* *history-index*)))
+        (qml-set *qml-command* "text" text)
+        (qml-set *qml-command* "cursorPosition"
+                 (- (length text) (if (x:ends-with ")" text) 1 0)))))))
 
 ;;; etc.
 
