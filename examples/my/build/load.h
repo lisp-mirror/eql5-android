@@ -17,6 +17,7 @@ public:
     Q_INVOKABLE void restartApp() {
 
         // stolen from: https://www.kdab.com/qt-on-android-how-to-restart-your-application/
+        // this will restart the app after a few seconds (not immediately)
 
         auto activity = QtAndroid::androidActivity();
 

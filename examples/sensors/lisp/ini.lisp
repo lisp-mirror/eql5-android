@@ -116,7 +116,7 @@
             (when (= |QMessageBox.Apply|
                      (|question.QMessageBox| nil "Update" "Update installed successfully.<br><br>Apply update, <b>restarting</b> the app now?"
                                              (logior |QMessageBox.Apply| |QMessageBox.Cancel|)))
-              (! "restartApp" (:qt (qapp)))
+              (! "restartApp" (:qt (qapp))) ; see ../build/load.h'
               (qquit))
             (qmsg "<b>Error</b> copying the update."))))
     (qml-set *qml-folder-model* "nameFilters" name-filters))) ; reset (must stay here)
@@ -159,7 +159,7 @@
              ~%  :f  (dialogs:get-file-name) ; see dialogs:*file-name*~
              ~%  :r  (sensors:reload-qml)    ; see docu~
              ~%~
-             ~%  (shell \"ls -la\")            ; any shell command")
+             ~%  (shell \"ls -la\")            ; shell commands; see also *output*")
   (values))
 
 ;; ini

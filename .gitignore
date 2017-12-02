@@ -16,11 +16,8 @@
 *~
 *.~
 #*.*#
-.*.lisp
-.*.ui
-.*.txt
+.*
 *.user
-.test
 t.lisp
 tr.h
 moc_*.cpp
