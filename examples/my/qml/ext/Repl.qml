@@ -20,6 +20,7 @@ Item {
         Text {
             text: "REPL"
             anchors.verticalCenter: showRepl.verticalCenter
+            visible: !showRepl.checked
         }
         Switch {
             id: showRepl
