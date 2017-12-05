@@ -10,4 +10,4 @@ MOC_DIR     = ./tmp_desktop/
 
 SOURCES     += build/main_desktop.cpp
 
-RESOURCES   = sokoban.qrc
+RESOURCES   = qtapp.qrc
