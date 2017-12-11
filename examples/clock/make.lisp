@@ -7,7 +7,10 @@
 
 (in-package :eql-user)
 
-(defparameter *files* '("lisp/clock"))
+(defparameter *files* '("lisp/qml-lisp"
+                        "package"
+                        "lisp/clock"
+                        "lisp/painted-item"))
 
 (setf *load-verbose* nil)
 (setf *compile-verbose* t)
@@ -16,18 +19,28 @@
 
 (setf c::*compile-in-constants* t)
 
-(trace c::builder)
+(trace c::builder) ; print out all the object files involved
 
 (push :release *features*)
 
+(defparameter *force-compile* (find "-f" (ext:command-args) :test 'string=))
+
 (dolist (file *files*)
-  (cross:compile-file* file))
+  (let ((src (x:cc file ".lisp"))
+        (obj (x:cc file ".o")))
+    (print src)
+    ;; exclude files using inline C code
+    (unless (find (pathname-name src) '(#| nothing yet |#) :test 'string=)
+      (load src))
+    (when (or *force-compile*
+              (> (file-write-date src)
+                 (if (probe-file obj)
+                     (file-write-date obj)
+                     0)))
+      (cross:compile-file* file))))
 
 (cross:build-static-library* "build/app"
                              :lisp-files (mapcar (lambda (file) (x:cc file ".o"))
                                                  *files*)
-                             :init-name "ini_app")
-
-(dolist (file *files*)
-  (delete-file (x:cc file ".o")))
-
+                             :init-name "ini_app"
+                             :epilogue-code '(painted-item:start))
