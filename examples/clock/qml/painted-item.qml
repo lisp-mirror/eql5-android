@@ -3,7 +3,7 @@ import EQL5 1.0
 
 Rectangle {
     color: "black"
-    width: 500; height: 500 // must not be 0 (for QQuickWidget)
+    width: 500; height: 500 // must be defined (for QQuickWidget)
 
     PaintedItem {
         id: clock
