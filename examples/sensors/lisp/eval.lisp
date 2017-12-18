@@ -163,7 +163,8 @@
   (defun history-move (dir)
     (unless out
       (history-ini))
-    (when *history-index*
+    (when (and *history-index*
+               (plusp (length *history*)))
       (setf *history-index* (if (string= "back" dir)
                                 (max (1- *history-index*) 0)
                                 (min (1+ *history-index*) (1- (length *history*)))))
