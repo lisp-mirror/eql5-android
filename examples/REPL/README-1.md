@@ -8,10 +8,17 @@ in [README-PREPARE](../../README-PREPARE.md).
 
 
 
-### Note
+### Notes
 
 This example assumes you already tried `../tic-tac-toe` (more detailed
 description).
+
+This app has a fixed orientation. You can set this property in
+[android-sources/AndroidManifest.xml](android-sources/AndroidManifest.xml):
+
+```
+  android:screenOrientation="portrait"
+```
 
 
 
