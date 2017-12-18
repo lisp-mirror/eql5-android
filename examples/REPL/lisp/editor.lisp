@@ -4,7 +4,7 @@
 
 (qrequire :quick)
 
-(dolist (module (list :network :sql :svg))
+(dolist (module (list :multimedia :network :sql :svg))
   (qrequire module :quiet)) ; load if available
 
 (defvar *package-char-dummy*     #\$)
@@ -383,7 +383,8 @@
   (defun history-move (dir)
     (unless out
       (history-ini))
-    (when *history-index*
+    (when (and *history-index*
+               (plusp (length *history*)))
       (setf *history-index* (if (eql :back dir)
                                 (max (1- *history-index*) 0)
                                 (min (1+ *history-index*) (1- (length *history*)))))
