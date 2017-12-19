@@ -473,9 +473,14 @@
 ;;; select all, cut, copy, paste
 
 (defvar *selected-text*      "")
-(defvar *copied-text*        "")
 (defvar *selection-start*    0)
 (defvar *cursor-indent-copy* 0)
+
+(defun clipboard-text ()
+  (|text| (|clipboard.QGuiApplication|)))
+
+(defun set-clipboard-text (text)
+  (|setText| (|clipboard.QGuiApplication|) text))
 
 (defun copy-paste (pos) ; called from QML
   (select-expression pos)
@@ -505,28 +510,29 @@
   (copy)
   (qml-call (active-edit) "remove"
             *selection-start*
-            (+ *selection-start* (length *copied-text*))))
+            (+ *selection-start* (length (clipboard-text)))))
 
 (defun copy ()
   (let ((edit (active-edit)))
     (if *selection-start*
         (progn
-          (setf *copied-text* *selected-text*)
+          (set-clipboard-text *selected-text*)
           (let* ((snip (qml-call edit "getText" (max 0 (- *selection-start* 100)) *selection-start*))
                  (nl (position #\Newline snip :from-end t)))
             (setf *cursor-indent-copy* (if nl (- (length snip) (1+ nl)) 0))))
-        (setf *copied-text*        (qml-get edit "text")
-              *selection-start*    0
-              *cursor-indent-copy* 0))))
+        (progn
+          (set-clipboard-text (qml-get edit "text"))
+          (setf *selection-start*    0
+                *cursor-indent-copy* 0)))))
 
 (defun paste ()
   "Paste text adapting the indentation."
   (let ((edit (active-edit)))
     (when (and (string= *qml-command* edit)
-               (find #\Newline *copied-text*))
+               (find #\Newline (clipboard-text)))
       (return-from paste))
-    (unless (x:empty-string *copied-text*)
-      (let* ((lines (x:split *copied-text* #\Newline))
+    (unless (x:empty-string (clipboard-text))
+      (let* ((lines (x:split (clipboard-text) #\Newline))
              (diff (- *cursor-indent* *cursor-indent-copy*))
              (text (with-output-to-string (s)
                      (write-line (first lines) s)
