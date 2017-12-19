@@ -128,32 +128,43 @@ Rectangle {
         border.width: 1.5
         border.color: command.focus ? "#0066ff" : "lightgray"
 
-        TextEdit {
-            id: command
-            objectName: "command"
+        Ext.Flickable {
+            id: flickCommand
             anchors.fill: parent
-            padding: 4
-            font.family: "Droid Sans Mono"
-            font.pixelSize: 18
-            selectionColor: "firebrick"
-            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-            cursorDelegate: cursor
-            focus: true
+            contentWidth: command.paintedWidth
+            contentHeight: command.paintedHeight
 
-            Component.onCompleted: Lisp.call(textDocument, "editor:set-text-document", objectName)
+            TextEdit {
+                id: command
+                objectName: "command"
+                width: flickCommand.width
+                height: flickCommand.height
+                padding: 4
+                font.family: "Droid Sans Mono"
+                font.pixelSize: 18
+                selectionColor: "firebrick"
+                inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+                cursorDelegate: cursor
+                focus: true
 
-            MouseArea {
-                anchors.fill: parent
+                onCursorRectangleChanged: flickCommand.ensureVisible(cursorRectangle)
 
-                onPressed: {
-                    // seems necessary to consistently move cursor by tapping
-                    command.forceActiveFocus()
-                    command.cursorPosition = command.positionAt(mouse.x, mouse.y)
-                    Qt.inputMethod.show() // needed for edge case (since we have 2 input fields)
-                    Lisp.call("editor:set-focus-editor", command.objectName)
+                Component.onCompleted: Lisp.call(textDocument, "editor:set-text-document", objectName)
+
+                MouseArea {
+                    width: Math.max(rectCommand.width, command.paintedWidth)
+                    height: Math.max(rectCommand.height, command.paintedHeight)
+
+                    onPressed: {
+                        // seems necessary to consistently move cursor by tapping
+                        command.forceActiveFocus()
+                        command.cursorPosition = command.positionAt(mouse.x, mouse.y)
+                        Qt.inputMethod.show() // needed for edge case (since we have 2 input fields)
+                        Lisp.call("editor:set-focus-editor", command.objectName)
+                    }
+
+                    onPressAndHold: Lisp.call("editor:copy-paste", command.cursorPosition)
                 }
-
-                onPressAndHold: Lisp.call("editor:copy-paste", command.cursorPosition)
             }
         }
     }
