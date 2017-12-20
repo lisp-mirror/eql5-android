@@ -257,21 +257,6 @@ The first argument is the `this` context of JS; `nil` means the root item.
 To load them, just use `asdf:load-system`, which is much faster than
 `ql:quickload` (on android).
 
---
-
-Since we have all of EQL5 available, you can directly run files like
-`clock.lisp` (see `../clock/lisp/clock.lisp`).
-
-So, if you copy the file to your device, you can open it using the open
-button, and load it with the lambda button.
-
-Close the clock window using the back button on your device (triangle). This
-will only hide the window; you can show it again by entering:
-
-```
-  (|show| clock:*clock*)
-```
-
 
 
 ### Slime
