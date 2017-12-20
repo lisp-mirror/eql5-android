@@ -79,10 +79,7 @@ Rectangle {
 
                     Component.onCompleted: fileBrowser.path = path // header, footer need this
 
-                    onAccepted: {
-                        fileBrowser.visible = false
-                        Lisp.call("dialogs:set-file-name", text)
-                    }
+                    onAccepted: Lisp.call("dialogs:set-file-name", text)
                 }
             }
 

@@ -71,10 +71,18 @@
         (qml-set *qml-folder-model* "folder" folder)))
     (qml-set *qml-file-browser* "visible" t)))
 
+(defun directory-p (path)
+  (qlet ((info "QFileInfo(QString)" path))
+    (|isDir| info)))
+
 (defun set-file-name (name) ; called from QML
-  (setf *file-name* name)
-  (when *callback*
-    (funcall *callback*)))
+  (if (directory-p name)
+      (set-file-browser-path name)
+      (progn
+        (qml-set *qml-file-browser* "visible" nil)
+        (setf *file-name* name)
+        (when *callback*
+          (funcall *callback*)))))
 
 (defun location (name)
   (first (|standardLocations.QStandardPaths|
