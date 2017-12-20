@@ -57,9 +57,15 @@ Rectangle {
                         onClicked: Lisp.call("dialogs:set-file-browser-path", urlToString(folderModel.parentFolder))
                     }
 
+                    // storage
+                    Ext.DialogButton {
+                        text: "\uf0c7"
+                        onClicked: Lisp.call("dialogs:set-file-browser-path", ":storage")
+                    }
+
                     // documents
                     Ext.DialogButton {
-                        text: "\uf15b"
+                        text: "\uf0f6"
                         onClicked: Lisp.call("dialogs:set-file-browser-path", ":documents")
                     }
 

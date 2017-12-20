@@ -85,11 +85,13 @@
           (funcall *callback*)))))
 
 (defun location (name)
-  (first (|standardLocations.QStandardPaths|
-          (cond ((string= ":home" name)
-                 |QStandardPaths.HomeLocation|)
-                ((string= ":documents" name)
-                 |QStandardPaths.DocumentsLocation|)))))
+  (if (string= ":storage" name)
+      #+android "/storage" #-android "/"
+      (first (|standardLocations.QStandardPaths|
+              (cond ((string= ":home" name)
+                     |QStandardPaths.HomeLocation|)
+                    ((string= ":documents" name)
+                     |QStandardPaths.DocumentsLocation|))))))
 
 (defun set-file-browser-path (path) ; called from QML
   (qlet ((url "QUrl(QString)"
