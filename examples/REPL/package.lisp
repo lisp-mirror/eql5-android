@@ -4,6 +4,8 @@
   (:use :cl :eql :qml)
   (:export
    #:*file*
+   #:change-font
+   #:eval*
    #:log-output
    #:reload-qml
    #:start))

@@ -31,21 +31,28 @@
 (defun touch-file (name)
   (open name :direction :probe :if-does-not-exist :create))
 
+(defun delayed-eval (msec string)
+  (qsingle-shot msec (lambda () (editor:eval* string))))
+
 (defun post-install ()
   (when (copy-asset-files *assets-lib*)
     (touch-file ".eql5-ini")
-    (qsingle-shot 1000 (lambda () (editor::eval* "(help t)")))
+    (delayed-eval 1000 "(help t)")
     :done))
 
 (defun ini ()
   (si:install-bytecodes-compiler)
-  (let ((.eclrc ".eclrc"))
-    (if (probe-file .eclrc)
-        (load .eclrc)
-        (touch-file .eclrc)))
-  (qlater (lambda () (editor::eval* (if (probe-file ".eql5-ini")
-                                        "(help t)"
-                                        "(post-install)")))))
+  (if (probe-file ".eclrc")
+      (ignore-errors (load ".eclrc")) ; don't hang on startup
+      (touch-file ".eclrc"))
+  (with-open-file (s ".eclrc" :direction :output :if-exists :append)
+    (when (zerop (file-length s))
+      (write-line ";;; example settings" s)
+      (terpri s)
+      (write-line ";;(editor:change-font :bigger 2)" s)))
+  (delayed-eval 0 (if (probe-file ".eql5-ini")
+                                  "(help t)"
+                                  "(post-install)")))
 
 ;; Quicklisp setup (stolen from 'ecl-android')
 
