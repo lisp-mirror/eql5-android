@@ -192,6 +192,18 @@ To run this example on the desktop, do:
 N.B: Don't use command line option `-qtpl`, as this would interfere with the
 debug dialog.
 
+Please note also that any runtime bug in the Lisp code of this example itself,
+when running from a console on the desktop, will cause an **infinite recursion
+error loop**; this seems to happen because of the combination of the following:
+
+ * re-binding of all streams
+ * debug dialog (circumventing the console debugger)
+ * eval running in its own thread
+
+The above means that debugging this example running it directly from a console
+on the desktop is not possible: you need to run it from Slime instead (please
+see EQL5 Slime docu).
+
 
 
 ### Reload QML files from android
