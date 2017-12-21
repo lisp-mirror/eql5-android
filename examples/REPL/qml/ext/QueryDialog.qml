@@ -57,6 +57,7 @@ Rectangle {
             leftPadding: 8
             rightPadding: 8
             topPadding: 8
+            font.pixelSize: queryInput.font.pixelSize - (main.isPhone ? 2 : 0)
         }
     }
 }

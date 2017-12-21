@@ -60,7 +60,7 @@ Rectangle {
             topPadding: 8
             bottomPadding: 8
             font.family: "Droid Sans Mono"
-            font.pixelSize: debugInput.font.pixelSize - 3
+            font.pixelSize: debugInput.font.pixelSize - 4
             text: ":r1 etc. restart / :h help / :q quit"
         }
 
@@ -92,6 +92,7 @@ Rectangle {
                 leftPadding: 8
                 rightPadding: 8
                 topPadding: 8
+                font.pixelSize: debugInput.font.pixelSize - (main.isPhone ? 2 : 0)
                 textFormat: TextEdit.RichText
                 readOnly: true
             }
