@@ -409,6 +409,12 @@
   (setf *file* nil)
   (reset-line-count))
 
+(defun insert (text)
+  (let ((edit (active-edit)))
+    (qml-call edit "insert"
+              (qml-get edit "cursorPosition")
+              text)))
+
 ;;; open file
 
 (defun open-file ()

@@ -329,6 +329,32 @@ Rectangle {
         easing.type: Easing.InExpo
     }
 
+    // paren buttons (on the right above keyboard)
+
+    Rectangle {
+        width: rowParens.width
+        height: rowParens.height
+        anchors.right: rectOutput.right
+        anchors.bottom: rectOutput.bottom
+        color: rectOutput.color
+        opacity: 0.5
+
+        Row {
+            id: rowParens
+            padding: 4
+            spacing: 6
+
+            Ext.ParenButton {
+                text: "("
+                onClicked: Lisp.call("editor:insert", "(")
+            }
+                Ext.ParenButton {
+                    text: ")"
+                onClicked: Lisp.call("editor:insert", ")")
+            }
+        }
+    }
+
     // arrow buttons (cursor movement)
 
     Rectangle {
