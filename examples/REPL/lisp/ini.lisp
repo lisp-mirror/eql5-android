@@ -47,9 +47,14 @@
       (touch-file ".eclrc"))
   (with-open-file (s ".eclrc" :direction :output :if-exists :append)
     (when (zerop (file-length s))
-      (write-line ";;; example settings" s)
-      (terpri s)
-      (write-line ";;(editor:change-font :bigger 2)" s)))
+      (format s ";;; example settings~
+               ~%~
+               ~%;; bigger font size~
+               ~%;;(editor:change-font :bigger 2)~
+               ~%~
+               ~%;; hide paren buttons~
+               ~%;;(qml-set \"rect_paren_buttons\" \"visible\" nil)~
+               ~%")))
   (delayed-eval 0 (if (probe-file ".eql5-ini")
                                   "(help t)"
                                   "(post-install)")))
