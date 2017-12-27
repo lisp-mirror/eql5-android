@@ -172,8 +172,8 @@
                ~%~
                ~%  tap and hold to select/copy/paste/eval s-exp (e.g. on 'defun')~
                ~%~
-               ~%  tap on [back] to hide keyboard / show cursor move buttons~
-               ~%  tap-and-hold to move to beginning/end of line/file"))
+               ~%  tap on [back] to hide keyboard / show cursor move buttons;~
+               ~%  hold them to move to beginning/end of line/file"))
   (values))
 
 ;; ini

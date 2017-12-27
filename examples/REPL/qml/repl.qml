@@ -332,24 +332,27 @@ Rectangle {
     // paren buttons (on the right above keyboard)
 
     Rectangle {
+        objectName: "rect_paren_buttons"
         width: rowParens.width
         height: rowParens.height
         anchors.right: rectOutput.right
         anchors.bottom: rectOutput.bottom
-        color: rectOutput.color
+        color: "transparent"
+        border.width: 1
+        border.color: "#b0b0b0"
         opacity: 0.5
+        visible: (Qt.inputMethod.keyboardRectangle.height > 0)
 
         Row {
             id: rowParens
-            padding: 4
-            spacing: 6
+            padding: 2
 
             Ext.ParenButton {
                 text: "("
                 onClicked: Lisp.call("editor:insert", "(")
             }
-                Ext.ParenButton {
-                    text: ")"
+            Ext.ParenButton {
+                text: ")"
                 onClicked: Lisp.call("editor:insert", ")")
             }
         }

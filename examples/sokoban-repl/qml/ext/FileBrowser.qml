@@ -137,7 +137,7 @@ Rectangle {
 
                 Text {
                     id: itemCount
-                    text: " " + folderModel.count + " items"
+                    text: Lisp.call("format", null, " ~D item~P", folderModel.count, folderModel.count)
                     anchors.verticalCenter: parent.verticalCenter
                 }
             }

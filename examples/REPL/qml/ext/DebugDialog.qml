@@ -60,7 +60,7 @@ Rectangle {
             topPadding: 8
             bottomPadding: 8
             font.family: "Droid Sans Mono"
-            font.pixelSize: debugInput.font.pixelSize - 4
+            font.pixelSize: debugInput.font.pixelSize - (main.isPhone ? 4 : 2)
             text: ":r1 etc. restart / :h help / :q quit"
         }
 
