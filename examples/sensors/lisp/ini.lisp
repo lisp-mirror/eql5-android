@@ -159,7 +159,7 @@
              ~%  :f  (dialogs:get-file-name) ; see dialogs:*file-name*~
              ~%  :r  (sensors:reload-qml)    ; see docu~
              ~%~
-             ~%  (shell \"ls -la\")            ; shell commands; see also *output*")
+             ~%  (shell \"ls -la\")            ; see *output*")
   (values))
 
 ;; ini
