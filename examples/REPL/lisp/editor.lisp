@@ -227,6 +227,9 @@
 
 ;;; paren highlighting
 
+(defvar *left-paren-indent*  nil)
+(defvar *closing-all-parens* nil)
+
 (defun code-parens-only (code &optional right)
   "Substitute all non code related parenthesis with a space character."
   (let ((ex #\Space)
@@ -303,11 +306,31 @@
           (let ((content-y (when set-y (qml-get *qml-flick-edit* "contentY"))))
             (qml-set edit "selectionColor" "gray")
             (qml-call edit "select" from (1+ from))
+            (setf *left-paren-indent*
+                  (> (first (qml-call edit "positionToRectangle" from))
+                     4)) ; pixel indent of QML "command"
             (qsleep 0.1)
             (qml-set edit "cursorPosition" pos)
             (qml-set edit "selectionColor" color)
             (when set-y
-              (qml-set *qml-flick-edit* "contentY" content-y))))))))
+              (qml-set *qml-flick-edit* "contentY" content-y)))
+          (when *closing-all-parens*
+            (qlater 'do-close-all-parens)))))))
+
+(let (n)
+  (defun close-all-parens ()
+    (setf n                    25 ; limit
+          *closing-all-parens* t)
+    (insert-closing-paren))
+  (defun do-close-all-parens ()
+    (if (and *left-paren-indent*
+             (plusp (decf n)))
+        (insert-closing-paren)
+        (setf *closing-all-parens* nil)))
+  (defun insert-closing-paren ()
+    (qsingle-shot 100 (lambda () (insert ")")))))
+
+;;;
 
 (defun eval* (text)
   (eval:feed-top-level text))
@@ -593,6 +616,7 @@
   ;; needed because resizing sometimes gets messed up on startup
   ;; (caused by virtual keyboard)
   (qsingle-shot 1000 (lambda ()
+                       (qml-call *qml-command* "forceActiveFocus")
                        (when (= (+ (qml-get *qml-edit* "height")
                                    (qml-get *qml-output* "height"))
                                 (fourth (|availableGeometry| (|desktop.QApplication|))))

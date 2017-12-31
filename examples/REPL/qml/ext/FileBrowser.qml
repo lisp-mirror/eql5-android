@@ -7,9 +7,7 @@ import EQL5 1.0
 Rectangle {
     id: fileBrowser
     objectName: "file_browser"
-    anchors.fill: parent
     visible: false
-    z: 2
 
     // header, footer need this
     property Rectangle header
@@ -22,6 +20,7 @@ Rectangle {
         objectName: "folder_view"
         anchors.fill: parent
         delegate: Ext.FileDelegate {}
+        currentIndex: -1 // no initial highlight
         headerPositioning: ListView.OverlayHeader
         footerPositioning: ListView.OverlayHeader
 
@@ -40,7 +39,7 @@ Rectangle {
             width: fileBrowser.width
             height: headerColumn.height
             z: 2
-            color: "#505050"
+            color: "#f0f0f0"
 
             Component.onCompleted: fileBrowser.header = header // header, footer need this
 
@@ -51,7 +50,7 @@ Rectangle {
                     id: buttonRow
                     spacing: 4
 
-                    // folder up
+                    // one directory up
                     Ext.DialogButton {
                         text: "\uf062"
                         onClicked: Lisp.call("dialogs:set-file-browser-path", urlToString(folderModel.parentFolder))
@@ -89,13 +88,13 @@ Rectangle {
                 }
             }
 
-            // cancel
+            // back
             Ext.DialogButton {
                 x: header.width - width
-                text: "\uf00d"
+                text: "\uf105"
 
                 onClicked: {
-                    fileBrowser.visible = false
+                    main.popDialog()
                     Lisp.call("dialogs:set-file-name", "")
                 }
             }
@@ -109,6 +108,7 @@ Rectangle {
 
             // cursor back
             Ext.ArrowButton {
+                opacity: 0.1
                 text: "\uf137"
 
                 onPressed:      path.cursorPosition--
@@ -117,6 +117,7 @@ Rectangle {
 
             // cursor forward
             Ext.ArrowButton {
+                opacity: 0.1
                 text: "\uf138"
 
                 onPressed:      path.cursorPosition++

@@ -4,11 +4,10 @@ import "." as Ext
 import EQL5 1.0
 
 Rectangle {
-    id: dialog
-    anchors.fill: parent
+    id: queryDialog
+    objectName: "query_dialog"
     color: "#f0f0f0"
     visible: false
-    z: 2
 
     Column {
         anchors.fill: parent
@@ -16,22 +15,21 @@ Rectangle {
         Rectangle {
             id: menu
             width: parent.width
-            height: cancel.height
-            color: "#505050"
+            height: back.height
+            color: "#f0f0f0"
 
             Text {
                 x: 8
                 anchors.verticalCenter: parent.verticalCenter
-                color: "white"
-                font.bold: true
                 font.pixelSize: 18
+                font.bold: true
                 text: "Query Dialog"
             }
 
             Ext.DialogButton {
-                id: cancel
+                id: back
                 x: parent.width - width
-                text: "\uf00d"
+                text: "\uf105"
 
                 onClicked: {
                     queryInput.clear()
@@ -53,7 +51,7 @@ Rectangle {
         Text {
             objectName: "query_text"
             width: parent.width
-            height: dialog.height - menu.height - queryInput.height - main.keyboardHeight()
+            height: queryDialog.height - menu.height - queryInput.height - main.keyboardHeight()
             leftPadding: 8
             rightPadding: 8
             topPadding: 8

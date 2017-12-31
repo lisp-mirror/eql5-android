@@ -5,11 +5,10 @@ import "." as Ext
 import EQL5 1.0
 
 Rectangle {
-    id: dialog
-    anchors.fill: parent
+    id: debugDialog
+    objectName: "debug_dialog"
     color: "#f0f0f0"
     visible: false
-    z: 2
 
     Column {
         anchors.fill: parent
@@ -17,22 +16,21 @@ Rectangle {
         Rectangle {
             id: menu
             width: parent.width
-            height: cancel.height
-            color: "#505050"
+            height: back.height
+            color: "#f0f0f0"
 
             Text {
                 x: 8
                 anchors.verticalCenter: parent.verticalCenter
-                color: "white"
-                font.bold: true
                 font.pixelSize: 18
+                font.bold: true
                 text: "Debug Dialog"
             }
 
             Ext.DialogButton {
-                id: cancel
+                id: back
                 x: parent.width - width
-                text: "\uf00d"
+                text: "\uf105"
 
                 onClicked: {
                     debugInput.text = ":q"
@@ -68,20 +66,20 @@ Rectangle {
             id: line
             width: parent.width
             height: 1
-            color: "gray"
+            color: "#d0d0d0"
         }
 
         Flickable {
             id: flickText
             width: parent.width
-            height: dialog.height
-                    - cancel.height
+            height: debugDialog.height
+                    - back.height
                     - debugInput.height
                     - label.height
                     - line.height
                     - main.keyboardHeight()
             contentWidth: text.paintedWidth
-            contentHeight: text.paintedHeight
+            contentHeight: text.paintedHeight + text.topPadding
             clip: true
 
             TextEdit {

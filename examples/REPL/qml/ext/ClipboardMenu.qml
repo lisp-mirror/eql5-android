@@ -4,6 +4,7 @@ import QtQuick.Window 2.2
 import "." as Ext
 
 Popup {
+    objectName: "clipboard_menu"
     x: (Screen.desktopAvailableWidth - width) / 2
     y: 4
 

@@ -5,6 +5,8 @@
    #:debug-dialog
    #:get-file-name
    #:exited
+   #:push-dialog
+   #:pop-dialog
    #:*file-name*))
 
 (in-package :dialogs)
@@ -13,23 +15,40 @@
 (defvar *callback*         nil)
 (defvar *suspended-thread* nil)
 
-(defvar *qml-query-dialog* "query_dialog")
+(defvar *qml-main*         "main")         ; StackView
 (defvar *qml-query-text*   "query_text")
 (defvar *qml-query-input*  "query_input")
-(defvar *qml-debug-dialog* "debug_dialog")
 (defvar *qml-debug-text*   "debug_text")
 (defvar *qml-debug-input*  "debug_input")
-(defvar *qml-file-browser* "file_browser")
 (defvar *qml-folder-model* "folder_model")
+
+;; '(js nil ...)': these are calls to JS functions defined in the QML root item
+
+(defun push-dialog (name)
+  (js nil (format nil "push~@(~A~)Dialog()" name)))
+
+(defun pop-dialog ()
+  "Pops the currently shown dialog, returning T if there was a dialog to pop."
+  (prog1
+      (> (qml-get nil "depth") 1)
+    (js nil "popDialog()")
+    (exited))) ; needed in some cases (eval thread)
+
+(defun wait-while-transition ()
+  ;; needed for evtl. recursive calls
+  (x:while (qml-get nil "busy")
+    (qsleep 0.05)))
 
 (defun query-dialog (query)
   (unless (x:empty-string query)
     (qml-set *qml-query-text* "text" (string-trim '(#\Newline) query)))
   (qml-call *qml-query-input* "clear")
-  (qml-set *qml-query-dialog* "visible" t)
+  (wait-while-transition)
+  (push-dialog :query)
   (qml-call *qml-query-input* "forceActiveFocus")
+  (|show| (|inputMethod.QGuiApplication|)) ; needed on recursive calls
   (wait-for-closed)
-  (qml-set *qml-query-dialog* "visible" nil)
+  (pop-dialog)
   (qml-get *qml-query-input* "text"))
 
 (defun debug-dialog (messages)
@@ -39,10 +58,12 @@
               (format nil "<pre><font face='Droid Sans Mono' color='~A'>~A</font></pre>"
                       (cdr text/color)
                       (x:string-substitute "<br>" (string #\Newline) (qescape (car text/color))))))
-  (qml-set *qml-debug-dialog* "visible" t)
+  (wait-while-transition)
+  (push-dialog :debug)
   (qml-call *qml-debug-input* "forceActiveFocus")
   (wait-for-closed)
-  (qml-set *qml-debug-dialog* "visible" nil)
+  (pop-dialog)
+  (editor:ensure-focus :show)
   (qml-get *qml-debug-input* "text"))
 
 (defun wait-for-closed ()
@@ -53,7 +74,8 @@
 
 (defun exited () ; called from QML
   (when *suspended-thread*
-    (mp:process-resume *suspended-thread*)))
+    (mp:process-resume *suspended-thread*)
+    (setf *suspended-thread* nil)))
 
 ;; file browser
 
@@ -69,7 +91,7 @@
            (curr (qml-get *qml-folder-model* "folder")))
       (dolist (folder (list none curr))
         (qml-set *qml-folder-model* "folder" folder)))
-    (qml-set *qml-file-browser* "visible" t)))
+    (push-dialog :file)))
 
 (defun directory-p (path)
   (qlet ((info "QFileInfo(QString)" path))
@@ -80,7 +102,7 @@
     (if (directory-p name)
         (set-file-browser-path name)
         (progn
-          (qml-set *qml-file-browser* "visible" nil)
+          (pop-dialog)
           (setf *file-name* name)
           (when *callback*
             (funcall *callback*))))))

@@ -177,6 +177,9 @@
 
 ;;; ini
 
+(defun sym (symbol package)
+  (intern (symbol-name symbol) package))
+
 (defun ini-quick-view (file)
   (setf *quick-view* (qnew "QQuickView"))
   ;; special settings for mobile, taken from Qt example
@@ -198,9 +201,11 @@
   #+android
   ;; force quitting of app (needed because of restartable event loop for Slime)
   (qoverride *quick-view* "hideEvent(QHideEvent*)"
-             (lambda (ev) (qquit)))
+             (lambda (ev)
+               (if (funcall (sym 'pop-dialog :dialogs))       ; either close dialog
+                   (qlater (lambda () (|show| *quick-view*)))
+                   (qquit))))                                 ; or quit app
   (let ((platform (|platformName.QGuiApplication|)))
     (if (find platform '("qnx" "eglfs") :test 'string=)
         (|showFullScreen| *quick-view*)
         (|show| *quick-view*))))
-

@@ -151,8 +151,8 @@ only show the last line of the output you would see on a console).
 ### Entering parens
 
 Of course we need an easy way to enter `(` and `)`, independent from the
-keyboard. On the top right above the keyboard you find 2 buttons for this purpose
-(they are mentioned here because you maybe didn't notice them).
+keyboard. On the top right above the keyboard you find 2 buttons for this purpose.  
+Holding the `)` button will close all currently open parens.
 
 
 
