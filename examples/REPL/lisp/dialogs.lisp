@@ -22,21 +22,21 @@
 (defvar *qml-debug-input*  "debug_input")
 (defvar *qml-folder-model* "folder_model")
 
-;; '(js nil ...)': these are calls to JS functions defined in the QML root item
+;; '(js *qml-main* ...)': see JS functions in '../qml/repl.qml'
 
 (defun push-dialog (name)
-  (js nil (format nil "push~@(~A~)Dialog()" name)))
+  (js *qml-main* (format nil "push~@(~A~)Dialog()" name)))
 
 (defun pop-dialog ()
   "Pops the currently shown dialog, returning T if there was a dialog to pop."
   (prog1
-      (> (qml-get nil "depth") 1)
-    (js nil "popDialog()")
+      (> (qml-get *qml-main* "depth") 1)
+    (js *qml-main* "popDialog()")
     (exited))) ; needed in some cases (eval thread)
 
 (defun wait-while-transition ()
   ;; needed for evtl. recursive calls
-  (x:while (qml-get nil "busy")
+  (x:while (qml-get *qml-main* "busy")
     (qsleep 0.05)))
 
 (defun query-dialog (query)

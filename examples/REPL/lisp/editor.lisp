@@ -309,7 +309,8 @@
             (setf *left-paren-indent*
                   (> (first (qml-call edit "positionToRectangle" from))
                      4)) ; pixel indent of QML "command"
-            (qsleep 0.1)
+            (unless *closing-all-parens*
+              (qsleep 0.1))
             (qml-set edit "cursorPosition" pos)
             (qml-set edit "selectionColor" color)
             (when set-y
@@ -328,7 +329,7 @@
         (insert-closing-paren)
         (setf *closing-all-parens* nil)))
   (defun insert-closing-paren ()
-    (qsingle-shot 100 (lambda () (insert ")")))))
+    (qsingle-shot 50 (lambda () (insert ")")))))
 
 ;;;
 

@@ -4,7 +4,7 @@ import EQL5 1.0
 Rectangle {
     width: folderView.width
     height: 48
-    color: (index == folderView.currentIndex) ? "skyblue" : folderView.colors[index & 1]
+    color: (index == folderView.currentIndex) ? "lightblue" : folderView.colors[index & 1]
 
     Row {
         anchors.fill: parent
