@@ -2,10 +2,9 @@ import QtQuick 2.7
 import EQL5 1.0
 
 Rectangle {
-    id: delegate
     width: folderView.width
     height: 48
-    color: folderView.colors[index & 1]
+    color: (index == folderView.currentIndex) ? "lightblue" : folderView.colors[index & 1]
 
     Row {
         anchors.fill: parent
@@ -35,6 +34,11 @@ Rectangle {
         anchors.fill: parent
 
         onClicked: {
+            // highlight selected
+            folderView.currentIndex = index
+            Lisp.call("qsleep", 0.15)
+            folderView.currentIndex = -1
+
             if(fileIsDir) {
                 Lisp.call("dialogs:set-file-browser-path", filePath)
             }

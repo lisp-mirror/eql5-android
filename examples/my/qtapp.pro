@@ -1,4 +1,4 @@
-QT             = widgets printsupport uitools quick quickwidgets qml multimedia multimediawidgets network sensors sql svg androidextras
+QT             = widgets printsupport uitools quick quickwidgets qml multimedia multimediawidgets network positioning sensors sql svg webview androidextras
 TEMPLATE       = lib
 CONFIG         += plugin no_keywords release
 ECL_ANDROID    = $$(ECL_ANDROID)
