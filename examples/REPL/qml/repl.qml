@@ -89,6 +89,7 @@ StackView {
                     objectName: "edit"
                     width: flickEdit.width
                     height: flickEdit.height
+                    leftPadding: 2
                     font.family: "Droid Sans Mono"
                     font.pixelSize: 18
                     selectionColor: "firebrick"
@@ -242,6 +243,7 @@ StackView {
                     objectName: "output"
                     width: flickOutput.width
                     height: flickOutput.height
+                    leftPadding: 2
                     font.pixelSize: 18
                     textFormat: TextEdit.RichText
                     readOnly: true
@@ -376,8 +378,8 @@ StackView {
             target: buttonsRight
             property: "x"
             from: buttonsRight.parent.width - buttonsRight.width
-            to: 2 * buttonsRight.parent.width // because of StackView animations
-            duration: 1000
+            to: buttonsRight.parent.width
+            duration: 500
             easing.type: Easing.InExpo
         }
 
