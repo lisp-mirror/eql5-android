@@ -22,7 +22,4 @@ Rectangle {
 
     // your QML
 
-    Ext.PositionSource {
-        objectName: "pos_src"
-    }
 }
