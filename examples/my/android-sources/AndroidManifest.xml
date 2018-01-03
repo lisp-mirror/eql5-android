@@ -23,9 +23,9 @@
             <!-- Run with local libs -->
             <meta-data android:name="android.app.use_local_qt_libs" android:value="1"/>
             <meta-data android:name="android.app.libs_prefix" android:value="/data/local/tmp/qt/"/>
-            <meta-data android:name="android.app.load_local_libs" android:value="plugins/platforms/android/libqtforandroid.so:plugins/bearer/libqandroidbearer.so:lib/libQt5QuickParticles.so:plugins/sensors/libqtsensors_android.so:plugins/mediaservice/libqtmedia_android.so:lib/libQt5MultimediaQuick_p.so"/>
+            <meta-data android:name="android.app.load_local_libs" android:value="plugins/platforms/android/libqtforandroid.so:plugins/bearer/libqandroidbearer.so:lib/libQt5QuickParticles.so:plugins/sensors/libqtsensors_android.so:plugins/mediaservice/libqtmedia_android.so:lib/libQt5MultimediaQuick_p.so:plugins/position/libqtposition_android.so"/>
             <meta-data android:name="android.app.load_local_jars" android:value="jar/QtAndroid.jar:jar/QtAndroid-bundled.jar:jar/QtAndroidBearer.jar:jar/QtAndroidBearer-bundled.jar:jar/QtSensors.jar:jar/QtSensors-bundled.jar:jar/QtMultimedia.jar:jar/QtMultimedia-bundled.jar"/>
-            <meta-data android:name="android.app.static_init_classes" android:value="org.qtproject.qt5.android.sensors.QtSensors:org.qtproject.qt5.android.sensors.QtSensors:org.qtproject.qt5.android.multimedia.QtMultimediaUtils:org.qtproject.qt5.android.multimedia.QtMultimediaUtils"/>
+            <meta-data android:name="android.app.static_init_classes" android:value="org.qtproject.qt5.android.sensors.QtSensors:org.qtproject.qt5.android.sensors.QtSensors:org.qtproject.qt5.android.multimedia.QtMultimediaUtils:org.qtproject.qt5.android.multimedia.QtMultimediaUtils:org.qtproject.qt5.android.positioning.QtPositioning"/>
             <!--  Messages maps -->
             <meta-data android:value="@string/ministro_not_found_msg" android:name="android.app.ministro_not_found_msg"/>
             <meta-data android:value="@string/ministro_needed_msg" android:name="android.app.ministro_needed_msg"/>

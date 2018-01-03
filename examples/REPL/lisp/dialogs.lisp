@@ -25,7 +25,7 @@
 ;; '(js *qml-main* ...)': see JS functions in '../qml/repl.qml'
 
 (defun push-dialog (name)
-  (js *qml-main* (format nil "push~@(~A~)Dialog()" name)))
+  (js *qml-main* "push~ADialog()" (string-capitalize name)))
 
 (defun pop-dialog ()
   "Pops the currently shown dialog, returning T if there was a dialog to pop."
@@ -63,7 +63,7 @@
   (qml-call *qml-debug-input* "forceActiveFocus")
   (wait-for-closed)
   (pop-dialog)
-  (editor:ensure-focus :show)
+  (qlater (lambda () (editor:ensure-focus :show)))
   (qml-get *qml-debug-input* "text"))
 
 (defun wait-for-closed ()
