@@ -46,7 +46,7 @@
   (|setForeground| *eql-keyword-format*  (qnew "QBrush(QColor)" "#0000C0"))
   (|setForeground| *lisp-keyword-format* (qnew "QBrush(QColor)" "#C00000"))
   (x:do-with *comment-format*
-    (|setForeground| (qnew "QBrush(QColor)" "#80A080"))
+    (|setForeground| (qnew "QBrush(QColor)" "lightslategray"))
     (|setFontItalic| t))
   (setf *highlighter-edit*    (qnew "QSyntaxHighlighter(QTextDocument*)" *qml-document-edit*)
         *highlighter-command* (qnew "QSyntaxHighlighter(QTextDocument*)" *qml-document-command*))
@@ -442,7 +442,7 @@
 ;;; open file
 
 (defun open-file ()
-  (confirm-save-changes)
+  (save-changes :confirm)
   (dialogs:get-file-name 'do-open-file))
 
 (defun do-open-file ()
@@ -493,11 +493,13 @@
         (setf *file* dialogs:*file-name*)
         (save-to-file *file*)))))
 
-(defun confirm-save-changes ()
+(defun save-changes (&optional confirm)
   (when (and *file*
              (qml-get *qml-edit* "canUndo")
-             (confirm-save-dialog "Save changes?"
-                                  (format nil "Save changes to current file?<br><br>~S<br>" *file*)))
+             (if confirm
+                 (confirm-save-dialog "Save changes?"
+                                      (format nil "Save changes to current file?<br><br>~S<br>" *file*))
+                 t))
     (save-to-file *file*)))
 
 ;;; select all, cut, copy, paste

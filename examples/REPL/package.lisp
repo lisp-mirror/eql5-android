@@ -10,5 +10,6 @@
    #:ensure-focus
    #:log-output
    #:reload-qml
+   #:save-changes
    #:start))
 

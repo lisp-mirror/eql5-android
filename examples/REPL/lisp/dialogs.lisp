@@ -57,7 +57,8 @@
     (qml-call *qml-debug-text* "append"
               (format nil "<pre><font face='Droid Sans Mono' color='~A'>~A</font></pre>"
                       (cdr text/color)
-                      (x:string-substitute "<br>" (string #\Newline) (qescape (car text/color))))))
+                      (x:string-substitute "<br>" (string #\Newline)
+                                           (qescape (string-trim '(#\Newline) (car text/color)))))))
   (wait-while-transition)
   (push-dialog :debug)
   (qml-call *qml-debug-input* "forceActiveFocus")

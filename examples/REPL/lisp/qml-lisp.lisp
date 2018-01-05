@@ -202,6 +202,7 @@
   ;; force quitting of app (needed because of restartable event loop for Slime)
   (qoverride *quick-view* "hideEvent(QHideEvent*)"
              (lambda (ev)
+               (funcall (sym 'save-changes :editor))
                (if (funcall (sym 'pop-dialog :dialogs))       ; either close dialog
                    (qlater (lambda () (|show| *quick-view*)))
                    (qquit))))                                 ; or quit app
