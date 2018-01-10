@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
     if(QFile::exists(update)) {
         // update
         QLibrary lib(update);
-        Ini ini = (Ini)lib.resolve("ini_CL_REPLay"); // N.B. unique ini function name
+        Ini ini = (Ini)lib.resolve("ini_CL_REPL"); // N.B. unique ini function name
         if(ini) {
             ini();
             return 0; }
@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
 
     // default
     QLibrary lib(path.arg("qtapp"));
-    Ini ini = (Ini)lib.resolve("ini_CL_REPLay");     // (see above)
+    Ini ini = (Ini)lib.resolve("ini_CL_REPL");     // (see above)
     ini();
 
     return 0; }

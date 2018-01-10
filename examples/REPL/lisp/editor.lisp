@@ -27,6 +27,7 @@
 (defvar *qml-flick-edit*       "flick_edit")
 (defvar *qml-command*          "command")
 (defvar *qml-output*           "output")
+(defvar *qml-flick-output*     "flick_output")
 (defvar *qml-clear*            "clear")
 (defvar *qml-status*           "status")
 (defvar *qml-clipboard-menu*   "clipboard_menu")
@@ -91,8 +92,8 @@
             (let* ((len (|matchedLength| *lisp-match-rule*))
                    (kw* (subseq text (1+ i) (+ i len)))
                    (kw (x:if-it (position #\: kw* :from-end t)
-                           (subseq kw* (1+ x:it))
-                           kw*)))
+                                (subseq kw* (1+ x:it))
+                                kw*)))
               (flet ((set-format (frm)
                        (|setFormat| highlighter (1+ i) (1- len) frm)))
                 (cond ((find kw *eql-keywords* :test 'string=)
@@ -164,8 +165,8 @@
 (defparameter *two-spaces-indent-symbols*
  '(case ccase ecase ctypecase etypecase handler-bind handler-case catch
    defstruct defun defmacro destructuring-bind do do* dolist dotimes
-   do-all-symbols do-symbols flet labels lambda let let* loop
-   multiple-value-bind prog progn prog1 prog2 qlet typecase unless when
+   do-all-symbols do-external-symbols do-symbols flet labels lambda let let*
+   loop multiple-value-bind prog progn prog1 prog2 qlet typecase unless when
    with-open-file with-output-to-string eql::do-string eql::do-with
    eql::let-it eql::when-it eql::when-it* eql::while eql::while-it))
 
@@ -264,8 +265,8 @@
 
 (defun code-region (text-cursor curr-line &optional right)
   (let ((max (|lineCount| (if (qml-get *qml-edit* "activeFocus")
-                               *qml-document-edit*
-                               *qml-document-command*))))
+                              *qml-document-edit*
+                              *qml-document-command*))))
     (with-output-to-string (s)
       (write-line (if right (nreverse curr-line) curr-line) s)
       (do* ((n (|blockNumber| text-cursor) (+ n (if right -1 1)))
@@ -354,7 +355,8 @@
                           (x:string-substitute "<br>" *separator* text*)
                           (x:string-substitute "<br>" (string #\Newline) text*)))))
   (qml-set *qml-output* "cursorPosition"
-           (qml-get *qml-output* "length")))
+           (qml-get *qml-output* "length"))
+  (qml-set *qml-flick-output* "contentX" 0))
 
 (defun eval-expression (&optional single (history t))
   (let ((text (string-trim '(#\Space #\Tab #\Newline #\Return)
@@ -448,13 +450,12 @@
 (defun do-open-file ()
   (unless (x:empty-string dialogs:*file-name*)
     (if (probe-file dialogs:*file-name*)
-        (progn
-          (setf *file* dialogs:*file-name*)
-          (if (x:starts-with "fas" (pathname-type *file*))
-              (eval* (format nil "(load ~S)" *file*))
-              (progn
-                (qml-set *qml-edit* "text" (read-file *file*))
-                (reset-line-count))))
+        (if (x:starts-with "fas" (pathname-type dialogs:*file-name*))
+            (qsingle-shot 150 (lambda () (eval* (format nil "(load ~S)" dialogs:*file-name*)))) ; wait for dialog to be hidden
+            (progn
+              (setf *file* dialogs:*file-name*)
+              (qml-set *qml-edit* "text" (read-file *file*))
+              (reset-line-count)))
         (qmsg (format nil "File does not exist:~%~%~S" dialogs:*file-name*)))))
 
 ;;; save-file
@@ -485,6 +486,9 @@
 (defun do-save-file ()
   (let ((ok t))
     (unless (x:empty-string dialogs:*file-name*)
+      (unless (find (pathname-type dialogs:*file-name*) '("lisp" "lsp" "sexp" "exp" "eclrc")
+                    :test 'string-equal)
+        (setf dialogs:*file-name* (x:cc dialogs:*file-name* ".lisp")))
       (when (probe-file dialogs:*file-name*)
         (unless (confirm-save-dialog "Overwrite?"
                                      (format nil "File already exists; overwrite?<br><br>~S<br>" dialogs:*file-name*))

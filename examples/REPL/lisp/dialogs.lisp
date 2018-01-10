@@ -37,7 +37,7 @@
 (defun wait-while-transition ()
   ;; needed for evtl. recursive calls
   (x:while (qml-get *qml-main* "busy")
-    (qsleep 0.05)))
+    (qsleep 0.15)))
 
 (defun query-dialog (query)
   (unless (x:empty-string query)

@@ -32,37 +32,33 @@ StackView {
 
     pushEnter: Transition {
         XAnimator {
-            from: main.width
+            from: main.width / 2
             to: 0
-            duration: 250
-            easing.type: Easing.InOutCubic
+            duration: 100
         }
     }
 
     pushExit: Transition {
         XAnimator {
             from: 0
-            to: -main.width
-            duration: 250
-            easing.type: Easing.InOutCubic
+            to: -main.width / 2
+            duration: 100
         }
     }
 
     popEnter: Transition {
         XAnimator {
-            from: -main.width
+            from: -main.width / 2
             to: 0
-            duration: 250
-            easing.type: Easing.InOutCubic
+            duration: 100
         }
     }
 
     popExit: Transition {
         XAnimator {
             from: 0
-            to: main.width
-            duration: 250
-            easing.type: Easing.InOutCubic
+            to: main.width / 2
+            duration: 100
         }
     }
 
@@ -183,6 +179,7 @@ StackView {
 
             Ext.Flickable {
                 id: flickCommand
+                objectName: "flick_command"
                 anchors.fill: parent
                 contentWidth: command.paintedWidth
                 contentHeight: command.paintedHeight
@@ -232,6 +229,7 @@ StackView {
 
             Ext.Flickable {
                 id: flickOutput
+                objectName: "flick_output"
                 anchors.fill: parent
                 contentWidth: output.paintedWidth
                 contentHeight: output.paintedHeight
