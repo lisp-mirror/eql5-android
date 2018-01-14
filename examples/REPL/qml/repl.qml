@@ -28,37 +28,55 @@ StackView {
     function pushQueryDialog() { main.push(queryDialogInstance) }
     function popDialog()       { main.pop() }
 
-    // custom transition animations (defaults are a little slow)
+    // custom transition animations
 
     pushEnter: Transition {
-        XAnimator {
-            from: main.width / 2
-            to: 0
-            duration: 100
+        ParallelAnimation {
+            OpacityAnimator {
+                from: 0
+                to: 1
+                easing.type: Easing.OutQuart
+                duration: 200
+            }
+            XAnimator {
+                from: width / 3
+                to: 0
+                easing.type: Easing.OutQuart
+                duration: 200
+            }
         }
     }
 
     pushExit: Transition {
-        XAnimator {
-            from: 0
-            to: -main.width / 2
-            duration: 100
+        OpacityAnimator {
+            from: 1
+            to: 0
+            duration: 200
         }
     }
 
     popEnter: Transition {
-        XAnimator {
-            from: -main.width / 2
-            to: 0
-            duration: 100
+        OpacityAnimator {
+            from: 0
+            to: 1
+            duration: 200
         }
     }
 
     popExit: Transition {
-        XAnimator {
-            from: 0
-            to: main.width / 2
-            duration: 100
+        ParallelAnimation {
+            OpacityAnimator {
+                from: 1
+                to: 0
+                easing.type: Easing.InQuart
+                duration: 200
+            }
+            XAnimator {
+                from: 0
+                to: width / 3
+                easing.type: Easing.InQuart
+                duration: 200
+            }
         }
     }
 
@@ -486,9 +504,9 @@ StackView {
 
     // not visible dialog / menu instances
 
-    Ext.FileBrowser { id: fileDialogInstance }
-    Ext.QueryDialog { id: queryDialogInstance }
-    Ext.DebugDialog { id: debugDialogInstance }
+    Ext.FileBrowser { id: fileDialogInstance;  opacity: 0 }
+    Ext.QueryDialog { id: queryDialogInstance; opacity: 0 }
+    Ext.DebugDialog { id: debugDialogInstance; opacity: 0 }
 
     Ext.ClipboardMenu {}
 }

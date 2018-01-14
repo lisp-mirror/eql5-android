@@ -12,7 +12,7 @@ void ini_app(cl_object);
 
 // N.B. unique ini function name (see 'load.cpp')
 
-void ini_CL_REPLay() {
+void ini_CL_REPL() {
     //qApp->setOrganizationName("MyTeam");
     //qApp->setOrganizationDomain("my-team.org");
     qApp->setApplicationName(QFileInfo(qApp->applicationFilePath()).baseName());

@@ -25,6 +25,10 @@
 
 (defvar eql::*reloading-qml*     nil)
 
+(defvar *qml-eval*       "eval")
+(defvar *qml-status*     "status")
+(defvar *qml-status-bar* "status_bar")
+
 (defun ini (&key output query-dialog debug-dialog)
   (setf *gui-output*       output
         *gui-query-dialog* query-dialog
@@ -102,13 +106,13 @@
         (clear-status-buffers)
         (start-status-timer))
       (unless eql::*reloading-qml*
-        (qml:qml-set "status_bar" "visible" t))
+        (qml:qml-set *qml-status-bar* "visible" t))
       (setf *eval-thread* (mp:process-run-function "EQL5 REPL top-level" 'start-top-level)))))
 
 (defun set-eval-state (evaluating)
   (unless (or eql::*reloading-qml*
               (and (find-package :swank) evaluating))
-    (qml:qml-set "eval" "enabled" (not evaluating))))
+    (qml:qml-set *qml-eval* "enabled" (not evaluating))))
 
 (defun start-top-level ()
   (set-eval-state t)
@@ -119,8 +123,8 @@
   (unless *log-mode*
     (stop-status-timer))
   (unless eql::*reloading-qml*
-    (qml:qml-set "status_bar" "visible" nil))
-  (qml:qml-set "status" "text" "")
+    (qml:qml-set *qml-status-bar* "visible" nil))
+  (qml:qml-set *qml-status* "text" "")
   (write-output :trace  *trace-output-buffer*)
   (write-output :output *standard-output-buffer*)
   (write-output :error  *error-output-buffer*)
@@ -160,7 +164,7 @@
 (defvar *log-stream*             nil)
 (defvar *log-file*               "logs/output.txt")
 
-(defun start-status-timer (&optional (interval 500))
+(defun start-status-timer (&optional (interval 200))
   (unless *status-timer*
     (setf *status-timer* (qnew "QTimer"))
     (qconnect *status-timer* "timeout()" 'update-status))
@@ -172,7 +176,7 @@
 (defun start-logging ()
   (ensure-directories-exist *log-file*)
   (setf *log-stream* (open *log-file* :direction :output :if-exists :supersede))
-  (start-status-timer 200)
+  (start-status-timer)
   (setf *log-mode* t))
 
 (defun stop-logging ()
@@ -213,10 +217,10 @@
     (mapc (lambda (stream line-var)
             (when (update-status-line stream line-var)
               (unless *log-mode*
-                (qml:qml-set "status" "text" (symbol-value line-var)))
+                (qml:qml-set *qml-status* "text" (symbol-value line-var)))
               (return-from update-status)))
             (list *status-standard-buffer* *status-trace-buffer* *status-error-buffer*)
             '(*status-standard-line* *status-trace-line* *status-error-line*))
     (when (and (not *log-mode*)
-               (x:empty-string (qml:qml-get "status" "text")))
-      (qml:qml-set "status" "text" "Evaluating..."))))
+               (x:empty-string (qml:qml-get *qml-status* "text")))
+      (qml:qml-set *qml-status* "text" "Evaluating..."))))

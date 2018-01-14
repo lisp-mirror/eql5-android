@@ -68,12 +68,9 @@
                                  (t t))))
       (values exp x))))
 
-(defun end-position (str &optional simple)
+(defun end-position (str)
   (multiple-value-bind (x end)
-      (if simple
-          (ignore-errors (read-from-string (code-parens-only str)
-                                           nil nil :preserve-whitespace t))
-          (read* str))
+      (read* str)
     (when (numberp end)
       end)))
 
@@ -321,7 +318,7 @@
 
 (let (n)
   (defun close-all-parens ()
-    (setf n                    25 ; limit
+    (setf n                    25 ; limit (to be safe on tilts)
           *closing-all-parens* t)
     (insert-closing-paren))
   (defun do-close-all-parens ()
@@ -486,8 +483,9 @@
 (defun do-save-file ()
   (let ((ok t))
     (unless (x:empty-string dialogs:*file-name*)
-      (unless (find (pathname-type dialogs:*file-name*) '("lisp" "lsp" "sexp" "exp" "eclrc")
-                    :test 'string-equal)
+      (unless (or (find (pathname-type dialogs:*file-name*) '("lisp" "lsp" "sexp" "exp")
+                        :test 'string-equal)
+                  (string= ".eclrc" (pathname-name dialogs:*file-name*)))
         (setf dialogs:*file-name* (x:cc dialogs:*file-name* ".lisp")))
       (when (probe-file dialogs:*file-name*)
         (unless (confirm-save-dialog "Overwrite?"
@@ -532,7 +530,7 @@
         (when (or (minusp (decf start))
                   (find ch '(#\Newline #\) )))
           (return-from select-expression)))
-      (x:when-it (end-position (subseq text start) :simple)
+      (x:when-it (end-position (subseq text start))
         (let ((end (+ start x:it)))
           (setf *selection-start* start
                 *selected-text*   (subseq text start end))
