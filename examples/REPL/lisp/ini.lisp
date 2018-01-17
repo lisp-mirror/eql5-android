@@ -171,14 +171,14 @@
       (format t "  :s  (start-swank)           ; adb forward tcp:4005 tcp:4005~
                ~%  :q  (quicklisp)             ; will install/load it~
                ~%  :f  (dialogs:get-file-name) ; see dialogs:*file-name*~
-               ~%  :r  (editor:reload-qml)     ; see docu~
                ~%~
                ~%  (shell \"ls -la\")            ; see *output*~
                ~%~
                ~%  tap and hold to select/copy/paste/eval s-exp (e.g. on 'defun')~
                ~%~
-               ~%  tap on [back] to hide keyboard / show cursor move buttons;~
-               ~%  hold them to move to beginning/end of line/file"))
+               ~%  tap on [back] to hide keyboard / show cursor move buttons; hold them to move to beginning/end of line/file~
+               ~%~
+               ~%  double [space] for auto-completion (e.g. m-v-b)"))
   (values))
 
 ;; ini

@@ -93,7 +93,7 @@
                                 kw*)))
               (flet ((set-format (frm)
                        (|setFormat| highlighter (1+ i) (1- len) frm)))
-                (cond ((find kw *eql-keywords* :test 'string=)
+                (cond ((find kw *eql-keywords-list* :test 'string=)
                        (when cache-matches
                          (push (cons (+ i len) (intern (string-upcase kw) :keyword))
                                qt-matches))
@@ -129,6 +129,83 @@
         (when (and (plusp pos)
                    (char= #\) (char line (1- pos))))
           (show-matching-paren text-cursor (subseq line 0 pos) :right))))))
+
+;;; auto completion: start when 2 spaces have been inserted in less than 500 ms
+
+(let ((pos 0))
+  (defun edit-contents-changed ()
+    (let ((pos* (qml-get *qml-edit* "cursorPosition")))
+      (when (= pos* (1+ pos))
+        (contents-changed *qml-document-edit* pos))
+      (setf pos pos*))))
+
+(let ((pos 0))
+  (defun command-contents-changed ()
+    (let ((pos* (qml-get *qml-command* "cursorPosition")))
+      (when (= pos* (1+ pos))
+        (contents-changed *qml-document-command* pos))
+      (setf pos pos*))))
+
+(let ((space-count 0))
+  (defun contents-changed (document position)
+    (when (and (plusp position)
+               (char= #\Space (|characterAt| document position)))
+      (qsingle-shot 500 (lambda () (setf space-count 0)))
+      (let (ch)
+        (when (and (= 2 (incf space-count))
+                   (alpha-char-p (setf ch (|characterAt| document (- position 2)))))
+          (let ((start (- position 3))
+                (text (list ch)))
+            (x:while (and (not (minusp start))
+                          (or (alpha-char-p (setf ch (|characterAt| document start)))
+                              (char= #\- ch)))
+              (decf start)
+              (push ch text))
+            (search-completion (coerce text 'string))))))))
+
+(defun search-completion (short)
+  (let* ((edit (active-edit))
+         (pos (qml-get edit "cursorPosition")))
+    (qml-call edit "remove" (- pos 2) pos) ; remove the 2 spaces
+    (x:when-it (complete-symbol short)
+      (setf pos (qml-get edit "cursorPosition"))
+      (let ((pos-2 (- pos (length short))))
+        (qml-call edit "remove" pos-2 pos)
+        (qml-call edit "insert" pos-2 x:it)))))
+
+(defun complete-symbol (short)
+  "Works only for generic CL and EQL5 symbols and respective abbreviations, excluding variable names."
+  (if (find #\- short)
+      ;; complete an abbreviation; example: "m-v-b" => "multiple-value-bind"
+      ;; (QRegExp is more convenient here than CL-PPCRE)
+      (qlet ((regex "QRegExp(QString)"
+                    (x:cc (x:string-substitute "[a-z]*-" "-" short)
+                          "[a-z\-]*")))
+        (dolist (name *lisp-keywords-list*)
+          (when (|exactMatch| regex name)
+            (return-from complete-symbol name)))
+        (dolist (name *eql-keywords-list*)
+          (when (|exactMatch| regex name)
+            (return-from complete-symbol name))))
+      ;; complete as far as unambiguous; return full name if unique
+      (let (matches)
+        (dolist (name *lisp-keywords-list*)
+          (when (x:starts-with short name)
+            (push name matches)))
+        (dolist (name *eql-keywords-list*)
+          (when (x:starts-with short name)
+            (push name matches)))
+        (when matches
+          (if (rest matches)
+              (let ((i1 (1+ (length short)))
+                    (i2 (apply 'min (mapcar 'length matches))))
+                (do ((i i1 (1+ i)))
+                    ((> i i2) (subseq (first matches) 0 (1- i)))
+                  (let ((start (subseq (first matches) 0 i)))
+                    (unless (every (lambda (str) (x:starts-with start str))
+                                   matches)
+                      (return-from complete-symbol (subseq start 0 (1- (length start))))))))
+              (first matches))))))
 
 ;;; the following are workarounds because QML 'Keys' doesn't work on all devices
 
@@ -613,7 +690,9 @@
       (qconnect *qml-document-edit*    "blockCountChanged(int)" 'edit-line-count-changed)
       (qconnect *qml-document-command* "blockCountChanged(int)" 'command-line-count-changed)
       (qconnect *qml-document-edit*    "cursorPositionChanged(QTextCursor)" 'cursor-position-changed)
-      (qconnect *qml-document-command* "cursorPositionChanged(QTextCursor)" 'cursor-position-changed)))
+      (qconnect *qml-document-command* "cursorPositionChanged(QTextCursor)" 'cursor-position-changed)
+      (qconnect *qml-document-edit*    "contentsChanged()" 'edit-contents-changed)
+      (qconnect *qml-document-command* "contentsChanged()" 'command-contents-changed)))
   (defun reset-documents ()
     (setf curr 0)))
 

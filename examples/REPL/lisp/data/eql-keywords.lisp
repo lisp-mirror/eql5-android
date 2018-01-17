@@ -1,6 +1,6 @@
 (in-package :editor)
 
-(defvar *eql-keywords*
+(defvar *eql-keywords-list*
   '("define-qt-wrappers"
     "defvar-ui"
     "ensure-qt-object"

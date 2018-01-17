@@ -189,6 +189,16 @@ Sokoban from the neighbor directory ;-)
 
 
 
+### Auto completion
+
+Entering 2 spaces within half a second will start auto completion. It will
+complete only a part, if ambiguous.
+
+On abbreviations, like `m-v-b` for `multiple-value-bind`, it will complete the
+whole word, preferring the first alphabetical match if ambiguous.
+
+
+
 ### Desktop notes
 
 To run this example on the desktop, do:
