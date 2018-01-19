@@ -85,7 +85,7 @@
     (|hide| (|inputMethod.QGuiApplication|))
     (when 1st
       (setf 1st nil)
-      (set-file-browser-path ":documents"))
+      (set-file-browser-path ":data"))
     (setf *callback* callback)
     ;; force update
     (qlet ((none "QUrl")
@@ -114,8 +114,8 @@
       (first (|standardLocations.QStandardPaths|
               (cond ((string= ":home" name)
                      |QStandardPaths.HomeLocation|)
-                    ((string= ":documents" name)
-                     |QStandardPaths.DocumentsLocation|))))))
+                    ((string= ":data" name)
+                     |QStandardPaths.GenericDataLocation|))))))
 
 (defun set-file-browser-path (path) ; called from QML
   (qlet ((url "QUrl(QString)"

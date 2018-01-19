@@ -176,7 +176,7 @@
 (defun start-logging ()
   (ensure-directories-exist *log-file*)
   (setf *log-stream* (open *log-file* :direction :output :if-exists :supersede))
-  (start-status-timer)
+  (start-status-timer 200)
   (setf *log-mode* t))
 
 (defun stop-logging ()

@@ -136,14 +136,14 @@
   (defun edit-contents-changed ()
     (let ((pos* (qml-get *qml-edit* "cursorPosition")))
       (when (= pos* (1+ pos))
-        (contents-changed *qml-document-edit* pos))
+        (qlater (lambda () (contents-changed *qml-document-edit* (1- pos)))))
       (setf pos pos*))))
 
 (let ((pos 0))
   (defun command-contents-changed ()
     (let ((pos* (qml-get *qml-command* "cursorPosition")))
       (when (= pos* (1+ pos))
-        (contents-changed *qml-document-command* pos))
+        (qlater (lambda () (contents-changed *qml-document-command* (1- pos)))))
       (setf pos pos*))))
 
 (let ((space-count 0))
@@ -158,7 +158,7 @@
                 (text (list ch)))
             (x:while (and (not (minusp start))
                           (or (alpha-char-p (setf ch (|characterAt| document start)))
-                              (char= #\- ch)))
+                              (find ch "-12")))
               (decf start)
               (push ch text))
             (search-completion (coerce text 'string))))))))
@@ -179,8 +179,8 @@
       ;; complete an abbreviation; example: "m-v-b" => "multiple-value-bind"
       ;; (QRegExp is more convenient here than CL-PPCRE)
       (qlet ((regex "QRegExp(QString)"
-                    (x:cc (x:string-substitute "[a-z]*-" "-" short)
-                          "[a-z\-]*")))
+                    (x:cc (x:string-substitute "[a-z12]*-" "-" short)
+                          "[a-z12\-]*")))
         (dolist (name *lisp-keywords-list*)
           (when (|exactMatch| regex name)
             (return-from complete-symbol name)))
