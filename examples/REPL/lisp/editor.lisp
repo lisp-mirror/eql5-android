@@ -733,14 +733,16 @@
 
 (defvar *qml-hide-buttons-top*   "hide_buttons_top")
 (defvar *qml-hide-buttons-right* "hide_buttons_right")
+(defvar *qml-buttons-top*        "buttons_top")
 
 (defun start-menu-timer ()
   (unless *menu-timer*
     (setf *menu-timer* (qnew "QTimer" "singleShot" t))
     (qconnect *menu-timer* "timeout()"
               (lambda ()
-                (qml-call *qml-hide-buttons-top* "start")
-                (qml-call *qml-hide-buttons-right* "start"))))
+                (when (zerop (qml-get *qml-buttons-top* "y"))
+                  (qml-call *qml-hide-buttons-top* "start")
+                  (qml-call *qml-hide-buttons-right* "start")))))
   (|start| *menu-timer* 3000))
 
 ;;; cursor movement (see arrow buttons in QML)
@@ -843,3 +845,11 @@
   (connect-menu-buttons)
   (connect-arrows)
   (setf eql::*reloading-qml* nil))
+
+;;; quit app
+
+(defun back-pressed () ; called from QML
+  (or (dialogs:pop-dialog)
+      (progn
+        (save-changes)
+        (qquit))))

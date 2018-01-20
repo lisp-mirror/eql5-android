@@ -28,6 +28,13 @@ StackView {
     function pushQueryDialog() { main.push(queryDialogInstance) }
     function popDialog()       { main.pop() }
 
+    Keys.onPressed: {
+        if(event.key == Qt.Key_Back) {
+            event.accepted = true
+            Lisp.call("editor:back-pressed")
+        }
+    }
+
     // custom transition animations
 
     pushEnter: Transition {
@@ -155,6 +162,7 @@ StackView {
 
         Rectangle {
             id: buttonsTop
+            objectName: "buttons_top"
             y: -height // hidden
             width: rowButtonsTop.width
             height: rowButtonsTop.height
@@ -271,16 +279,17 @@ StackView {
             Rectangle {
                 color: "lightgray"
                 objectName: "status_bar"
-                border.width: 1
-                border.color: "gray"
                 width: main.width
                 height: status.height
                 anchors.bottom: parent.bottom
+                border.width: 1
+                border.color: "gray"
                 visible: false
 
                 Text {
                     id: status
                     objectName: "status"
+                    x: 2
                     font.family: "Droid Sans Mono"
                     font.pixelSize: 18
                 }
@@ -304,6 +313,7 @@ StackView {
 
         Rectangle {
             id: buttonsRight
+            objectName: "buttons_right"
             x: -width // hidden
             width: colButtonsRight.width
             height: colButtonsRight.height
