@@ -129,10 +129,23 @@ which are different for every Android version. The web is your friend...)
 Debug
 -----
 
-Of course debugging is best done using the desktop version.
+Of course debugging is best done using the desktop version (where possible).
 
-For android specific debugging, there is currently nothing integrated yet.
+If you want to use logging on the device through `adb logcat`, you can use:
 
-Note that anything sent to the output streams will not be shown in the android
-internal logs (see `adb logcat`); one would need to use the android C log
-functions for that (but this is not integrated).
+```
+  ;; Lisp
+  (eql:qlog "message")
+  (eql:qlog 1 "plus" 2 "gives" 6/2)
+  (eql:qlog "x: ~A y: ~A" x y)
+
+  // QML
+  console.log("message")
+```
+
+The logged lines will contain `[EQL5]`, so you can use:
+
+```
+  adb logcat -s "[EQL5]"
+```
+

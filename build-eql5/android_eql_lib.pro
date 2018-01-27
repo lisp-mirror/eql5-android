@@ -1,7 +1,7 @@
 QT            += widgets printsupport uitools
 TEMPLATE      = lib
 CONFIG        += dll no_keywords release
-DEFINES       += EQL_LIBRARY
+DEFINES       += EQL_LIBRARY COMPILE_ANDROID
 ECL_ANDROID   = $$(ECL_ANDROID)
 INCLUDEPATH   += $$ECL_ANDROID/include
 LIBS          += -L$$ECL_ANDROID/lib -lecl -L. -landroid_ini_eql5

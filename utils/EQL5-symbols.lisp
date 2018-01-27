@@ -253,6 +253,7 @@
    #:qload-c++
    #:qload-ui
    #:qlocal8bit
+   #:qlog
    #:qmessage-box
    #:qmsg
    #:qnew
@@ -1101,6 +1102,7 @@
 (export (intern "QLOAD-C++"))
 (export (intern "QLOAD-UI"))
 (export (intern "QLOCAL8BIT"))
+(export (intern "QLOG"))
 (export (intern "QMESSAGE-BOX"))
 (export (intern "QMSG"))
 (export (intern "QNEW"))
