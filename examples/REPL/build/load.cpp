@@ -12,7 +12,11 @@ static bool load(const QString& name) {
     return lib.load(); }
 
 int main(int argc, char** argv) {
+
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    // no text selection handles/menu (would interfere with our own menu)
+    qputenv("QT_QPA_NO_TEXT_HANDLES", "1");
+
     Qt_EQL_Application qapp(argc, argv);
 
     // splash pixmap (see "../../../img/logo.png")
