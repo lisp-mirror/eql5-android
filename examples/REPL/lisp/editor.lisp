@@ -29,7 +29,6 @@
 (defvar *qml-output*           "output")
 (defvar *qml-flick-output*     "flick_output")
 (defvar *qml-clear*            "clear")
-(defvar *qml-status*           "status")
 (defvar *qml-clipboard-menu*   "clipboard_menu")
 (defvar *qml-document-edit*    nil)
 (defvar *qml-document-command* nil)
@@ -501,7 +500,7 @@
                  (* steps
                     (if (qml-get nil "isPhone") 1 2)
                     (if (eql :bigger to) 1 -1)))))
-    (dolist (item (list *qml-edit* *qml-command* *qml-output* *qml-status*))
+    (dolist (item (list *qml-edit* *qml-command* *qml-output*))
       (qml-set item "font.pixelSize" size))))
 
 (defun clear ()
@@ -638,12 +637,13 @@
 
 (defun paste ()
   "Paste text adapting the indentation."
-  (let ((edit (active-edit)))
+  (let ((edit (active-edit))
+        (clip-text (clipboard-text)))
     (when (and (string= *qml-command* edit)
-               (find #\Newline (clipboard-text)))
+               (find #\Newline clip-text))
       (return-from paste))
-    (unless (x:empty-string (clipboard-text))
-      (let* ((lines (x:split (clipboard-text) #\Newline))
+    (unless (x:empty-string clip-text)
+      (let* ((lines (x:split clip-text #\Newline))
              (diff (- *cursor-indent* *cursor-indent-copy*))
              (text (with-output-to-string (s)
                      (write-line (first lines) s)
@@ -651,6 +651,9 @@
                        (when (plusp diff)
                          (write-string (make-string diff) s))
                        (write-line (subseq line (if (minusp diff) (- diff) 0)) s)))))
+        (qml-call edit "remove"
+                  (qml-get edit "selectionStart")
+                  (qml-get edit "selectionEnd"))
         (qml-call edit "insert"
                   (qml-get edit "cursorPosition")
                   (subseq text 0 (1- (length text))))))))

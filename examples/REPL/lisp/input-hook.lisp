@@ -1,9 +1,9 @@
 ;;; idea & most code from "ecl-readline.lisp"
 
 (defpackage input-hook
-    (:use :common-lisp)
+    (:use :cl)
   (:export
-   #:new))
+   #:make))
 
 (provide :input-hook)
 
@@ -11,49 +11,43 @@
 
 (defvar *functions* nil)
 
-(defun new (function)
-  (let ((stream (make-instance 'gray::input-hook-stream)))
+(defun make (function)
+  (let ((stream (make-instance 'input-hook-stream)))
     (push (cons stream function) *functions*)
     stream))
 
-(in-package :gray)
+(defclass input-hook-stream (gray:fundamental-character-input-stream)
+  ((buffer :initform (make-string 0))
+   (index  :initform 0)))
 
-(defclass input-hook-stream (fundamental-character-input-stream)
-  ((in-buffer  :initform (make-string 0))
-   (in-index   :initform 0)
-   (out-buffer :initform (make-array 0 :element-type 'character :adjustable t :fill-pointer t))))
-
-(defmethod stream-read-char ((stream input-hook-stream))
+(defmethod gray:stream-read-char ((stream input-hook-stream))
   (if (ensure-stream-data stream)
-      (with-slots (in-buffer in-index) stream
-        (let ((ch (char in-buffer in-index)))
-          (incf in-index)
+      (with-slots (buffer index) stream
+        (let ((ch (char buffer index)))
+          (incf index)
           ch))
       :eof))
 
-(defmethod stream-unread-char ((stream input-hook-stream) character)
-  (with-slots (in-index) stream
-    (when (> in-index 0)
-      (decf in-index))))
+(defmethod gray:stream-unread-char ((stream input-hook-stream) character)
+  (with-slots (index) stream
+    (when (> index 0)
+      (decf index))))
 
-(defmethod stream-listen ((stream input-hook-stream))
+(defmethod gray:stream-listen ((stream input-hook-stream))
   nil)
 
-(defmethod stream-clear-input ((stream input-hook-stream))
+(defmethod gray:stream-clear-input ((stream input-hook-stream))
   nil)
 
-(defmethod stream-close ((stream input-hook-stream) &key abort)
-  (call-next-method))
-
-(defmethod stream-peek-char ((stream input-hook-stream))
+(defmethod gray:stream-peek-char ((stream input-hook-stream))
   (if (ensure-stream-data stream)
-      (with-slots (in-buffer in-index) stream
-        (char in-buffer in-index))
+      (with-slots (buffer index) stream
+        (char buffer index))
       :eof))
 
 (defun ensure-stream-data (stream)
-  (with-slots (in-buffer in-index) stream
-    (when (= in-index (length in-buffer))
-      (setf in-buffer (funcall (cdr (assoc stream input-hook::*functions*)))
-            in-index 0))
-    in-buffer))
+  (with-slots (buffer index) stream
+    (when (= index (length buffer))
+      (setf buffer (funcall (cdr (assoc stream input-hook::*functions*)))
+            index 0))
+    buffer))

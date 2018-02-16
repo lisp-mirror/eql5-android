@@ -25,9 +25,8 @@
 
 (defvar eql::*reloading-qml*     nil)
 
-(defvar *qml-eval*       "eval")
-(defvar *qml-status*     "status")
-(defvar *qml-status-bar* "status_bar")
+(defvar *qml-eval*     "eval")
+(defvar *qml-progress* "progress")
 
 (defun ini (&key output query-dialog debug-dialog)
   (setf *gui-output*       output
@@ -42,22 +41,19 @@
             *trace-output*    *trace-output-buffer*
             *error-output*    *error-output-buffer*)
       (setf *standard-output* (make-broadcast-stream *standard-output*
-                                                     *standard-output-buffer*
-                                                     *status-standard-buffer*)
+                                                     *standard-output-buffer*)
             *trace-output*    (make-broadcast-stream *trace-output*
-                                                     *trace-output-buffer*
-                                                     *status-trace-buffer*)
+                                                     *trace-output-buffer*)
             *error-output*    (make-broadcast-stream *error-output*
-                                                     *error-output-buffer*
-                                                     *status-error-buffer*)))
+                                                     *error-output-buffer*)))
   (setf *terminal-io*  (make-two-way-stream (two-way-stream-input-stream *terminal-io*)
                                             (if *silent*
                                                 *terminal-out-buffer*
                                                 (make-broadcast-stream (two-way-stream-output-stream *terminal-io*)
                                                                        *terminal-out-buffer*)))
-        *query-io*     (make-two-way-stream (input-hook:new 'handle-query-io)
+        *query-io*     (make-two-way-stream (input-hook:make 'handle-query-io)
                                             (two-way-stream-output-stream *terminal-io*))
-        *gui-debug-io* (make-two-way-stream (input-hook:new 'handle-debug-io)
+        *gui-debug-io* (make-two-way-stream (input-hook:make 'handle-debug-io)
                                             (two-way-stream-output-stream *terminal-io*))))
 
 (defun current-package-name ()
@@ -102,29 +98,23 @@
                   (format nil "(load (make-string-input-stream ~S))" str))))
       ;; run eval in its own thread, so GUI will remain responsive
       ;; N.B. this is only safe because we use "thread-safe.lisp" (like in Slime mode)
-      (unless *log-mode*
-        (clear-status-buffers)
-        (start-status-timer))
-      (unless eql::*reloading-qml*
-        (qml:qml-set *qml-status-bar* "visible" t))
-      (setf *eval-thread* (mp:process-run-function "EQL5 REPL top-level" 'start-top-level)))))
-
-(defun set-eval-state (evaluating)
-  (unless (or eql::*reloading-qml*
-              (and (find-package :swank) evaluating))
-    (qml:qml-set *qml-eval* "enabled" (not evaluating))))
+      (show-progress-bar)
+      (set-eval-state t)
+      (setf *debug-invoked* nil
+            *query-invoked* nil)
+      (finish-output *standard-output*)
+      (write-output :expression *standard-output-buffer*)
+      (setf *eval-thread* (mp:process-run-function "REPL eval" 'start-top-level)))))
 
 (defun start-top-level ()
-  (set-eval-state t)
-  (setf *debug-invoked* nil
-        *query-invoked* nil)
-  (write-output :expression *standard-output-buffer*)
   (si::%top-level)
-  (unless *log-mode*
-    (stop-status-timer))
-  (unless eql::*reloading-qml*
-    (qml:qml-set *qml-status-bar* "visible" nil))
-  (qml:qml-set *qml-status* "text" "")
+  (finish-output *trace-output*)
+  (finish-output *standard-output*)
+  (finish-output *error-output*)
+  (setf *eval-thread* nil)
+  (qsingle-shot 100 'top-level-exited))
+
+(defun top-level-exited ()
   (write-output :trace  *trace-output-buffer*)
   (write-output :output *standard-output-buffer*)
   (write-output :error  *error-output-buffer*)
@@ -133,7 +123,18 @@
                  (and *debug-invoked*
                       *query-invoked*)))
     (funcall *gui-output* :values (format nil "~{~S~^#||#~}" si::*latest-values*))) ; "#||#": separator
-  (set-eval-state nil))
+  (unless eql::*reloading-qml*
+    (show-progress-bar nil)
+    (set-eval-state nil)))
+
+(defun show-progress-bar (&optional (show t))
+  (qml-set *qml-progress* "enabled" show)
+  (qml-set *qml-progress* "visible" show))
+
+(defun set-eval-state (evaluating)
+  (unless (or eql::*reloading-qml*
+              (and (find-package :swank) evaluating))
+    (qml-set *qml-eval* "enabled" (not evaluating))))
 
 (defun handle-query-io ()
   (setf *query-invoked* t)
@@ -149,78 +150,3 @@
   (let ((cmd (funcall *gui-debug-dialog* (list (cons (get-output-stream-string *error-output-buffer*) "#d00000")
                                                (cons (get-output-stream-string *terminal-out-buffer*) "black")))))
     (format nil "~A~%" (if (x:empty-string cmd) ":q" cmd))))
-
-;; status bar & log mode
-
-(defvar *status-timer*           nil)
-(defvar *status-standard-buffer* (make-string-output-stream))
-(defvar *status-trace-buffer*    (make-string-output-stream))
-(defvar *status-error-buffer*    (make-string-output-stream))
-(defvar *status-standard-line*   "")
-(defvar *status-trace-line*      "")
-(defvar *status-error-line*      "")
-
-(defvar *log-mode*               nil)
-(defvar *log-stream*             nil)
-(defvar *log-file*               "logs/output.txt")
-
-(defun start-status-timer (&optional (interval 200))
-  (unless *status-timer*
-    (setf *status-timer* (qnew "QTimer"))
-    (qconnect *status-timer* "timeout()" 'update-status))
-  (|start| *status-timer* interval))
-
-(defun stop-status-timer ()
-  (|stop| *status-timer*))
-
-(defun start-logging ()
-  (ensure-directories-exist *log-file*)
-  (setf *log-stream* (open *log-file* :direction :output :if-exists :supersede))
-  (start-status-timer 200)
-  (setf *log-mode* t))
-
-(defun stop-logging ()
-  (when *log-stream*
-    (close *log-stream*)
-    (|stop| *status-timer*)
-    (setf *log-stream* nil
-          *log-mode*   nil)))
-
-(defun display-log ()
-  (flet ((read-log ()
-           (with-open-file (s *log-file* :direction :input)
-             (x:let-it (make-string (file-length s))
-               (read-sequence x:it s)))))
-    (qml:qml-set "output" "text"
-                 (x:string-substitute "<br>" (string #\Newline) (qescape (read-log))))))
-
-(defun clear-status-buffers ()
-  (get-output-stream-string *status-standard-buffer*)
-  (get-output-stream-string *status-trace-buffer*)
-  (get-output-stream-string *status-error-buffer*))
-
-(defun update-status-line (stream line-var)
-  (let ((chunk (get-output-stream-string stream)))
-    (unless (x:empty-string chunk)
-      (if *log-mode*
-          (progn
-            (write-string chunk *log-stream*)
-            (finish-output *log-stream*))
-          (let* ((line (x:cc (symbol-value line-var) chunk))
-                 (nl (position #\Newline line :from-end t)))
-            (setf (symbol-value line-var)
-                  (if nl (subseq line (1+ nl)) line))))
-      t)))
-
-(defun update-status ()
-  (unless eql::*reloading-qml*
-    (mapc (lambda (stream line-var)
-            (when (update-status-line stream line-var)
-              (unless *log-mode*
-                (qml:qml-set *qml-status* "text" (symbol-value line-var)))
-              (return-from update-status)))
-            (list *status-standard-buffer* *status-trace-buffer* *status-error-buffer*)
-            '(*status-standard-line* *status-trace-line* *status-error-line*))
-    (when (and (not *log-mode*)
-               (x:empty-string (qml:qml-get *qml-status* "text")))
-      (qml:qml-set *qml-status* "text" "Evaluating..."))))

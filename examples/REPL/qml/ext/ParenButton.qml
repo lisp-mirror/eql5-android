@@ -5,7 +5,6 @@ Button {
     width: main.isPhone ? 35 : 55
     height: width
     font.pixelSize: main.isPhone ? 24 : 30
-    font.bold: true
     focusPolicy: Qt.NoFocus
     flat: true
 }

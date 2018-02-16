@@ -6,7 +6,7 @@ Text {
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter
     font.pixelSize: 1.2 * width
-    opacity: 0.20
+    opacity: 0.2
     scale: 1.2
 
     signal pressed()

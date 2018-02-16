@@ -12,8 +12,7 @@ StackView {
     property bool isPhone: (Math.max(width, height) < 1000) // trivial but seems reliable
 
     function keyboardHeight() {
-        var x = Qt.inputMethod.keyboardRectangle.width / Screen.width // needed for high dpi scaling
-        return (Qt.inputMethod.keyboardRectangle.height / (x ? x : 1))
+        return Qt.inputMethod.keyboardRectangle.height / Lisp.call("qml:scale")
     }
 
     function halfHeight() {
@@ -244,6 +243,16 @@ StackView {
                 }
             }
         }
+ 
+        ProgressBar {
+            objectName: "progress"
+            anchors.top: rectCommand.bottom
+            width: main.width
+            z: 1
+            indeterminate: true
+            enabled: false
+            visible: false
+        }
 
         Rectangle {
             id: rectOutput
@@ -273,25 +282,6 @@ StackView {
                     readOnly: true
 
                     onCursorRectangleChanged: flickOutput.ensureVisible(cursorRectangle)
-                }
-            }
-
-            Rectangle {
-                color: "lightgray"
-                objectName: "status_bar"
-                width: main.width
-                height: status.height
-                anchors.bottom: parent.bottom
-                border.width: 1
-                border.color: "gray"
-                visible: false
-
-                Text {
-                    id: status
-                    objectName: "status"
-                    x: 2
-                    font.family: "Droid Sans Mono"
-                    font.pixelSize: 18
                 }
             }
         }
@@ -419,8 +409,8 @@ StackView {
             anchors.bottom: rectOutput.bottom
             color: "transparent"
             border.width: 1
-            border.color: "#303030"
-            opacity: 0.3
+            border.color: "#a0a0a0"
+            opacity: 0.7
             visible: (Qt.inputMethod.keyboardRectangle.height > 0)
 
             Row {

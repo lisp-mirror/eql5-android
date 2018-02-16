@@ -11,9 +11,8 @@
 
 (in-package :dialogs)
 
-(defvar *file-name*        nil)
-(defvar *callback*         nil)
-(defvar *suspended-thread* nil)
+(defvar *file-name* t)
+(defvar *callback*  t)
 
 (defvar *qml-main*         "main")         ; StackView
 (defvar *qml-query-text*   "query_text")
@@ -32,7 +31,7 @@
   (prog1
       (> (qml-get *qml-main* "depth") 1)
     (js *qml-main* "popDialog()")
-    (exited))) ; needed in some cases (eval thread)
+    (exited)))
 
 (defun wait-while-transition ()
   ;; needed for evtl. recursive calls
@@ -67,16 +66,13 @@
   (qlater (lambda () (editor:ensure-focus :show)))
   (qml-get *qml-debug-input* "text"))
 
-(defun wait-for-closed ()
-  (unless (eql (mp:process-name mp:*current-process*)
-               'si:top-level)
-    (setf *suspended-thread* mp:*current-process*)
-    (mp:process-suspend mp:*current-process*)))
-
-(defun exited () ; called from QML
-  (when *suspended-thread*
-    (mp:process-resume *suspended-thread*)
-    (setf *suspended-thread* nil)))
+(let ((exited t))
+  (defun wait-for-closed ()
+    (setf exited nil)
+    (x:while (not  exited)
+      (qsleep 0.1)))
+  (defun exited () ; called from QML
+    (setf exited t)))
 
 ;; file browser
 
@@ -109,13 +105,12 @@
             (funcall *callback*))))))
 
 (defun location (name)
-  (if (string= ":storage" name)
-      #+android "/storage" #-android "/"
-      (first (|standardLocations.QStandardPaths|
-              (cond ((string= ":home" name)
-                     |QStandardPaths.HomeLocation|)
-                    ((string= ":data" name)
-                     |QStandardPaths.GenericDataLocation|))))))
+  (cond ((string= ":storage" name)
+         #+android "/storage" #-android "/")
+        ((string= ":data" name)
+         (first (|standardLocations.QStandardPaths| |QStandardPaths.GenericDataLocation|)))
+        ((string= ":home" name)
+         (namestring *default-pathname-defaults*))))
 
 (defun set-file-browser-path (path) ; called from QML
   (qlet ((url "QUrl(QString)"

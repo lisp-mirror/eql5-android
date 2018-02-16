@@ -158,11 +158,15 @@
 
 ;; convenience
 
+(defvar *qml-output* "output")
+
 (define-symbol-macro :h (help))
 (define-symbol-macro :s (start-swank))
 (define-symbol-macro :q (quicklisp))
 (define-symbol-macro :f (dialogs:get-file-name))
 (define-symbol-macro :r (editor:reload-qml))
+(define-symbol-macro :c (qml-call *qml-output* "clear"))
+
 (define-symbol-macro :u (install-update)) ; unofficial
 
 (defun help (&optional startup)

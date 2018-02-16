@@ -108,7 +108,7 @@ Rectangle {
 
             // cursor back
             Ext.ArrowButton {
-                opacity: 0.1
+                opacity: 0.15
                 text: "\uf137"
 
                 onPressed:      path.cursorPosition--
@@ -117,7 +117,7 @@ Rectangle {
 
             // cursor forward
             Ext.ArrowButton {
-                opacity: 0.1
+                opacity: 0.15
                 text: "\uf138"
 
                 onPressed:      path.cursorPosition++
