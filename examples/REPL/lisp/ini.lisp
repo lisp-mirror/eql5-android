@@ -66,12 +66,14 @@
 
 (defun quicklisp ()
   (unless (find-package :quicklisp)
-    (require :ecl-quicklisp)
-    (require :deflate)
-    (require :ql-minitar)
+    (qrun* ; run in main thread (safer on some devices)
+     (require :ecl-quicklisp)
+     (require :deflate)
+     (require :ql-minitar))
     ;; replace interpreted function with precompiled one from DEFLATE
     (setf (symbol-function (sym 'gunzip :ql-gunzipper))
-          (symbol-function (sym 'gunzip :deflate)))))
+          (symbol-function (sym 'gunzip :deflate))))
+  :quicklisp)
 
 ;; Swank setup (stolen from 'ecl-android')
 
@@ -83,23 +85,24 @@
 
 (defun start-swank (&key (loopback "0.0.0.0") log-events
                          (load-contribs t) (setup t) (delete t) (quiet t)
-                         (port 4005) (dont-close t) style)
-  (unless (find-package :swank)
-    (require :asdf)
-    (funcall (sym 'load-system :asdf) :swank))
-  (funcall (sym 'init :swank-loader)
-           :load-contribs load-contribs
-           :setup setup
-           :delete delete
-           :quiet quiet)
-  (setf (symbol-value (sym '*loopback-interface* :swank)) loopback)
-  (setf (symbol-value (sym '*log-events* :swank)) log-events)
-  (eval (read-from-string "(swank/backend:defimplementation swank/backend:lisp-implementation-program () \"org.lisp.ecl\")"))
-  (if (eql :spawn style)
-      (swank/create-server port dont-close style)
-      (qrun (lambda () (mp:process-run-function
-                        "SLIME-listener"
-                        (lambda () (swank/create-server port dont-close style)))))))
+                      (port 4005) (dont-close t) style)
+  (qrun* ; run in main thread (safer on some devices)
+   (unless (find-package :swank)
+     (require :asdf)
+     (funcall (sym 'load-system :asdf) :swank))
+   (funcall (sym 'init :swank-loader)
+            :load-contribs load-contribs
+            :setup setup
+            :delete delete
+            :quiet quiet)
+   (setf (symbol-value (sym '*loopback-interface* :swank)) loopback)
+   (setf (symbol-value (sym '*log-events* :swank)) log-events)
+   (eval (read-from-string "(swank/backend:defimplementation swank/backend:lisp-implementation-program () \"org.lisp.ecl\")"))
+   (if (eql :spawn style)
+       (swank/create-server port dont-close style)
+       (mp:process-run-function
+        "SLIME-listener"
+        (lambda () (swank/create-server port dont-close style))))))
 
 (defun stop-swank ()
   (when (find-package :swank)

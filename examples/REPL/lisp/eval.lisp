@@ -102,15 +102,13 @@
       (set-eval-state t)
       (setf *debug-invoked* nil
             *query-invoked* nil)
-      (finish-output *standard-output*)
       (write-output :expression *standard-output-buffer*)
-      (setf *eval-thread* (mp:process-run-function "REPL eval" 'start-top-level)))))
+      (qsingle-shot 100 (lambda ()
+                          (setf *eval-thread*
+                                (mp:process-run-function "REPL eval" 'start-top-level)))))))
 
 (defun start-top-level ()
   (si::%top-level)
-  (finish-output *trace-output*)
-  (finish-output *standard-output*)
-  (finish-output *error-output*)
   (setf *eval-thread* nil)
   (qsingle-shot 100 'top-level-exited))
 
