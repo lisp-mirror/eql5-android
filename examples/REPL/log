@@ -1,0 +1,3 @@
+reset
+adb logcat -c
+adb logcat -s "[EQL5]"
