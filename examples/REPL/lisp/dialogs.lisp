@@ -78,6 +78,7 @@
 
 (let ((1st t))
   (defun get-file-name (&optional callback)
+    (ensure-android-permission) ; defaults to 'external storage'
     (|hide| (|inputMethod.QGuiApplication|))
     (when 1st
       (setf 1st nil)

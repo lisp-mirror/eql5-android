@@ -143,9 +143,6 @@ To get **Quicklisp**, simply eval:
   (quicklisp)
 ```
 
-In the status bar at the bottom you can follow the progress (although it will
-only show the last line of the output you would see on a console).
-
 
 
 ### Entering parens

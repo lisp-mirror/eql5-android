@@ -32,7 +32,7 @@
   (open name :direction :probe :if-does-not-exist :create))
 
 (defun delayed-eval (msec string)
-  (qsingle-shot msec (lambda () (editor:eval* string))))
+  (qsingle-shot msec (lambda () (funcall (sym 'eval* :editor) string))))
 
 (defun post-install ()
   (when (copy-asset-files *assets-lib*)
@@ -64,7 +64,7 @@
 (defun sym (symbol package)
   (intern (symbol-name symbol) package))
 
-(defun quicklisp ()
+(defun eql::quicklisp ()
   (unless (find-package :quicklisp)
     (qrun* ; run in main thread (safer on some devices)
      (require :ecl-quicklisp)
@@ -75,6 +75,8 @@
           (symbol-function (sym 'gunzip :deflate))))
   :quicklisp)
 
+(export 'eql::quicklisp :eql)
+
 ;; Swank setup (stolen from 'ecl-android')
 
 (defun swank/create-server (port dont-close style)
@@ -83,7 +85,7 @@
                 :dont-close dont-close
                 :style style))
 
-(defun start-swank (&key (loopback "0.0.0.0") log-events
+(defun eql::start-swank (&key (loopback "0.0.0.0") log-events
                          (load-contribs t) (setup t) (delete t) (quiet t)
                       (port 4005) (dont-close t) style)
   (qrun* ; run in main thread (safer on some devices)
@@ -104,17 +106,28 @@
         "SLIME-listener"
         (lambda () (swank/create-server port dont-close style))))))
 
-(defun stop-swank ()
+(defun eql::stop-swank ()
   (when (find-package :swank)
     (funcall (sym 'stop-server :swank) 4005)
     :stopped))
+
+(export 'eql::start-swank :eql)
+(export 'eql::stop-swank  :eql)
+
+;; permissions (android api >= 23)
+
+(defun eql::ensure-android-permission (&optional (name "android.permission.WRITE_EXTERNAL_STORAGE"))
+  "Check/request Android permission (for API level >= 23); the name defaults to \"android.permission.WRITE_EXTERNAL_STORAGE\". Returns T on granted permission."
+  (! "checkPermission" (:qt (qapp)) name)) ; see ../build/load.h'
+
+(export 'eql::ensure-android-permission :eql)
 
 ;; update app
 
 (defvar *qml-folder-model* "folder_model")
 
 (let (name-filters)
-  (defun install-update (&optional from)
+  (defun eql::install-update (&optional from)
     "Copies new version of 'libqtapp.so' in 'update/' directory. After restart of the app, the new version will be used."
     (if from
         (do-install-update from)
@@ -122,7 +135,7 @@
           (unless name-filters
             (setf name-filters (qml-get *qml-folder-model* "nameFilters")))
           (qml-set *qml-folder-model* "nameFilters" (list "*.so"))
-          (dialogs:get-file-name (lambda () (do-install-update dialogs:*file-name*))))))
+          (funcall (sym 'get-file-name :dialogs) (lambda () (do-install-update (sym '*file-name* :dialogs)))))))
   (defun do-install-update (from)
     (unless (x:empty-string from)
       (let ((to "update/libqtapp.so"))
@@ -138,11 +151,15 @@
             (qmsg "<b>Error</b> copying the update."))))
     (qml-set *qml-folder-model* "nameFilters" name-filters))) ; reset (must stay here)
 
+(export 'eql::install-update :eql)
+
 ;; shell
 
-(defvar *output* nil)
+(defvar eql::*output* nil)
 
-(defun shell (command)
+(export 'eql::*output* :eql)
+
+(defun eql::shell (command)
   "Run shell commands; examples:
   (shell \"ls -la\")
   (shell \"ifconfig\")"
@@ -159,6 +176,8 @@
     (delete-file tmp))
   (values))
 
+(export 'eql::shell    :eql)
+
 ;; convenience
 
 (defvar *qml-output* "output")
@@ -166,17 +185,20 @@
 (define-symbol-macro :h (help))
 (define-symbol-macro :s (start-swank))
 (define-symbol-macro :q (quicklisp))
-(define-symbol-macro :f (dialogs:get-file-name))
-(define-symbol-macro :r (editor:reload-qml))
-(define-symbol-macro :c (qml-call *qml-output* "clear"))
+(define-symbol-macro :a (require :asdf))
+(define-symbol-macro :f (funcall (sym 'get-file-name :dialogs)))
+(define-symbol-macro :c (progn (qml-call *qml-output* "clear") (values)))
 
-(define-symbol-macro :u (install-update)) ; unofficial
+(define-symbol-macro :r (funcall (sym 'reload-qml :editor))) ; see README in example 'my'
+
+(define-symbol-macro :u (install-update))    ; unofficial
 
 (defun help (&optional startup)
   (if (and startup (qml-get nil "isPhone"))
       (format t "  :h  (help)")
       (format t "  :s  (start-swank)           ; adb forward tcp:4005 tcp:4005~
                ~%  :q  (quicklisp)             ; will install/load it~
+               ~%  :a  (require :asdf)         ; see asdf:load-system~
                ~%  :f  (dialogs:get-file-name) ; see dialogs:*file-name*~
                ~%~
                ~%  (shell \"ls -la\")            ; see *output*~

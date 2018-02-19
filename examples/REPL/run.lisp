@@ -1,6 +1,7 @@
 (load "dependencies")
 (load "lisp/qml-lisp")
 (load "package")
+(load "lisp/ini")
 (load "lisp/data/lisp-keywords")
 (load "lisp/data/eql-keywords")
 (load "lisp/input-hook")
@@ -9,7 +10,6 @@
 (load "lisp/dialogs")
 (load "lisp/thread-safe")
 (load "lisp/editor")
-(load "lisp/ini")
 
 (progn
   (editor:start)
