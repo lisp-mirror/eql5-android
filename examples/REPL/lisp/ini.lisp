@@ -135,7 +135,8 @@
           (unless name-filters
             (setf name-filters (qml-get *qml-folder-model* "nameFilters")))
           (qml-set *qml-folder-model* "nameFilters" (list "*.so"))
-          (funcall (sym 'get-file-name :dialogs) (lambda () (do-install-update (sym '*file-name* :dialogs)))))))
+          (funcall (sym 'get-file-name :dialogs)
+                   (lambda () (do-install-update (symbol-value (sym '*file-name* :dialogs))))))))
   (defun do-install-update (from)
     (unless (x:empty-string from)
       (let ((to "update/libqtapp.so"))

@@ -52,6 +52,7 @@
 
 (defun debug-dialog (messages)
   (qml-call *qml-debug-text* "clear")
+  (qml-set *qml-debug-input* "text" ":q")
   (dolist (text/color messages)
     (qml-call *qml-debug-text* "append"
               (format nil "<pre><font face='Droid Sans Mono' color='~A'>~A</font></pre>"

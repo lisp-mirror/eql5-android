@@ -4,10 +4,7 @@ mkdir -p android-sources/libs/armeabi-v7a
 
 cp ../../lib/libeql5.so            android-sources/libs/armeabi-v7a/
 cp ../../lib/libeql5_quick.so      android-sources/libs/armeabi-v7a/
-cp ../../lib/libeql5_multimedia.so android-sources/libs/armeabi-v7a/
 cp ../../lib/libeql5_network.so    android-sources/libs/armeabi-v7a/
-cp ../../lib/libeql5_sql.so        android-sources/libs/armeabi-v7a/
-cp ../../lib/libeql5_svg.so        android-sources/libs/armeabi-v7a/
 cp $ECL_ANDROID/lib/libecl.so      android-sources/libs/armeabi-v7a/
 
 # all prebuilt ECL libs (ASDF etc.)

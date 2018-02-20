@@ -1,4 +1,4 @@
-QT          = widgets printsupport uitools quick quickwidgets qml multimedia multimediawidgets network sensors sql svg androidextras
+QT          = widgets printsupport uitools quick quickwidgets qml network androidextras
 TEMPLATE    = app
 TARGET      = repl
 DESTDIR     = ./android-build/libs/armeabi-v7a

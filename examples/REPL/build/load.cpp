@@ -14,8 +14,7 @@ static bool load(const QString& name) {
 int main(int argc, char** argv) {
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    // no text selection handles/menu (would interfere with our own menu)
-    qputenv("QT_QPA_NO_TEXT_HANDLES", "1");
+    qputenv("QT_QPA_NO_TEXT_HANDLES", "1");  // no text selection handles/menu (we use our own)
 
     Qt_EQL_Application qapp(argc, argv);
 
@@ -34,10 +33,7 @@ int main(int argc, char** argv) {
     load(path.arg("ecl"));
     load(path.arg("eql5"));
     load(path.arg("eql5_quick"));
-    load(path.arg("eql5_multimedia"));
     load(path.arg("eql5_network"));
-    load(path.arg("eql5_sql"));
-    load(path.arg("eql5_svg"));
 
     // we are prepared for eventual updates
     // (the app itself is fully contained in 'libqtapp.so')
