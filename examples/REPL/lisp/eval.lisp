@@ -98,7 +98,6 @@
                   (format nil "(load (make-string-input-stream ~S))" str))))
       ;; run eval in its own thread, so GUI will remain responsive
       ;; N.B. this is only safe because we use "thread-safe.lisp" (like in Slime mode)
-      (show-progress-bar)
       (set-eval-state t)
       (setf *debug-invoked* nil
             *query-invoked* nil)
@@ -122,7 +121,6 @@
                       *query-invoked*)))
     (funcall *gui-output* :values (format nil "~{~S~^#||#~}" si::*latest-values*))) ; "#||#": separator
   (unless eql::*reloading-qml*
-    (show-progress-bar nil)
     (set-eval-state nil)))
 
 (defun show-progress-bar (&optional (show t))
@@ -130,9 +128,10 @@
   (qml-set *qml-progress* "visible" show))
 
 (defun set-eval-state (evaluating)
-  (unless (or eql::*reloading-qml*
-              (and (find-package :swank) evaluating))
-    (qml-set *qml-eval* "enabled" (not evaluating))))
+  (unless eql::*reloading-qml*
+    (qml-set *qml-eval* "enabled"
+             (if (find-package :swank) t (not evaluating)))
+    (show-progress-bar evaluating)))
 
 (defun handle-query-io ()
   (setf *query-invoked* t)
@@ -142,9 +141,24 @@
       (funcall *gui-output* :values text))
     (format nil "~A~%" text)))
 
+(defun find-quit-restart ()
+  ;; find best restart for ':q' (default), to exit the debugger immediately
+  ;; precedence role: restart-toplevel, abort, restart-qt-events
+  (let ((restarts (compute-restarts)))
+    (if (= 1 (length restarts))
+        ":r1"
+        (let ((restart-names (mapcar (lambda (r) (symbol-name (restart-name r))) ; N.B. first is RESTART-DEBUGGER
+                                     restarts)))
+          (dolist (name '("RESTART-TOPLEVEL" "ABORT" "RESTART-QT-EVENTS"))
+            (x:when-it (position name restart-names :test 'string=)
+              (return-from find-quit-restart (format nil ":r~D" x:it)))))))      ; for index, see above
+  ":q")
+
 (defun handle-debug-io ()
   (set-eval-state nil)
   (setf *debug-invoked* t)
   (let ((cmd (funcall *gui-debug-dialog* (list (cons (get-output-stream-string *error-output-buffer*) "#d00000")
                                                (cons (get-output-stream-string *terminal-out-buffer*) "black")))))
+    (when (string-equal ":q" cmd)
+      (setf cmd (find-quit-restart)))
     (format nil "~A~%" (if (x:empty-string cmd) ":q" cmd))))
