@@ -3,7 +3,7 @@
 ;;; Requires 'assets/lib/*' to contain all precompiled ECL contribs.
 ;;;
 
-(in-package :eql-user)
+(in-package :eql)
 
 (use-package :qml)
 
@@ -64,7 +64,7 @@
 (defun sym (symbol package)
   (intern (symbol-name symbol) package))
 
-(defun eql::quicklisp ()
+(defun quicklisp ()
   (unless (find-package :quicklisp)
     (qrun* ; run in main thread (safer on some devices)
      (require :ecl-quicklisp)
@@ -75,7 +75,7 @@
           (symbol-function (sym 'gunzip :deflate))))
   :quicklisp)
 
-(export 'eql::quicklisp :eql)
+(export 'quicklisp)
 
 ;; Swank setup (stolen from 'ecl-android')
 
@@ -85,8 +85,8 @@
                 :dont-close dont-close
                 :style style))
 
-(defun eql::start-swank (&key (loopback "0.0.0.0") log-events
-                         (load-contribs t) (setup t) (delete t) (quiet t)
+(defun start-swank (&key (loopback "0.0.0.0") log-events
+                      (load-contribs t) (setup t) (delete t) (quiet t)
                       (port 4005) (dont-close t) style)
   (qrun* ; run in main thread (safer on some devices)
    (unless (find-package :swank)
@@ -106,28 +106,28 @@
         "SLIME-listener"
         (lambda () (swank/create-server port dont-close style))))))
 
-(defun eql::stop-swank ()
+(defun stop-swank ()
   (when (find-package :swank)
     (funcall (sym 'stop-server :swank) 4005)
     :stopped))
 
-(export 'eql::start-swank :eql)
-(export 'eql::stop-swank  :eql)
+(export 'start-swank)
+(export 'stop-swank)
 
 ;; permissions (android api >= 23)
 
-(defun eql::ensure-android-permission (&optional (name "android.permission.WRITE_EXTERNAL_STORAGE"))
+(defun ensure-android-permission (&optional (name "android.permission.WRITE_EXTERNAL_STORAGE"))
   "Check/request Android permission (for API level >= 23); the name defaults to \"android.permission.WRITE_EXTERNAL_STORAGE\". Returns T on granted permission."
   (! "checkPermission" (:qt (qapp)) name)) ; see ../build/load.h'
 
-(export 'eql::ensure-android-permission :eql)
+(export 'ensure-android-permission)
 
 ;; update app
 
 (defvar *qml-folder-model* "folder_model")
 
 (let (name-filters)
-  (defun eql::install-update (&optional from)
+  (defun install-update (&optional from)
     "Copies new version of 'libqtapp.so' in 'update/' directory. After restart of the app, the new version will be used."
     (if from
         (do-install-update from)
@@ -152,15 +152,15 @@
             (qmsg "<b>Error</b> copying the update."))))
     (qml-set *qml-folder-model* "nameFilters" name-filters))) ; reset (must stay here)
 
-(export 'eql::install-update :eql)
+(export 'install-update)
 
 ;; shell
 
-(defvar eql::*output* nil)
+(defvar *output* nil)
 
-(export 'eql::*output* :eql)
+(export '*output*)
 
-(defun eql::shell (command)
+(defun shell (command)
   "Run shell commands; examples:
   (shell \"ls -la\")
   (shell \"ifconfig\")"
@@ -177,7 +177,7 @@
     (delete-file tmp))
   (values))
 
-(export 'eql::shell    :eql)
+(export 'shell)
 
 ;; convenience
 
@@ -210,6 +210,8 @@
                ~%~
                ~%  double [space] for auto-completion (e.g. m-v-b)"))
   (values))
+
+(export 'help)
 
 ;; ini
 

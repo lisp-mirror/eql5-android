@@ -142,14 +142,16 @@
     (format nil "~A~%" text)))
 
 (defun find-quit-restart ()
-  ;; find best restart for ':q' (default), to exit the debugger immediately
-  ;; precedence role: restart-toplevel, abort, restart-qt-events
+  ;; find best restart for ':q' (default), to exit the debugger immediately (if possible)
   (let ((restarts (compute-restarts)))
     (if (= 1 (length restarts))
         ":r1"
         (let ((restart-names (mapcar (lambda (r) (symbol-name (restart-name r))) ; N.B. first is RESTART-DEBUGGER
                                      restarts)))
-          (dolist (name '("RESTART-TOPLEVEL" "ABORT" "RESTART-QT-EVENTS"))
+          ;; precedence role
+          (dolist (name '("RESTART-TOPLEVEL"
+                          "ABORT"
+                          "RESTART-QT-EVENTS"))
             (x:when-it (position name restart-names :test 'string=)
               (return-from find-quit-restart (format nil ":r~D" x:it)))))))      ; for index, see above
   ":q")

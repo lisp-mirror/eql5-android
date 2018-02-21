@@ -198,8 +198,8 @@ StackView {
             id: rectCommand
             y: flickEdit.height
             width: parent.width
-            height: command.font.pixelSize + 12
-            border.width: 1.5
+            height: command.font.pixelSize + 11
+            border.width: 2
             border.color: command.focus ? "#0066ff" : "lightgray"
 
             Ext.Flickable {
