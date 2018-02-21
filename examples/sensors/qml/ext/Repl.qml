@@ -9,8 +9,6 @@ Item {
     z: 1
     anchors.fill: parent
 
-    Ext.FileBrowser {}
-
     Row {
         z: 1
         anchors.right: parent.right
@@ -117,6 +115,16 @@ Item {
             color: "#101010"
             opacity: 0.8
         }
+    }
+
+    ProgressBar {
+        objectName: "progress"
+        anchors.top: replContainer.bottom
+        width: repl.width
+        z: 1
+        indeterminate: true
+        enabled: false
+        visible: false
     }
 
     Row {

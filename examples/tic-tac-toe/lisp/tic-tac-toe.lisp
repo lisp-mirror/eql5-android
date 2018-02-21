@@ -8,3 +8,8 @@
 (qrequire :quick)
 
 (qml:ini-quick-view "qml/tic-tac-toe.qml")
+
+;; quit app
+
+(defun eql::back-pressed () ; called from QML
+  (qquit))

@@ -7,14 +7,16 @@
 
 (in-package :eval)
 
+(defvar *output-buffer* (make-string-output-stream))
+(defvar *prompt*        t)
+(defvar *eval-thread*   nil)
+(defvar *               nil)
+(defvar **              nil)
+(defvar ***             nil)
+
 (defvar *qml-repl-input*  "repl_input")
 (defvar *qml-repl-output* "repl_output")
-(defvar *output-buffer*   (make-string-output-stream))
-(defvar *prompt*          t)
-(defvar *eval-thread*     nil)
-(defvar *                 nil)
-(defvar **                nil)
-(defvar ***               nil)
+(defvar *qml-progress*    "progress")
 
 (defun ini ()
   (ini-streams))
@@ -32,7 +34,7 @@
                  (lambda (x y) (< (length x) (length y)))))))
 
 (let ((n 0))
-  (defun eval-in-thread (text) ; called from QML
+  (defun eval-in-thread (text &optional (progress t)) ; called from QML
     (let ((str (string-trim " " text)))
       (unless (x:empty-string str)
         (if *prompt*
@@ -46,27 +48,35 @@
             (format t "~A~%~%~A" #.(make-string 50 :initial-element #\_) str))
         ;; run eval in its own thread, so UI will remain responsive
         ;; N.B. this is only safe because we use "thread-safe.lisp" (like in Slime mode)
-        (setf *eval-thread* (mp:process-run-function "EQL5 REPL top-level" (lambda () (do-eval str))))))))
+        (update-output)
+        (when progress
+          (show-progress-bar))
+        (qsingle-shot 100 (lambda ()
+                            (setf *eval-thread*
+                                  (mp:process-run-function "EQL5 REPL top-level" (lambda () (do-eval str))))))))))
 
 (defvar *color-values*     "#b0e0ff")
 (defvar *color-read-error* "#ffd540")
 (defvar *color-error*      "#ffb0b0")
 
 (defun do-eval (str)
-  (start-output-timer)
   (let ((color *color-read-error*))
     (handler-case
         (let ((exp (read-from-string str)))
           (setf color *color-error*)
           (let ((vals (multiple-value-list (eval exp))))
             (setf *** ** ** * * (first vals))
+            (update-output)
             (append-output (format nil "~{~S~^~%~}" vals) *color-values*))
           (qml-call *qml-repl-input* "clear")
           (history-add str))
       (condition (c)
         (show-error c color))))
+  (qsingle-shot 100 'eval-exited))
+
+(defun eval-exited ()
   (update-output)
-  (stop-output-timer))
+  (show-progress-bar nil))
 
 (defun show-error (error color)
   (let ((e1 (prin1-to-string error))
@@ -75,18 +85,11 @@
     (unless (string= e1 e2)
       (append-output e2 color))))
 
+(defun show-progress-bar (&optional (show t))
+  (qml-set *qml-progress* "enabled" show)
+  (qml-set *qml-progress* "visible" show))
+
 ;;; output
-
-(defvar *output-timer* nil)
-
-(defun start-output-timer (&optional (interval 500))
-  (unless *output-timer*
-    (setf *output-timer* (qnew "QTimer"))
-    (qconnect *output-timer* "timeout()" 'update-output))
-  (|start| *output-timer* interval))
-
-(defun stop-output-timer ()
-  (|stop| *output-timer*))
 
 (defun update-output ()
   (let ((chunk (get-output-stream-string *output-buffer*)))
@@ -110,7 +113,6 @@
                (qml-get *qml-repl-output* "length")))))
 
 (defun append-output (text &optional (color "white"))
-  (update-output)
   (qml-call *qml-repl-output* "append"
             (format nil "<pre><font face='~A' color='~A'>~A</font></pre>"
                     #+android "Droid Sans Mono"

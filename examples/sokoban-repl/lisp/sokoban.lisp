@@ -305,7 +305,7 @@
   (qml-set *qml-level* "to" (1- (length *my-mazes*)))
   (set-maze)
   ;; show help
-  (qlater (lambda () (eval:eval-in-thread "(help)"))))
+  (qlater (lambda () (eval:eval-in-thread "(help)" nil))))
 
 ;; REPL
 

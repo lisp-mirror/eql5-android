@@ -13,6 +13,13 @@ Rectangle {
     property bool running: true
     property int difficulty: 10 // chance it will actually think
 
+    Keys.onPressed: {
+        if(event.key == Qt.Key_Back) {
+            event.accepted = true
+            Lisp.call("eql:back-pressed")
+        }
+    }
+
     Image {
         id: board_image
         objectName: "board_image"

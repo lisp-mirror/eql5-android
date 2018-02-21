@@ -12,12 +12,24 @@ class Qt_EQL_Application : public QApplication {
 public:
     Qt_EQL_Application(int argc, char** argv) : QApplication(argc, argv) {}
 
-    // JNI (Java Native Interface) is very verbose, but the only practical way to call Java from Qt
+    Q_INVOKABLE bool checkPermission(const QString& name) {
+        // e.g. "android.permission.WRITE_EXTERNAL_STORAGE"
+        // this handles the new Android permission model, starting with API version 23 (Android 6),
+        // that is: we need to ask for the permission at runtime (every time we need a permission)
+#if QT_VERSION > 0x050A00 // 5.10
+        QtAndroid::PermissionResult res = QtAndroid::checkPermission(name);
+        if(res == QtAndroid::PermissionResult::Denied) {
+            QtAndroid::requestPermissionsSync(QStringList() << name);
+            res = QtAndroid::checkPermission(name);
+            if(res == QtAndroid::PermissionResult::Denied) {
+                return false; }}
+#endif
+        return true; }
 
     Q_INVOKABLE void restartApp() {
-
         // stolen from: https://www.kdab.com/qt-on-android-how-to-restart-your-application/
         // this will restart the app after a few seconds (not immediately)
+        // (uses JNI, Java Native Interface)
 
         auto activity = QtAndroid::androidActivity();
 

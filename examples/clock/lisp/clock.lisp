@@ -50,3 +50,8 @@
         (|rotate| p (* 6 min))
         (|setPen| p *pen-minute*)
         (|drawLine| p '(0 0 64 0))))))
+
+;; quit app
+
+(defun eql::back-pressed () ; called from QML
+  (qquit))

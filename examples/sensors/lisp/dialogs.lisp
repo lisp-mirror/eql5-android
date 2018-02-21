@@ -4,29 +4,59 @@
    #:load-file
    #:get-file-name
    #:location
-   #:*file-name*
-   #:*qml-file-browser*))
+   #:*file-name*))
 
 (in-package :dialogs)
 
 (defvar *file-name* nil)
 (defvar *callback*  nil)
 
+(defvar *qml-main*         "main")         ; StackView
 (defvar *qml-file-browser* "file_browser")
 (defvar *qml-folder-model* "folder_model")
 
+;; '(js *qml-main* ...)': see JS functions in '../qml/*.qml'
+
+(defun push-dialog (name)
+  (js *qml-main* "push~ADialog()" (string-capitalize name)))
+
+(defun pop-dialog ()
+  "Pops the currently shown dialog, returning T if there was a dialog to pop."
+  (prog1
+      (> (qml-get *qml-main* "depth") 1)
+    (js *qml-main* "popDialog()")
+    (exited)))
+
+(defun wait-while-transition ()
+  ;; needed for evtl. recursive calls
+  (x:while (qml-get *qml-main* "busy")
+    (qsleep 0.1)))
+
+(let ((exited t))
+  (defun wait-for-closed ()
+    (setf exited nil)
+    (x:while (not  exited)
+      (qsleep 0.1)))
+  (defun exited () ; called from QML
+    (setf exited t)))
+
+;; file browser
+
 (let ((1st t))
   (defun get-file-name (&optional callback)
+    #+android
+    (ensure-android-permission) ; defaults to 'external storage'
+    (|hide| (|inputMethod.QGuiApplication|))
     (when 1st
       (setf 1st nil)
-      (set-file-browser-path ":documents"))
+      (set-file-browser-path ":data"))
     (setf *callback* callback)
     ;; force update
     (qlet ((none "QUrl")
            (curr (qml-get *qml-folder-model* "folder")))
       (dolist (folder (list none curr))
         (qml-set *qml-folder-model* "folder" folder)))
-    (qml-set *qml-file-browser* "visible" t)))
+    (push-dialog :file)))
 
 (defun directory-p (path)
   (qlet ((info "QFileInfo(QString)" path))
@@ -37,8 +67,7 @@
     (if (directory-p name)
         (set-file-browser-path name)
         (progn
-          (qml-set *qml-file-browser* "visible" nil)
-          (|hide| (|inputMethod.QGuiApplication|))
+          (pop-dialog)
           (setf *file-name* name)
           (when *callback*
             (funcall *callback*))))))
@@ -57,13 +86,12 @@
         (qmsg (format nil "File does not exist:~%~%~S" *file-name*)))))
 
 (defun location (name)
-  (if (string= ":storage" name)
-      #+android "/storage" #-android "/"
-      (first (|standardLocations.QStandardPaths|
-              (cond ((string= ":home" name)
-                     |QStandardPaths.HomeLocation|)
-                    ((string= ":documents" name)
-                     |QStandardPaths.DocumentsLocation|))))))
+  (cond ((string= ":storage" name)
+         #+android "/storage" #-android "/")
+        ((string= ":data" name)
+         (first (|standardLocations.QStandardPaths| |QStandardPaths.GenericDataLocation|)))
+        ((string= ":home" name)
+         (namestring *default-pathname-defaults*))))
 
 (defun set-file-browser-path (path) ; called from QML
   (qlet ((url "QUrl(QString)"

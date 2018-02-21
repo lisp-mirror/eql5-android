@@ -9,10 +9,10 @@
 
 (defparameter *files* '("lisp/qml-lisp"
                         "lisp/eval"
-                        "lisp/dialogs"
                         "lisp/thread-safe"
                         "package"
                         "lisp/ini"
+                        "lisp/dialogs"
                         "lisp/my-ini"
                         "lisp/my"))
 

@@ -16,6 +16,13 @@ Rectangle {
 
     function isLandscape() { return (Screen.primaryOrientation == Qt.LandscapeOrientation) }
 
+    Keys.onPressed: {
+        if(event.key == Qt.Key_Back) {
+            event.accepted = true
+            Lisp.call("eql:back-pressed")
+        }
+    }
+
     Row {
         anchors.centerIn: parent
         // adapt 'level' and 'board' scale to screen size

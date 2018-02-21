@@ -59,8 +59,9 @@ instead, which will be installed automatically later on).
 Also, we don't need Android Studio, so search for **command line tools** on the
 SDK download page; for Qt < 5.9, see note below.
 
-The SDK tools are expected to be installed here: `/opt/android/sdk/` (so unzip
-them there).
+The SDK tools are expected to be found here: `/opt/android/sdk/`: you probably
+want to install them in your home dir (for updates), and add a link from the
+above location.
 
 --
 
@@ -73,7 +74,8 @@ Here are the links to the **SDK** tools for Qt prior to 5.9:
 [macOS](https://dl.google.com/android/repository/tools_r25.2.5-macosx.zip)  
 [Windows](https://dl.google.com/android/repository/tools_r25.2.5-windows.zip)
 
-As mentioned above, just unzip them in `/opt/android/sdk/`.
+As mentioned above, link `/opt/android/sdk/` to the place where you instaled
+them.
 
 
 

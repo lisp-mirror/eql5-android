@@ -9,7 +9,6 @@ Rectangle {
     objectName: "file_browser"
     anchors.fill: parent
     visible: false
-    z: 2
 
     // header, footer need this
     property Rectangle header
@@ -33,7 +32,7 @@ Rectangle {
             objectName: "folder_model"
             showDirsFirst: true
             showHidden: true
-            nameFilters: ["*.lisp", "*.lsp", "*.asd", "*.fas", ".fasb", ".fasc", ".eclrc"]
+            nameFilters: ["*.lisp", "*.lsp", "*.asd", "*.fas", "*.fasb", "*.fasc", ".eclrc"]
         }
 
         header: Rectangle {

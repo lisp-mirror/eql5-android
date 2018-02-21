@@ -36,7 +36,7 @@ Rectangle {
         onClicked: {
             // highlight selected
             folderView.currentIndex = index
-            Lisp.call("qsleep", 0.15)
+            Lisp.call("qsleep", 0.1)
             folderView.currentIndex = -1
 
             if(fileIsDir) {

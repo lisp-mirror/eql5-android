@@ -21,6 +21,7 @@
    #:qml-set
    #:qml-set-all
    #:paint
+   #:scale
    #:reload
    #:root-context
    #:root-item))
@@ -84,11 +85,11 @@
 
 (defun root-item ()
   (when *quick-view*
-    (if (= (qt-object-id *quick-view*) (qid "QQmlApplicationEngine"))
-        (let ((object (first (|rootObjects| *quick-view*))))
-          (setf (qt-object-id object) (qid "QObject")) ; unknown to EQL, so resort to QObject
-          object)
-        (qt-object-? (|rootObject| *quick-view*)))))
+    (qrun* (if (= (qt-object-id *quick-view*) (qid "QQmlApplicationEngine"))
+               (let ((object (first (|rootObjects| *quick-view*))))
+                 (setf (qt-object-id object) (qid "QObject")) ; unknown to EQL, so resort to QObject
+                 object)
+               (qt-object-? (|rootObject| *quick-view*))))))
 
 (defun root-context ()
   (when *quick-view*
@@ -112,7 +113,11 @@
 
 (defun children (item/name)
   "Like QML function 'children'."
-  (mapcar 'qt-object-? (|childItems| (quick-item item/name))))
+  (qrun* (mapcar 'qt-object-? (|childItems| (quick-item item/name)))))
+
+(defun scale ()
+  "Returns the scale factor used on high dpi scaled devices (e.g. phones)."
+  (|effectiveDevicePixelRatio| *quick-view*))
 
 (defun reload ()
   "Force reloading of QML file after changes made to it."
@@ -130,50 +135,50 @@
 
 (defun qml-call (item/name method-name &rest arguments)
   ;; QFUN+ comes in handy here
-  (apply 'qfun+ (quick-item item/name) method-name arguments))
+  (qrun* (apply 'qfun+ (quick-item item/name) method-name arguments)))
 
 ;;; get/set QQmlProperty
 
 (defun qml-get (item/name property-name)
   "Gets QQmlProperty of either ITEM or first object matching NAME."
-  (qlet ((property "QQmlProperty(QObject*,QString)"
-                   (quick-item item/name)
-                   property-name))
-    (if (|isValid| property)
-        (qlet ((variant (|read| property)))
-          (values (qvariant-value variant)
-                  t))
-        (eql::%error-msg "QML-GET" (list item/name property-name)))))
+  (qrun* (qlet ((property "QQmlProperty(QObject*,QString)"
+                          (quick-item item/name)
+                          property-name))
+           (if (|isValid| property)
+               (qlet ((variant (|read| property)))
+                 (values (qvariant-value variant)
+                         t))
+               (eql::%error-msg "QML-GET" (list item/name property-name))))))
 
 (defun qml-set (item/name property-name value &optional update)
   "Sets QQmlProperty of either ITEM, or first object matching NAME. Returns T on success. If UPDATE is not NIL and ITEM is a QQuickPaintedItem, |update| will be called on it."
-  (let ((item (quick-item item/name)))
-    (qlet ((property "QQmlProperty(QObject*,QString)" item property-name))
-      (if (|isValid| property)
-          (let ((type-name (|propertyTypeName| property)))
-            (qlet ((variant (qvariant-from-value value (if (find #\: type-name) "int" type-name))))
-              (prog1
-                  (|write| property variant)
-                (when (and update (= (qt-object-id item) (qid "QQuickPaintedItem")))
-                  (|update| item)))))
-          (eql::%error-msg "QML-SET" (list item/name property-name value))))))
+  (qrun* (let ((item (quick-item item/name)))
+           (qlet ((property "QQmlProperty(QObject*,QString)" item property-name))
+             (if (|isValid| property)
+                 (let ((type-name (|propertyTypeName| property)))
+                   (qlet ((variant (qvariant-from-value value (if (find #\: type-name) "int" type-name))))
+                     (prog1
+                         (|write| property variant)
+                       (when (and update (= (qt-object-id item) (qid "QQuickPaintedItem")))
+                         (|update| item)))))
+                 (eql::%error-msg "QML-SET" (list item/name property-name value)))))))
 
 (defun qml-set-all (name property-name value &optional update)
   "Sets QQmlProperty of all objects matching NAME."
   (assert (stringp name))
-  (dolist (item (qfind-children (root-item) name))
-    (qml-set item property-name value update)))
+  (qrun* (dolist (item (qfind-children (root-item) name))
+           (qml-set item property-name value update))))
 
 ;;; JS
 
 (defun js (item/name js-format-string &rest arguments)
   "Evaluates a JS string, with 'this' bound to either ITEM, or first object matching NAME. Arguments are passed through FORMAT."
-  (qlet ((qml-exp "QQmlExpression(QQmlContext*,QObject*,QString)"
-                  (root-context)
-                  (quick-item item/name)
-                  (apply 'format nil js-format-string arguments))
-         (variant (|evaluate| qml-exp)))
-    (qvariant-value variant)))
+  (qrun* (qlet ((qml-exp "QQmlExpression(QQmlContext*,QObject*,QString)"
+                         (root-context)
+                         (quick-item item/name)
+                         (apply 'format nil js-format-string arguments))
+                (variant (|evaluate| qml-exp)))
+           (qvariant-value variant))))
 
 ;;; ini
 
@@ -195,12 +200,7 @@
     (qmsg (x:join (mapcar '|toString| (|errors| *quick-view*))
                   #.(make-string 2 :initial-element #\Newline))))
   (|setResizeMode| *quick-view* |QQuickView.SizeRootObjectToView|)
-  #+android
-  ;; force quitting of app (needed because of restartable event loop for Slime)
-  (qoverride *quick-view* "hideEvent(QHideEvent*)"
-             (lambda (ev) (qquit)))
   (let ((platform (|platformName.QGuiApplication|)))
     (if (find platform '("qnx" "eglfs") :test 'string=)
         (|showFullScreen| *quick-view*)
         (|show| *quick-view*))))
-

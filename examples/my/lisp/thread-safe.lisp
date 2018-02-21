@@ -25,7 +25,7 @@
    `(progn
       (defvar ,orig (symbol-function ',fun)) ; hold a reference to original
       (setf (symbol-function ',orig) ,orig)
-      (defun ,fun (,@arguments)              ; re-define function
+      (defun ,fun ,arguments                 ; re-define function
         (qrun* ,(if arguments
                     `(,orig ,@(remove '&optional (mapcar (lambda (x) (if (atom x) x (first x)))
                                                          arguments)))
@@ -109,8 +109,7 @@
   (qselect qsel) &optional on-selected)
 
 (wrap-in-qrun*
-  qset-null object)
+  qset-null object &optional (test t))
 
 (wrap-in-qrun*
   %qsingle-shot milliseconds function)
-

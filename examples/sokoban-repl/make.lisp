@@ -13,8 +13,8 @@
                         "lisp/eval"
                         "lisp/thread-safe"
                         "lisp/sokoban"
-                        "lisp/dialogs"
-                        "lisp/ini"))
+                        "lisp/ini"
+                        "lisp/dialogs"))
 
 (setf *load-verbose* nil)
 (setf *compile-verbose* t)

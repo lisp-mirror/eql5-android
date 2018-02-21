@@ -315,5 +315,7 @@
   (qml-set *qml-level* "to" (1- (length *my-mazes*)))
   (set-maze))
 
-(run)
+(defun eql::back-pressed () ; called from QML
+  (qquit)) ; quit app
 
+(run)

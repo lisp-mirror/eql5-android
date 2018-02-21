@@ -5,6 +5,13 @@ Rectangle {
     color: "black"
     width: 500; height: 500 // must be defined (for QQuickWidget)
 
+    Keys.onPressed: {
+        if(event.key == Qt.Key_Back) {
+            event.accepted = true
+            Lisp.call("eql:back-pressed")
+        }
+    }
+
     PaintedItem {
         id: clock
         objectName: "clock"

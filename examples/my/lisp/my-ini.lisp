@@ -13,7 +13,7 @@
                 (#.|QQuickView.Error|
                  (qmsg (x:join (mapcar '|toString| (|errors| *quick-view*))
                                #.(make-string 2 :initial-element #\Newline)))))))
-  (qlater (lambda () (eval:eval-in-thread "(help)")))) ; show help
+  (qlater (lambda () (eval:eval-in-thread "(help)" nil)))) ; show help
 
 ;;; REPL
 
