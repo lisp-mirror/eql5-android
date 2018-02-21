@@ -57,7 +57,7 @@
                ~%")))
   (delayed-eval 0 (if (probe-file ".eql5-ini")
                                   "(help t)"
-                                  "(post-install)")))
+                                  "(eql::post-install)")))
 
 ;; Quicklisp setup (stolen from 'ecl-android')
 
