@@ -14,9 +14,10 @@
 (defvar **              nil)
 (defvar ***             nil)
 
-(defvar *qml-repl-input*  "repl_input")
-(defvar *qml-repl-output* "repl_output")
-(defvar *qml-progress*    "progress")
+(defvar *qml-repl-input*   "repl_input")
+(defvar *qml-repl-output*  "repl_output")
+(defvar *qml-flick-output* "flick_output")
+(defvar *qml-progress*     "progress")
 
 (defun ini ()
   (ini-streams))
@@ -76,7 +77,8 @@
 
 (defun eval-exited ()
   (update-output)
-  (show-progress-bar nil))
+  (show-progress-bar nil)
+  (qml-set *qml-flick-output* "contentX" 0))
 
 (defun show-error (error color)
   (let ((e1 (prin1-to-string error))

@@ -9,7 +9,6 @@ Rectangle {
     objectName: "file_browser"
     anchors.fill: parent
     visible: false
-    z: 2
 
     // header, footer need this
     property Rectangle header
@@ -67,7 +66,7 @@ Rectangle {
                     // documents
                     Ext.DialogButton {
                         text: "\uf0f6"
-                        onClicked: Lisp.call("dialogs:set-file-browser-path", ":documents")
+                        onClicked: Lisp.call("dialogs:set-file-browser-path", ":data")
                     }
 
                     // home

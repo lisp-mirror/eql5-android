@@ -38,6 +38,7 @@ Item {
 
             Ext.Flickable {
                 id: flickOutput
+                objectName: "flick_output"
                 anchors.fill: parent
                 contentWidth: replOutput.paintedWidth
                 contentHeight: replOutput.paintedHeight
