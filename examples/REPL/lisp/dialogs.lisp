@@ -70,9 +70,9 @@
 (let ((exited t))
   (defun wait-for-closed ()
     (setf exited nil)
-    (x:while (not  exited)
+    (x:while (not  exited) ; don't suspend the thread (busy waiting is more predictable)
       (qsleep 0.1)))
-  (defun exited () ; called from QML
+  (defun exited ()         ; called from QML
     (setf exited t)))
 
 ;; file browser
