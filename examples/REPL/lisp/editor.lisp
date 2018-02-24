@@ -384,7 +384,8 @@
                   (> (first (qml-call edit "positionToRectangle" from))
                      4)) ; pixel indent of QML "command"
             (unless *closing-all-parens*
-              (qsleep 0.1))
+              (qprocess-events)
+              (sleep 0.1))
             (qml-set edit "cursorPosition" pos)
             (qml-set edit "selectionColor" color)
             (when set-y
@@ -510,9 +511,11 @@
 
 (defun insert (text)
   (let ((edit (active-edit)))
-    (qml-call edit "insert"
-              (qml-get edit "cursorPosition")
-              text)))
+    ;; QLATER: prevent blocking on fast, repeated calls
+    (qlater (lambda ()
+              (qml-call edit "insert"
+                        (qml-get edit "cursorPosition")
+                        text)))))
 
 ;;; open file
 
