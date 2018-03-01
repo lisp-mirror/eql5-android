@@ -156,7 +156,7 @@
                   (text (list ch)))
               (x:while (and (not (minusp start))
                             (or (alphanumericp (setf ch (|characterAt| document start)))
-                                (find ch "-:")))
+                                (find ch "-:&")))
                 (decf start)
                 (push ch text))
               (search-completion (coerce text 'string)))))))))
@@ -177,8 +177,8 @@
       ;; complete an abbreviation; example: "m-v-b" => "multiple-value-bind"
       ;; (QRegExp is more convenient here than CL-PPCRE)
       (qlet ((regex "QRegExp(QString)"
-                    (x:cc (x:string-substitute "[a-z12:]*-" "-" short)
-                          "[a-z12\-]*")))
+                    (x:cc (x:string-substitute "[a-z1-9:&]*-" "-" short)
+                          "[a-z1-9\-]*")))
         (dolist (name *lisp-keywords-list*)
           (when (|exactMatch| regex name)
             (return-from complete-symbol name)))

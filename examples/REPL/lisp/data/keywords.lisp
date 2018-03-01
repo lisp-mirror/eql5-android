@@ -1,5 +1,7 @@
 (in-package :editor)
 
+;; list of symbols starting with either ':' or '&' (for auto completion)
+
 (defvar *keywords-list*
   '(":abort"
     ":above"
@@ -529,4 +531,12 @@
     ":writer"
     ":writers"
     ":x86_64"
-    ":zombi"))
+    ":zombi"
+    "&allow-other-keys"
+    "&aux"
+    "&body"
+    "&environment"
+    "&key"
+    "&optional"
+    "&rest"
+    "&whole"))
