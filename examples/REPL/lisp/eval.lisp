@@ -133,6 +133,13 @@
              (if (find-package :swank) t (not evaluating)))
     (show-progress-bar evaluating)))
 
+(defun clear-buffers ()
+  (dolist (s (list *standard-output-buffer*
+                   *trace-output-buffer*
+                   *error-output-buffer*
+                   *terminal-out-buffer*))
+    (get-output-stream-string s)))
+
 (defun handle-query-io ()
   (setf *query-invoked* t)
   (let ((text (funcall *gui-query-dialog* (get-output-stream-string *terminal-out-buffer*))))

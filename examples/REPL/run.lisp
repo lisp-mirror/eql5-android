@@ -4,6 +4,7 @@
 (load "lisp/ini")
 (load "lisp/data/lisp-keywords")
 (load "lisp/data/eql-keywords")
+(load "lisp/data/keywords")
 (load "lisp/input-hook")
 (load "lisp/top-level")
 (load "lisp/eval")

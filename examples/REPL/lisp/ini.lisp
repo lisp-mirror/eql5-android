@@ -179,21 +179,6 @@
 
 (export 'shell)
 
-;; convenience
-
-(defvar *qml-output* "output")
-
-(define-symbol-macro :h (help))
-(define-symbol-macro :s (start-swank))
-(define-symbol-macro :q (quicklisp))
-(define-symbol-macro :a (require :asdf))
-(define-symbol-macro :f (funcall (sym 'get-file-name :dialogs)))
-(define-symbol-macro :c (progn (qml-call *qml-output* "clear") (values)))
-
-(define-symbol-macro :r (funcall (sym 'reload-qml :editor))) ; see README in example 'my'
-
-(define-symbol-macro :u (install-update))    ; unofficial
-
 (defun help (&optional startup)
   (if (and startup (qml-get nil "isPhone"))
       (format t "  :h  (help)")
@@ -201,6 +186,7 @@
                ~%  :q  (quicklisp)             ; will install/load it~
                ~%  :a  (require :asdf)         ; see asdf:load-system~
                ~%  :f  (dialogs:get-file-name) ; see dialogs:*file-name*~
+               ~%  :k                          ; kill eval thread~
                ~%~
                ~%  (shell \"ls -la\")            ; see *output*~
                ~%~
@@ -212,7 +198,5 @@
   (values))
 
 (export 'help)
-
-;; ini
 
 (qlater 'ini)
