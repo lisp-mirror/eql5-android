@@ -74,7 +74,7 @@ Here are the links to the **SDK** tools for Qt prior to 5.9:
 [macOS](https://dl.google.com/android/repository/tools_r25.2.5-macosx.zip)  
 [Windows](https://dl.google.com/android/repository/tools_r25.2.5-windows.zip)
 
-As mentioned above, link `/opt/android/sdk/` to the place where you instaled
+As mentioned above, link `/opt/android/sdk/` to the place where you installed
 them.
 
 
