@@ -420,12 +420,14 @@
         (flet ((cmd (str)
                  (string-equal str text*)))
           (if (cmd ":k")
-              (progn
-                (mp:process-kill eval:*eval-thread*)
-                (setf eval:*eval-thread* nil)
-                (eval::set-eval-state nil)
-                (eval::clear-buffers)
-                (eval-output :error ":KILLED"))
+              (if eval:*eval-thread*
+                  (progn
+                    (mp:process-kill eval:*eval-thread*)
+                    (setf eval:*eval-thread* nil)
+                    (eval::set-eval-state nil)
+                    (eval::clear-buffers)
+                    (eval-output :error ":KILLED"))
+                  (eval-output :values "kill: eval thread not running"))
               (let ((cmd (cond ((cmd ":h")
                                 "(eql:help)")
                                ((cmd ":s")
