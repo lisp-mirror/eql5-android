@@ -66,13 +66,14 @@
 
 (defun quicklisp ()
   (unless (find-package :quicklisp)
-    (qrun* ; run in main thread (safer on some devices)
-     (require :ecl-quicklisp)
-     (require :deflate)
-     (require :ql-minitar))
-    ;; replace interpreted function with precompiled one from DEFLATE
-    (setf (symbol-function (sym 'gunzip :ql-gunzipper))
-          (symbol-function (sym 'gunzip :deflate))))
+    (when (qrun* ; run in main thread (safer on some devices)
+           (require :ecl-quicklisp)
+           (require :deflate)
+           (require :ql-minitar)
+           t)
+      ;; replace interpreted function with precompiled one from DEFLATE
+      (setf (symbol-function (sym 'gunzip :ql-gunzipper))
+            (symbol-function (sym 'gunzip :deflate)))))
   :quicklisp)
 
 (export 'quicklisp)

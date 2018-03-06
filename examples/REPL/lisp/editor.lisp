@@ -156,7 +156,7 @@
                   (text (list ch)))
               (x:while (and (not (minusp start))
                             (or (alphanumericp (setf ch (|characterAt| document start)))
-                                (find ch "-:&")))
+                                (find ch "-:&*")))
                 (decf start)
                 (push ch text))
               (search-completion (coerce text 'string)))))))))
@@ -176,29 +176,25 @@
   (if (find #\- short)
       ;; complete an abbreviation; example: "m-v-b" => "multiple-value-bind"
       ;; (QRegExp is more convenient here than CL-PPCRE)
-      (qlet ((regex "QRegExp(QString)"
-                    (x:cc (x:string-substitute "[a-z1-9:&]*-" "-" short)
-                          "[a-z1-9\-]*")))
-        (dolist (name *lisp-keywords-list*)
-          (when (|exactMatch| regex name)
-            (return-from complete-symbol name)))
-        (dolist (name *keywords-list*)
-          (when (|exactMatch| regex name)
-            (return-from complete-symbol name)))
-        (dolist (name *eql-keywords-list*)
-          (when (|exactMatch| regex name)
-            (return-from complete-symbol name))))
+      (progn
+        (setf short (x:string-substitute "\\*" "*" short))
+        (qlet ((regex "QRegExp(QString)"
+                      (x:cc (x:string-substitute "[a-z1-9:&*]*-" "-" short)
+                            "[a-z1-9\\-*]*")))
+          (dolist (names (list *lisp-keywords-list*
+                               *keywords-list*
+                               *eql-keywords-list*))
+            (dolist (name names)
+              (when (|exactMatch| regex name)
+                (return-from complete-symbol name))))))
       ;; complete as far as unambiguous; return full name if unique
       (let (matches)
-        (dolist (name *lisp-keywords-list*)
-          (when (x:starts-with short name)
-            (push name matches)))
-        (dolist (name *keywords-list*)
-          (when (x:starts-with short name)
-            (push name matches)))
-        (dolist (name *eql-keywords-list*)
-          (when (x:starts-with short name)
-            (push name matches)))
+        (dolist (names (list *lisp-keywords-list*
+                             *keywords-list*
+                             *eql-keywords-list*))
+          (dolist (name names)
+            (when (x:starts-with short name)
+              (push name matches))))
         (when matches
           (if (rest matches)
               (let ((i1 (1+ (length short)))
@@ -426,8 +422,8 @@
                     (setf eval:*eval-thread* nil)
                     (eval::set-eval-state nil)
                     (eval::clear-buffers)
-                    (eval-output :error ":KILLED"))
-                  (eval-output :values "kill: eval thread not running"))
+                    (print-eval-output :error ":KILLED"))
+                  (print-eval-output :values "kill: eval thread not running"))
               (let ((cmd (cond ((cmd ":h")
                                 "(eql:help)")
                                ((cmd ":s")
@@ -446,7 +442,7 @@
                                 "(eql:install-update)"))))
                 (eval:feed-top-level (or cmd text))))))))
 
-(defun eval-output (type text)
+(defun print-eval-output (type text)
   (let ((text* (qescape text)))
     ;; "insert" is cleaner with formatting than "append"
     (qml-call *qml-output* "insert"
@@ -864,7 +860,7 @@
                 (#.|QQuickView.Error|
                  (qmsg (x:join (mapcar '|toString| (|errors| *quick-view*))
                                #.(make-string 2 :initial-element #\Newline)))))))
-  (eval:ini :output       'eval-output
+  (eval:ini :output       'print-eval-output
             :query-dialog 'dialogs:query-dialog
             :debug-dialog 'dialogs:debug-dialog))
 
