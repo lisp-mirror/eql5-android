@@ -36,7 +36,7 @@ You only need to physically connect your device via USB (no wlan needed).
 * on the android REPL, run:
 
 ```
-  (start-swank)
+  :s ; (start-swank)
 ```
 
 * connect from Emacs:
@@ -75,21 +75,27 @@ It will tell you the IP address of your device.
 
 
 
-### Testing
+### Test
 
-To test if everything works, you can try (for the fun of it):
+To test if it works, you can try:
 
 ```
-  (use-package :qml)
-
-  (qml-set "edit" "text" "(sqrt -2)")
-
-  (qml-call "eval" "clicked")
+  (|pret
 ```
+
+followed by `TAB`, which should complete to:
+
+```
+  (|prettyProductName.QSysInfo|)
+```
+
+This will print your android version.
 
 To get the text (or better: html) of the output window, do:
 
 ```
+  (use-package :qml)
+
   (qml-get "output" "text")
 ```
 

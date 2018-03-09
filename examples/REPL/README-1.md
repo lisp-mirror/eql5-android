@@ -194,6 +194,9 @@ complete only a part, if ambiguous.
 On abbreviations, like `m-v-b` for `multiple-value-bind`, it will complete the
 whole word, preferring the first alphabetical match if ambiguous.
 
+Please note that auto completion only works for a fixed set of CL symbols (and
+**not** for user defined functions or variables).
+
 
 
 ### Desktop notes
