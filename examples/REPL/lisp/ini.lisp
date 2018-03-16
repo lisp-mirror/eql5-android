@@ -183,9 +183,9 @@
 (defun help (&optional startup)
   (if (and startup (qml-get nil "isPhone"))
       (format t "  :h  (help)")
-      (format t "  :s  (start-swank)           ; adb forward tcp:4005 tcp:4005~
+      (format t "  :a  (require :asdf)         ; see asdf:load-system~
                ~%  :q  (quicklisp)             ; will install/load it~
-               ~%  :a  (require :asdf)         ; see asdf:load-system~
+               ~%  :s  (start-swank)           ; adb forward tcp:4005 tcp:4005~
                ~%  :f  (dialogs:get-file-name) ; see dialogs:*file-name*~
                ~%  :k                          ; kill eval thread~
                ~%~

@@ -43,7 +43,7 @@ Rectangle {
             id: debugInput
             objectName: "debug_input"
             width: parent.width
-            font.family: "Droid Sans Mono"
+            font.family: "Hack"
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
             text: ":q"
 
@@ -57,7 +57,7 @@ Rectangle {
             rightPadding: 8
             topPadding: 8
             bottomPadding: 8
-            font.family: "Droid Sans Mono"
+            font.family: "Hack"
             font.pixelSize: debugInput.font.pixelSize - (main.isPhone ? 4 : 2)
             text: ":r1 etc. restart / :h help / :q quit"
         }

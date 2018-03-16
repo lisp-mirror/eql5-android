@@ -14,6 +14,8 @@
     <file>qml/ext/ArrowButton.qml</file>
     <file>qml/ext/ParenButton.qml</file>
 
+    <file>qml/fonts/Hack-Regular.ttf</file>
+    <file>qml/fonts/Hack-Bold.ttf</file>
     <file>qml/fonts/fontawesome-webfont.ttf</file>
 
 </qresource>

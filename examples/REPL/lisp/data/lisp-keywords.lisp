@@ -771,7 +771,6 @@
     "with-gensyms"))
 
 (defvar *lisp-keywords*
-  (let ((hash (make-hash-table :test 'equal)))
+  (x:let-it (make-hash-table :test 'equal)
     (dolist (kw *lisp-keywords-list*)
-      (setf (gethash kw hash) t))
-    hash))
+      (setf (gethash kw x:it) t))))

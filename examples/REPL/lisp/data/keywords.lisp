@@ -584,3 +584,8 @@
     "*standard-output*"
     "*terminal-io*"
     "*trace-output*"))
+
+(defvar *keywords*
+  (x:let-it (make-hash-table :test 'equal)
+    (dolist (kw *keywords-list*)
+      (setf (gethash kw x:it) t))))

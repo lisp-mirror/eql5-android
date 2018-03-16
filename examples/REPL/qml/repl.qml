@@ -110,7 +110,7 @@ StackView {
                     width: flickEdit.width
                     height: flickEdit.height
                     leftPadding: 2
-                    font.family: "Droid Sans Mono"
+                    font.family: "Hack"
                     font.pixelSize: 18
                     selectionColor: "firebrick"
                     inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
@@ -215,7 +215,7 @@ StackView {
                     width: flickCommand.width
                     height: flickCommand.height
                     padding: 4
-                    font.family: "Droid Sans Mono"
+                    font.family: "Hack"
                     font.pixelSize: 18
                     selectionColor: "firebrick"
                     inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
@@ -495,12 +495,11 @@ StackView {
         }
     }
 
-    // icon font
+    // fonts
 
-    FontLoader {
-        id: fontAwesome
-        source: "fonts/fontawesome-webfont.ttf"
-    }
+    FontLoader { id: fontHack;     source: "fonts/Hack-Regular.ttf" }        // code
+    FontLoader { id: fontHackBold; source: "fonts/Hack-Bold.ttf" }
+    FontLoader { id: fontAwesome;  source: "fonts/fontawesome-webfont.ttf" } // icons
 
     // not visible dialog / menu instances
 

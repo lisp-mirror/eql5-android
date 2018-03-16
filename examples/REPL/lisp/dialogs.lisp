@@ -54,11 +54,15 @@
   (qml-call *qml-debug-text* "clear")
   (qml-set *qml-debug-input* "text" ":q")
   (dolist (text/color messages)
-    (qml-call *qml-debug-text* "append"
-              (format nil "<pre><font face='Droid Sans Mono' color='~A'>~A</font></pre>"
-                      (cdr text/color)
-                      (x:string-substitute "<br>" (string #\Newline)
-                                           (qescape (string-trim '(#\Newline) (car text/color)))))))
+    (let* ((color (cdr text/color))
+           (bold (string/= "black" color)))
+      (qml-call *qml-debug-text* "append"
+                (format nil "<pre><font face='Hack' color='~A'>~A~A~A</font></pre>"
+                        color
+                        (if bold "<b>" "")
+                        (x:string-substitute "<br>" (string #\Newline)
+                                             (qescape (string-trim '(#\Newline) (car text/color))))
+                        (if bold "</b>" "")))))
   (wait-while-transition)
   (push-dialog :debug)
   (qml-call *qml-debug-input* "forceActiveFocus")

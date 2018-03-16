@@ -42,7 +42,7 @@ Rectangle {
             id: queryInput
             objectName: "query_input"
             width: parent.width
-            font.family: "Droid Sans Mono"
+            font.family: "Hack"
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
 
             onAccepted: Lisp.call("dialogs:exited")
