@@ -46,7 +46,7 @@
         *keyword-format*      (qnew "QTextCharFormat")
         *comment-format*      (qnew "QTextCharFormat")
         *lisp-match-rule*     (qnew "QRegExp(QString)" "[(']:*[^ )]+")
-        *keyword-match-rule*  (qnew "QRegExp(QString)" "[(': ][*:&][a-z1-9\\-*]*"))
+        *keyword-match-rule*  (qnew "QRegExp(QString)" "[(': ]?[*:&][a-z1-9\\-*]*"))
   (x:do-with *eql-keyword-format*
     (|setForeground| (qnew "QBrush(QColor)" "#2020b0"))
     (|setFontWeight| |QFont.Bold|))
@@ -102,12 +102,18 @@
                    (set-format *lisp-keyword-format*))))
           (setf i (|indexIn| *lisp-match-rule* text (+ i len))))))
     ;; CL keywords
-    (let ((i (|indexIn| *keyword-match-rule* text)))
+    (let ((i (|indexIn| *keyword-match-rule* text))
+          (extra "(' "))
       (x:while (>= i 0)
         (let* ((len (|matchedLength| *keyword-match-rule*))
-               (kw (subseq text (1+ i) (+ i len))))
-          (when (gethash kw *keywords*)
-            (|setFormat| highlighter (1+ i) (1- len) *keyword-format*))
+               (kw (subseq text i (+ i len))))
+          (when (gethash (string-left-trim extra kw) *keywords*)
+            (let ((skip (find (char kw 0) extra)))
+              (unless (and (not skip) (plusp i))
+                (|setFormat| highlighter
+                             (if skip (1+ i) i)
+                             (if skip (1- len) len)
+                             *keyword-format*))))
           (setf i (|indexIn| *keyword-match-rule* text (+ i len))))))
     ;; comments, strings, parenthesis
     (flet ((set-color (pos len color)
@@ -129,7 +135,6 @@
             (setf ex ch)))))))
 
 (defun cursor-position-changed (text-cursor)
-  (setf cache-matches t)
   (let* ((text-block (|block| text-cursor))
          (line (|text| text-block))
          (pos (|positionInBlock| text-cursor)))

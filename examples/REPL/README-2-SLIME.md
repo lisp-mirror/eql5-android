@@ -7,8 +7,8 @@ Since a working (and patched) Swank version is already included, just eval
 
 #### PC
 
-On the PC you should preferably use Slime v2.19 (newer versions may work, but
-will show a warning on startup).
+On the PC you should preferably use Slime v2.20 (newer versions may work, but
+will show a warning at startup).
 
 
 

@@ -176,10 +176,12 @@ StackView {
                 Ext.MenuButton {
                     objectName: "undo"
                     text: "\uf0e2"
+                    enabled: edit.canUndo
                 }
                 Ext.MenuButton {
                     objectName: "redo"
                     text: "\uf01e"
+                    enabled: edit.canRedo
                 }
                 Ext.MenuButton {
                     objectName: "font_smaller"

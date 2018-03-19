@@ -742,6 +742,8 @@
     "y-or-n-p"
     "yes-or-no-p"
     "zerop"
+    "1+"
+    "1-"
     ;; package :x
     "bytes-to-string"
     "cc"
