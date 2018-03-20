@@ -658,6 +658,9 @@
         (when (or (minusp (decf start))
                   (find ch '(#\Newline #\) )))
           (return-from select-expression)))
+      (when (and (plusp start)
+                 (char= #\` (char text (1- start))))
+        (decf start))
       (x:when-it (end-position (subseq text start))
         (let ((end (+ start x:it)))
           (setf *selection-start* start
