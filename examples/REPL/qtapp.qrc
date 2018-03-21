@@ -3,6 +3,7 @@
 
     <file>qml/repl.qml</file>
     <file>qml/ext/Flickable.qml</file>
+    <file>qml/ext/ScrollBar.qml</file>
     <file>qml/ext/QueryDialog.qml</file>
     <file>qml/ext/DebugDialog.qml</file>
     <file>qml/ext/FileBrowser.qml</file>

@@ -1,7 +1,11 @@
 import QtQuick 2.7
+import QtQuick.Controls 2.0
+import "." as Ext
 
 Flickable {
     clip: true
+
+    ScrollBar.vertical: Ext.ScrollBar {}
 
     function ensureVisible(r) {
         if (contentX >= r.x)
