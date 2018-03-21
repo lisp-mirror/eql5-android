@@ -83,10 +83,9 @@
 ;;; interrupt timers
 
 (defun %timers (fun)
-  (when *accel-timer*
-    (funcall fun *accel-timer*))
-  (when *compass-timer*
-    (funcall fun *compass-timer*)))
+  (dolist (timer (list *accel-timer* *compass-timer*))
+    (when timer
+      (funcall fun timer))))
 
 (defun start-sensor-timers ()
   (%timers '|start|))

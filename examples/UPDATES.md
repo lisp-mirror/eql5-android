@@ -32,7 +32,7 @@ This will copy `libqtapp.so` into the `update/` directory and strip it.
 ### Deploy
 
 Now copy the above `update/update-app-name.so` to your device. In the app REPL
-on the device, enter `:u`: this will call `(eql-user::install-update)`.
+on the device, enter `:u`: this will call `(eql:install-update)`.
 
 After selecting the file in the file dialog, it will be copied into the
 home directory of your app (*not* overwriting the original one); after
