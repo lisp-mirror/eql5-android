@@ -10,6 +10,7 @@ StackView {
     initialItem: mainRect
 
     property bool isPhone: (Math.max(width, height) < 1000) // trivial but seems reliable
+    property bool skipEnsureVisible: false
 
     function keyboardHeight() {
         return Qt.inputMethod.keyboardRectangle.height / Lisp.call("qml:scale")

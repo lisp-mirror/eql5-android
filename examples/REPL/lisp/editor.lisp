@@ -25,6 +25,7 @@
 (defvar *file*                   nil)
 
 ;; QML items
+(defvar *qml-main*             "main")
 (defvar *qml-edit*             "edit")
 (defvar *qml-flick-edit*       "flick_edit")
 (defvar *qml-command*          "command")
@@ -34,6 +35,11 @@
 (defvar *qml-clipboard-menu*   "clipboard_menu")
 (defvar *qml-document-edit*    nil)
 (defvar *qml-document-command* nil)
+
+(defmacro enum (&rest names/values)
+  `(progn
+     ,@(mapcar (lambda (n/v) `(defconstant ,(car n/v) ,(cdr n/v)))
+               names/values)))
 
 (defun read-file (file)
   (with-open-file (s (x:path file))
@@ -48,13 +54,13 @@
         *lisp-match-rule*     (qnew "QRegExp(QString)" "[(']:*[^ )]+")
         *keyword-match-rule*  (qnew "QRegExp(QString)" "[(': ]?[*:&][a-z1-9\\-*]*"))
   (x:do-with *eql-keyword-format*
-    (|setForeground| (qnew "QBrush(QColor)" "#2020b0"))
+    (|setForeground| (qnew "QBrush(QColor)" "#202090"))
     (|setFontWeight| |QFont.Bold|))
   (x:do-with *lisp-keyword-format*
-    (|setForeground| (qnew "QBrush(QColor)" "#b02020"))
+    (|setForeground| (qnew "QBrush(QColor)" "#902020"))
     (|setFontWeight| |QFont.Bold|))
   (x:do-with *keyword-format*
-    (|setForeground| (qnew "QBrush(QColor)" "#008080"))
+    (|setForeground| (qnew "QBrush(QColor)" "#207070"))
     (|setFontWeight| |QFont.Bold|))
   (x:do-with *comment-format*
     (|setForeground| (qnew "QBrush(QColor)" "lightslategray"))
@@ -84,64 +90,116 @@
     (when (numberp end)
       end)))
 
-(defun highlight-block (highlighter text)
-  (unless (x:empty-string text)
-    ;; CL, EQL5 functions and macros
-    (let ((i (|indexIn| *lisp-match-rule* text)))
-      (x:while (>= i 0)
-        (let* ((len (|matchedLength| *lisp-match-rule*))
-               (kw* (subseq text (1+ i) (+ i len)))
-               (kw (x:if-it (position #\: kw* :from-end t)
-                            (subseq kw* (1+ x:it))
-                            kw*)))
-          (flet ((set-format (frm)
-                   (|setFormat| highlighter (1+ i) (1- len) frm)))
-            (cond ((find kw *eql-keywords-list* :test 'string=)
-                   (set-format *eql-keyword-format*))
-                  ((gethash kw *lisp-keywords*)
-                   (set-format *lisp-keyword-format*))))
-          (setf i (|indexIn| *lisp-match-rule* text (+ i len))))))
-    ;; CL keywords
-    (let ((i (|indexIn| *keyword-match-rule* text))
-          (extra "(' "))
-      (x:while (>= i 0)
-        (let* ((len (|matchedLength| *keyword-match-rule*))
-               (kw (subseq text i (+ i len))))
-          (when (gethash (string-left-trim extra kw) *keywords*)
-            (let ((skip (find (char kw 0) extra)))
-              (unless (and (not skip) (plusp i))
-                (|setFormat| highlighter
-                             (if skip (1+ i) i)
-                             (if skip (1- len) len)
-                             *keyword-format*))))
-          (setf i (|indexIn| *keyword-match-rule* text (+ i len))))))
-    ;; comments, strings, parenthesis
-    (flet ((set-color (pos len color)
-             (|setFormat| highlighter pos len color)))
-      (let ((ex #\Space))
-        (dotimes (i (length text))
-          (let ((ch (char text i)))
-            (unless (char= #\\ ex)
-              (case ch
-                ((#\( #\))
-                 (set-color i 1 *parenthesis-color*))
-                (#\"
-                 (x:when-it (end-position (subseq text i))
-                   (set-color i x:it *string-color*)
-                   (incf i (1- x:it))))
-                (#\;
-                 (|setFormat| highlighter i (- (length text) i) *comment-format*)
-                 (return))))
-            (setf ex ch)))))))
+;;; syntax highlighting
 
-(defun cursor-position-changed (text-cursor)
-  (let* ((text-block (|block| text-cursor))
-         (line (|text| text-block))
-         (pos (|positionInBlock| text-cursor)))
-    (setf *cursor-indent* pos)
-    (when (and (plusp pos)
-               (char= #\) (char line (1- pos))))
-      (show-matching-paren text-cursor (subseq line 0 pos) :right))))
+(enum
+ (+no-value+   . -1)
+ (+in-comment+ . 1)
+ (+in-string+  . 2))
+
+(defun highlight-block (highlighter text)
+  ;; CL, EQL5 functions and macros
+  (let ((i (|indexIn| *lisp-match-rule* text)))
+    (x:while (>= i 0)
+      (let* ((len (|matchedLength| *lisp-match-rule*))
+             (kw* (subseq text (1+ i) (+ i len)))
+             (kw (x:if-it (position #\: kw* :from-end t)
+                          (subseq kw* (1+ x:it))
+                          kw*)))
+        (flet ((set-format (frm)
+                 (|setFormat| highlighter (1+ i) (1- len) frm)))
+          (cond ((find kw *eql-keywords-list* :test 'string=)
+                 (set-format *eql-keyword-format*))
+                ((gethash kw *lisp-keywords*)
+                 (set-format *lisp-keyword-format*))))
+        (setf i (|indexIn| *lisp-match-rule* text (+ i len))))))
+  ;; CL keywords etc.
+  (let ((i (|indexIn| *keyword-match-rule* text))
+        (extra "(' "))
+    (x:while (>= i 0)
+      (let* ((len (|matchedLength| *keyword-match-rule*))
+             (kw (subseq text i (+ i len))))
+        (when (gethash (string-left-trim extra kw) *keywords*)
+          (let ((skip (find (char kw 0) extra)))
+            (unless (and (not skip) (plusp i))
+              (|setFormat| highlighter
+                           (if skip (1+ i) i)
+                           (if skip (1- len) len)
+                           *keyword-format*))))
+        (setf i (|indexIn| *keyword-match-rule* text (+ i len))))))
+  ;; comments, strings, parenthesis
+  (flet ((set-comment-format (pos len)
+           (|setFormat| highlighter pos len *comment-format*))
+         (set-color (pos len color)
+           (|setFormat| highlighter pos len color))
+         (set-state (state)
+           (|setCurrentBlockState| highlighter state)))
+    (let* ((ex #\Space)
+           (state (|currentBlockState| highlighter))
+           (prev-state (|previousBlockState| highlighter))
+           (in-string (= +in-string+ prev-state))    ; multi line strings
+           (in-comment (= +in-comment+ prev-state))) ; multi line comments
+      (set-state (if (x:empty-string text) prev-state +no-value+))
+      (dotimes (i (length text))
+        (let ((ch (char text i)))
+          (unless (char= #\\ ex)
+            (cond (;; multi line comment
+                   (or (and (char= #\# ex)
+                            (char= #\| ch))
+                       (and (zerop i)
+                            in-comment))
+                   (let ((len (x:if-it (search "|#" (subseq text i))
+                                       (+ x:it (if in-comment 2 3))
+                                       (progn
+                                         (set-state +in-comment+)
+                                         (length text)))))
+                     (set-comment-format (max (1- i) 0) len)
+                     (incf i (1- len)))
+                   (force-repaint)
+                   (setf ch #\Space))
+                  ;; single/multi line string
+                  ((or (char= #\" ch)
+                       (and (zerop i)
+                            in-string))
+                   (let ((len (x:if-it (end-position (if in-string (x:cc "\"" text) (subseq text i)))
+                                       (if in-string (1- x:it) x:it)
+                                       (progn
+                                         (set-state +in-string+)
+                                         (length text)))))
+                     (set-color i len *string-color*)
+                     (incf i (1- len)))
+                   (setf ch #\Space))
+                  ;; parens
+                  ((find ch "()")
+                   (set-color i 1 *parenthesis-color*))
+                  ;; single line comment
+                  ((char= #\; ch)
+                   (set-comment-format i (- (length text) i))
+                   (return))))
+          (setf ex ch)))
+      (when (/= state (|currentBlockState| highlighter))
+        (force-repaint)))))
+
+(let (timer)
+  (defun force-repaint ()
+    (when (string= *qml-edit* (active-edit))
+      ;; N.B. workaround for bug (missing repaint after multi line highlight changes)
+      ;; (happening in e.g. Qt 5.10)
+      (unless timer
+        (setf timer (qnew "QTimer"
+                          "singleShot" t
+                          "interval" 100))
+        (qconnect timer "timeout()"
+                  ;; called max once every 100 ms
+                  (lambda ()
+                    (let ((pos (qml-get *qml-edit* "cursorPosition"))
+                          (len (qml-get *qml-edit* "length")))
+                      (when (plusp len)
+                        (qml-set *qml-main* "skipEnsureVisible" t)
+                        (qml-call *qml-edit* "select" (1- len) len)
+                        (qml-set *qml-edit* "cursorPosition" pos)
+                        (qml-set *qml-main* "skipEnsureVisible" nil))))))
+      (|start| timer))))
 
 ;;; auto completion: start when 2 spaces have been inserted in less than 500 ms
 
@@ -177,6 +235,9 @@
               (search-completion (coerce text 'string)))))))))
 
 (defun search-completion (short)
+  (let ((p (position #\: short)))
+    (when (and p (plusp p))
+      (setf short (subseq short (1+ p)))))
   (let* ((edit (active-edit))
          (pos (qml-get edit "cursorPosition")))
     (qml-call edit "remove" (- pos 2) pos) ; remove the 2 spaces
@@ -381,6 +442,15 @@
   (if (qml-get *qml-edit* "activeFocus")
       *qml-edit*
       *qml-command*))
+
+(defun cursor-position-changed (text-cursor)
+  (let* ((text-block (|block| text-cursor))
+         (line (|text| text-block))
+         (pos (|positionInBlock| text-cursor)))
+    (setf *cursor-indent* pos)
+    (when (and (plusp pos)
+               (char= #\) (char line (1- pos))))
+      (show-matching-paren text-cursor (subseq line 0 pos) :right))))
 
 (let ((ex-from -1))
   (defun show-matching-paren (text-cursor line type)

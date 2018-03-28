@@ -8,6 +8,8 @@ Flickable {
     ScrollBar.vertical: Ext.ScrollBar {}
 
     function ensureVisible(r) {
+        if (main.skipEnsureVisible)
+            return;
         if (contentX >= r.x)
             contentX = r.x;
         else if (contentX + width <= r.x + r.width)

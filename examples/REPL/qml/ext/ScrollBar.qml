@@ -5,13 +5,13 @@ import QtQuick.Controls 2.0
 
 ScrollBar {
     id: control
-    implicitWidth: 6
-    implicitHeight: 6
+    implicitWidth: main.isPhone ? 6 : 12
+    implicitHeight: implicitWidth
     padding: 1
 
     contentItem: Rectangle {
-        implicitWidth: 4
-        implicitHeight: 4
+        implicitWidth: main.isPhone ? 4 : 8
+        implicitHeight: implicitWidth
         radius: width / 2
         color: control.pressed ? "#b02020" : "#303030"
         opacity: 0.0
