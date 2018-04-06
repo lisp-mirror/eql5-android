@@ -53,7 +53,7 @@
                ~%;;(editor:change-font :bigger 2)~
                ~%~
                ~%;; hide paren buttons~
-               ~%;;(qml-set \"rect_paren_buttons\" \"visible\" nil)~
+               ~%;;(qml:qml-set \"rect_paren_buttons\" \"visible\" nil)~
                ~%")))
   (delayed-eval 0 (if (probe-file ".eql5-ini")
                                   "(help t)"

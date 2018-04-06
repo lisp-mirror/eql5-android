@@ -54,13 +54,13 @@
         *lisp-match-rule*     (qnew "QRegExp(QString)" "[(']:*[^ )]+")
         *keyword-match-rule*  (qnew "QRegExp(QString)" "[(': ]?[*:&][a-z1-9\\-*]*"))
   (x:do-with *eql-keyword-format*
-    (|setForeground| (qnew "QBrush(QColor)" "#202090"))
+    (|setForeground| (qnew "QBrush(QColor)" "#5050c0"))
     (|setFontWeight| |QFont.Bold|))
   (x:do-with *lisp-keyword-format*
-    (|setForeground| (qnew "QBrush(QColor)" "#902020"))
+    (|setForeground| (qnew "QBrush(QColor)" "#c05050"))
     (|setFontWeight| |QFont.Bold|))
   (x:do-with *keyword-format*
-    (|setForeground| (qnew "QBrush(QColor)" "#207070"))
+    (|setForeground| (qnew "QBrush(QColor)" "#409090"))
     (|setFontWeight| |QFont.Bold|))
   (x:do-with *comment-format*
     (|setForeground| (qnew "QBrush(QColor)" "lightslategray"))
@@ -73,15 +73,10 @@
              (lambda (str) (highlight-block *highlighter-command* str))))
 
 (defun read* (str &optional (start 0))
-  (setf *try-read-error* nil)
   (let ((*package* #.(find-package :eql)))
     (multiple-value-bind (exp x)
         (ignore-errors (read-from-string (substitute *package-char-dummy* #\: str)
                                          nil nil :start start :preserve-whitespace t))
-      (unless exp
-        (setf *try-read-error* (typecase x
-                                 (end-of-file :end-of-file)
-                                 (t t))))
       (values exp x))))
 
 (defun end-position (str)
@@ -102,7 +97,7 @@
   (let ((i (|indexIn| *lisp-match-rule* text)))
     (x:while (>= i 0)
       (let* ((len (|matchedLength| *lisp-match-rule*))
-             (kw* (subseq text (1+ i) (+ i len)))
+             (kw* (string-left-trim "(" (subseq text (1+ i) (+ i len))))
              (kw (x:if-it (position #\: kw* :from-end t)
                           (subseq kw* (1+ x:it))
                           kw*)))
@@ -653,12 +648,11 @@
 
 ;;; save-file
 
-(defun save-to-file (file &optional (qml-item *qml-edit*) append)
+(defun save-to-file (file)
   (ensure-directories-exist file)
   (with-open-file (s file :direction :output
-                     :if-exists (if append :append :supersede)
-                     :if-does-not-exist :create)
-    (write-sequence (qml-get qml-item "text") s)
+                     :if-exists :supersede)
+    (write-sequence (qml-get *qml-edit* "text") s)
     (|clearUndoRedoStacks| *qml-document-edit*)))
 
 (defun confirm-save-dialog (title text)
@@ -795,12 +789,6 @@
     (clicked "copy"       'copy)
     (clicked "paste"      'paste)
     (clicked "eval_exp"   (lambda () (eval-expression *selected-text* nil)))))
-
-;;; log
-
-(defun log-output ()
-  (save-to-file "output-log.htm" *qml-output* :append)
-  t)
 
 ;;; ini
 
