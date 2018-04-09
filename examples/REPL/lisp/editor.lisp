@@ -7,16 +7,59 @@
 (dolist (module (list :multimedia :network :sql :svg))
   (qrequire module :quiet)) ; load if available
 
+;;; colors (after changes, call APPLY-COLORS)
+
+(defvar *text-color*              "black")
+(defvar *background-color*        "white")
+(defvar *parenthesis-color*       "lightslategray")
+(defvar *string-color*            "saddlebrown")
+(defvar *comment-color*           "lightslategray")
+(defvar *lisp-keyword-color*      "#c05050")
+(defvar *eql-keyword-color*       "#5050c0")
+(defvar *keyword-color*           "#409090")
+
+(defvar *output-text-color*       "black")
+(defvar *output-background-color* "lavender")
+(defvar *output-string-color*     "saddlebrown")
+(defvar *output-value-color*      "#2020ff")
+(defvar *output-trace-color*      "darkmagenta")
+(defvar *output-error-color*      "red")
+
+(defun apply-colors ()
+  (x:do-with *lisp-keyword-format*
+    (|setForeground| (qnew "QBrush(QColor)" *lisp-keyword-color*))
+    (|setFontWeight| |QFont.Bold|))
+  (x:do-with *eql-keyword-format*
+    (|setForeground| (qnew "QBrush(QColor)" *eql-keyword-color*))
+    (|setFontWeight| |QFont.Bold|))
+  (x:do-with *keyword-format*
+    (|setForeground| (qnew "QBrush(QColor)" *keyword-color*))
+    (|setFontWeight| |QFont.Bold|))
+  (x:do-with *comment-format*
+    (|setForeground| (qnew "QBrush(QColor)" *comment-color*))
+    (|setFontItalic| t))
+  (dolist (item/color (list (cons *qml-edit*         *text-color*)
+                            (cons *qml-rect-edit*    *background-color*)
+                            (cons *qml-command*      *text-color*)
+                            (cons *qml-rect-command* *background-color*)
+                            (cons *qml-output*       *output-text-color*)
+                            (cons *qml-rect-output*  *output-background-color*)))
+    (qml-set (car item/color) "color"
+             (cdr item/color)))
+  (unless (zerop (qml-get *qml-edit* "length"))
+    (dolist (fun '("selectAll" "cut" "paste")) ; apply to editor
+      (qml-call *qml-edit* fun))))
+
+;;;
+
 (defvar *package-char-dummy*     #\$)
 (defvar *separator*              "#||#")
 (defvar *lisp-match-rule*        nil)
 (defvar *keyword-match-rule*     nil)
-(defvar *eql-keyword-format*     nil)
 (defvar *lisp-keyword-format*    nil)
+(defvar *eql-keyword-format*     nil)
 (defvar *keyword-format*         nil)
 (defvar *comment-format*         nil)
-(defvar *parenthesis-color*      "lightslategray")
-(defvar *string-color*           "saddlebrown")
 (defvar *current-depth*          0)
 (defvar *current-keyword-indent* 0)
 (defvar *cursor-indent*          0)
@@ -27,9 +70,12 @@
 ;; QML items
 (defvar *qml-main*             "main")
 (defvar *qml-edit*             "edit")
+(defvar *qml-rect-edit*        "rect_edit")
 (defvar *qml-flick-edit*       "flick_edit")
 (defvar *qml-command*          "command")
+(defvar *qml-rect-command*     "rect_command")
 (defvar *qml-output*           "output")
+(defvar *qml-rect-output*      "rect_output")
 (defvar *qml-flick-output*     "flick_output")
 (defvar *qml-clear*            "clear")
 (defvar *qml-clipboard-menu*   "clipboard_menu")
@@ -47,24 +93,12 @@
       (read-sequence x:it s))))
 
 (defun ini-highlighters ()
-  (setf *eql-keyword-format*  (qnew "QTextCharFormat")
-        *lisp-keyword-format* (qnew "QTextCharFormat")
+  (setf *lisp-keyword-format* (qnew "QTextCharFormat")
+        *eql-keyword-format*  (qnew "QTextCharFormat")
         *keyword-format*      (qnew "QTextCharFormat")
         *comment-format*      (qnew "QTextCharFormat")
         *lisp-match-rule*     (qnew "QRegExp(QString)" "[(']:*[^ )]+")
         *keyword-match-rule*  (qnew "QRegExp(QString)" "[(': ]?[*:&][a-z1-9\\-*]*"))
-  (x:do-with *eql-keyword-format*
-    (|setForeground| (qnew "QBrush(QColor)" "#5050c0"))
-    (|setFontWeight| |QFont.Bold|))
-  (x:do-with *lisp-keyword-format*
-    (|setForeground| (qnew "QBrush(QColor)" "#c05050"))
-    (|setFontWeight| |QFont.Bold|))
-  (x:do-with *keyword-format*
-    (|setForeground| (qnew "QBrush(QColor)" "#409090"))
-    (|setFontWeight| |QFont.Bold|))
-  (x:do-with *comment-format*
-    (|setForeground| (qnew "QBrush(QColor)" "lightslategray"))
-    (|setFontItalic| t))
   (setf *highlighter-edit*    (qnew "QSyntaxHighlighter(QTextDocument*)" *qml-document-edit*)
         *highlighter-command* (qnew "QSyntaxHighlighter(QTextDocument*)" *qml-document-command*))
   (qoverride *highlighter-edit* "highlightBlock(QString)"
@@ -103,10 +137,10 @@
                           kw*)))
         (flet ((set-format (frm)
                  (|setFormat| highlighter (1+ i) (1- len) frm)))
-          (cond ((find kw *eql-keywords-list* :test 'string=)
-                 (set-format *eql-keyword-format*))
-                ((gethash kw *lisp-keywords*)
-                 (set-format *lisp-keyword-format*))))
+          (cond ((gethash kw *lisp-keywords*)
+                 (set-format *lisp-keyword-format*))
+                ((find kw *eql-keywords-list* :test 'string=)
+                 (set-format *eql-keyword-format*))))
         (setf i (|indexIn| *lisp-match-rule* text (+ i len))))))
   ;; CL keywords etc.
   (let ((i (|indexIn| *keyword-match-rule* text))
@@ -352,7 +386,8 @@
            (pos-local      (paren-match-index code -3))
            (keyword-indent (x:when-it (pos-newline pos-keyword) (- x:it pos-keyword 1)))
            (auto-indent    (auto-indent-spaces (read* (reverse (subseq code 0 pos-keyword)))))
-           (in-local       (find (read* (reverse (subseq code 0 pos-local))) '(flet labels macrolet)))
+           (in-local       (find (read* (reverse (subseq code 0 pos-local)))
+                                 '(flet labels macrolet)))
            (local-indent   (x:when-it (and in-local (pos-newline pos-local)) (- x:it pos-local 1))))
       (setf *current-depth*          (or local-indent (if auto-indent (or keyword-indent pos) pos))
             *current-keyword-indent* (if local-indent
@@ -530,11 +565,11 @@
               (qml-get *qml-output* "length")
               (format nil "<pre><font face='Hack' color='~A'>~A~%~A~A</font></pre>"
                       (case type
-                        (:output "saddlebrown")
-                        (:values "#2020ff")
-                        (:trace  "darkmagenta")
-                        (:error  "red")
-                        (t       "black"))
+                        (:output *output-string-color*)
+                        (:values *output-value-color*)
+                        (:trace  *output-trace-color*)
+                        (:error  *output-error-color*)
+                        (t       *output-text-color*))
                       (if bold "<b>" "")
                       (if (eql :values type)
                           (x:string-substitute "<br>" *separator* text*)
@@ -812,7 +847,8 @@
   (defun reset-documents ()
     (setf curr 0)))
 
-(defun set-delayed-focus () ; called from QML
+(defun delayed-ini () ; called from QML
+  (qlater 'apply-colors)
   ;; needed because resizing sometimes gets messed up on startup
   ;; (caused by virtual keyboard)
   (qsingle-shot 1000 (lambda ()

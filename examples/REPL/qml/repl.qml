@@ -95,6 +95,7 @@ StackView {
 
         Rectangle {
             id: rectEdit
+            objectName: "rect_edit"
             width: main.width
             height: main.halfHeight()
 
@@ -119,10 +120,7 @@ StackView {
 
                     onCursorRectangleChanged: flickEdit.ensureVisible(cursorRectangle)
 
-                    Component.onCompleted: {
-                        Lisp.call(textDocument, "editor:set-text-document", objectName)
-                        Lisp.call("editor:set-delayed-focus")
-                    }
+                    Component.onCompleted: Lisp.call(textDocument, "editor:set-text-document", objectName)
 
                     MouseArea {
                         width: Math.max(rectEdit.width, edit.paintedWidth)
@@ -199,6 +197,7 @@ StackView {
 
         Rectangle {
             id: rectCommand
+            objectName: "rect_command"
             y: flickEdit.height
             width: parent.width
             height: command.font.pixelSize + 11
@@ -260,7 +259,6 @@ StackView {
         Rectangle {
             id: rectOutput
             objectName: "rect_output"
-            color: "lavender"
             y: flickEdit.height + rectCommand.height
             width: main.width
             height: main.halfHeight()
@@ -283,6 +281,8 @@ StackView {
                     font.pixelSize: 18
                     textFormat: TextEdit.RichText
                     readOnly: true
+
+                    Component.onCompleted: Lisp.call("editor:delayed-ini")
 
                     onCursorRectangleChanged: flickOutput.ensureVisible(cursorRectangle)
                 }

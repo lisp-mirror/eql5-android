@@ -36,6 +36,8 @@
 
 (defun post-install ()
   (when (copy-asset-files *assets-lib*)
+    (shell "chmod -R a+w quicklisp/local-projects")
+    (shell "chmod -R a+w settings")
     (touch-file ".eql5-ini")
     (delayed-eval 1000 "(help t)")
     :done))
@@ -48,6 +50,9 @@
   (with-open-file (s ".eclrc" :direction :output :if-exists :append)
     (when (zerop (file-length s))
       (format s ";;; example settings~
+               ~%~
+               ~%(x:when-it (probe-file \"settings/colors.lisp\")~
+               ~%  (load x:it))~
                ~%~
                ~%;; bigger font size~
                ~%;;(editor:change-font :bigger 2)~
