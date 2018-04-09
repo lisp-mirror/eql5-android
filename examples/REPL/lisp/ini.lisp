@@ -36,8 +36,7 @@
 
 (defun post-install ()
   (when (copy-asset-files *assets-lib*)
-    (shell "chmod -R a+w quicklisp/local-projects")
-    (shell "chmod -R a+w settings")
+    (shell "chmod 666 settings/colors.lisp") ; write permissions
     (touch-file ".eql5-ini")
     (delayed-eval 1000 "(help t)")
     :done))
