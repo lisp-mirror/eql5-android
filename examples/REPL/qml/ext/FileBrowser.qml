@@ -31,7 +31,7 @@ Rectangle {
             objectName: "folder_model"
             showDirsFirst: true
             showHidden: true
-            nameFilters: ["*.lisp", "*.lsp", "*.asd", "*.exp", "*.sexp", "*.fas", "*.fasb", "*.fasc", ".eclrc"]
+            nameFilters: ["*.lisp", "*.lsp", "*.asd", "*.exp", "*.sexp", "*.fas", "*.fasb", "*.fasc", ".eclrc", ".eql5-lisp-repl-history"]
         }
 
         header: Rectangle {

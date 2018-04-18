@@ -1,7 +1,7 @@
 ;;; idea & most code from "ecl-readline.lisp"
 
 (defpackage input-hook
-    (:use :cl)
+  (:use :cl)
   (:export
    #:make))
 

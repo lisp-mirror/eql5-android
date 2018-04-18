@@ -123,7 +123,7 @@
 
 (defun ensure-android-permission (&optional (name "android.permission.WRITE_EXTERNAL_STORAGE"))
   "Check/request Android permission (for API level >= 23); the name defaults to \"android.permission.WRITE_EXTERNAL_STORAGE\". Returns T on granted permission."
-  (! "checkPermission" (:qt (qapp)) name)) ; see ../build/load.h'
+  (! "checkPermission" (:qt (qapp)) name)) ; see '../build/load.h'
 
 (export 'ensure-android-permission)
 

@@ -14,6 +14,7 @@
 (setf *output-string-color*     "saddlebrown")
 (setf *output-value-color*      "#2020ff")
 (setf *output-trace-color*      "darkmagenta")
+(setf *output-error-color*      "red")
 
 (progn
   (apply-colors)
