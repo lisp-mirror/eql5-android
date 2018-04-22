@@ -26,7 +26,7 @@ Rectangle {
             width: 1/4 * folderView.width - 4
             anchors.verticalCenter: parent.verticalCenter
             horizontalAlignment: Text.AlignRight
-            text: fileIsDir ? "" : fileSize
+            text: fileIsDir ? "" : Lisp.call("format", null, "~:D", fileSize)
         }
     }
 
