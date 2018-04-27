@@ -304,7 +304,7 @@
     (pressed "next"     (lambda () (change-level :next)))
     (pressed "undo"     'undo)
     (pressed "restart"  'reset-maze)
-    (pressed "solve"    'solve)))
+    (pressed "solve"    (lambda () (qlater 'solve))))) ; QLATER: prevent timer problem
 
 (defun run ()
   (qml:ini-quick-view "qml/sokoban.qml")

@@ -284,7 +284,7 @@
     (pressed "next"     (lambda () (change-level :next)))
     (pressed "undo"     'undo)
     (pressed "restart"  'reset-maze)
-    (pressed "solve"    'solve)))
+    (pressed "solve"    (lambda () (qlater 'solve))))) ; QLATER: prevent timer problem
 
 (defun start ()
   ;; ini
