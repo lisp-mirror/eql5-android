@@ -191,8 +191,8 @@
                ~%  :q  (quicklisp)             ; will install/load it~
                ~%  :s  (start-swank)           ; adb forward tcp:4005 tcp:4005~
                ~%  :f  (dialogs:get-file-name) ; see dialogs:*file-name*~
+               ~%  :c                          ; clear output window~
                ~%  :k                          ; kill eval thread~
-               ~%~
                ~%  (shell \"ls -la\")            ; see *output*~
                ~%~
                ~%  tap and hold to select/copy/paste/eval s-exp (e.g. on 'defun')~

@@ -664,6 +664,8 @@
 (defun clear ()
   (qml-call *qml-edit* "clear")
   (setf *file* nil)
+  (setf *current-keyword-indent* 0
+        *cursor-indent*          0)
   (reset-line-count))
 
 (defun insert (text)
