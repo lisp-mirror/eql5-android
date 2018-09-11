@@ -564,7 +564,9 @@
                                ((cmd ":r")
                                 "(editor:reload-qml)") ; see README in example 'my'
                                ((cmd ":u")
-                                "(eql:install-update)"))))
+                                "(eql:install-update)")
+                               ((cmd "*")
+                                (format nil "(progn~%  (editor::set-clipboard-text (prin1-to-string *))~%  *)")))))
                 (eval:feed-top-level (or cmd text))))))))
 
 (defun print-eval-output (type text)

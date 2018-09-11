@@ -5,8 +5,6 @@
 
 (in-package :eql)
 
-(use-package :qml)
-
 (defvar *assets-lib* "assets:/lib/")
 
 (defun copy-asset-files (dir-name)
@@ -138,8 +136,8 @@
         (do-install-update from)
         (progn
           (unless name-filters
-            (setf name-filters (qml-get *qml-folder-model* "nameFilters")))
-          (qml-set *qml-folder-model* "nameFilters" (list "*.so"))
+            (setf name-filters (qml:qml-get *qml-folder-model* "nameFilters")))
+          (qml:qml-set *qml-folder-model* "nameFilters" (list "*.so"))
           (funcall (sym 'get-file-name :dialogs)
                    (lambda () (do-install-update (symbol-value (sym '*file-name* :dialogs))))))))
   (defun do-install-update (from)
@@ -155,7 +153,7 @@
               (! "restartApp" (:qt (qapp))) ; see ../build/load.h'
               (qquit))
             (qmsg "<b>Error</b> copying the update."))))
-    (qml-set *qml-folder-model* "nameFilters" name-filters))) ; reset (must stay here)
+    (qml:qml-set *qml-folder-model* "nameFilters" name-filters))) ; reset (must stay here)
 
 (export 'install-update)
 
@@ -185,7 +183,7 @@
 (export 'shell)
 
 (defun help (&optional startup)
-  (if (and startup (qml-get nil "isPhone"))
+  (if (and startup (qml:qml-get nil "isPhone"))
       (format t "  :h  (help)")
       (format t "  :a  (require :asdf)         ; see asdf:load-system~
                ~%  :q  (quicklisp)             ; will install/load it~
